@@ -1,6 +1,6 @@
 {
   "name": "@neynar/react",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Farcaster frontend component library powered by Neynar",
   "main": "index.js",
   "author": "Neynar",
