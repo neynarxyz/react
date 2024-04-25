@@ -1,8 +1,9 @@
 {
   "name": "@neynar/react",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Farcaster frontend component library powered by Neynar",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "author": "Neynar",
   "license": "MIT",
   "scripts": {
