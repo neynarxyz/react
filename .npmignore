@@ -5,7 +5,7 @@ rollup.config.mjs
 package.json
 tsconfig.json
 
-src\/.*\.stories\.tsx
+dist/**/*.stories.tsx
 
 .storybook
 
