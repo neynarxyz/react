@@ -1,1 +1,1 @@
-export { NeynarSigninButton } from "./NeynarSigninButton";
+export { NeynarAuthButton } from "./NeynarAuthButton";

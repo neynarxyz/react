@@ -27,7 +27,7 @@ const Button = styled.button`
   transition: background-color 0.3s;
 `;
 
-export const NeynarSigninButton: React.FC<ButtonProps> = ({
+export const NeynarAuthButton: React.FC<ButtonProps> = ({
   label = "Sign in with Neynar",
   onClick,
 }) => (

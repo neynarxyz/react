@@ -1,14 +1,14 @@
 import React from "react";
 import { Meta, StoryFn } from "@storybook/react";
-import { NeynarSigninButton } from "./index";
+import { NeynarAuthButton } from "./index";
 
 export default {
-  title: "NeynarSigninButton",
-  component: NeynarSigninButton,
+  title: "NeynarAuthButton",
+  component: NeynarAuthButton,
 } as Meta;
 
 const Template: StoryFn = (args) => (
-  <NeynarSigninButton onClick={() => alert("Hello from Neynar")} {...args} />
+  <NeynarAuthButton onClick={() => alert("Hello from Neynar")} {...args} />
 );
 
 export const Primary = Template.bind({});
