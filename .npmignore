@@ -5,8 +5,6 @@ rollup.config.mjs
 package.json
 tsconfig.json
 
-dist/**/*.stories.tsx
-
 .storybook
 
 .npmignore
