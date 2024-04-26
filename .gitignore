@@ -2,3 +2,4 @@
 /dist
 
 test-sdk.ts
+*storybook.log

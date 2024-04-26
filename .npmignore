@@ -2,3 +2,10 @@
 src/
 .github/
 rollup.config.mjs
+package.json
+tsconfig.json
+
+.storybook
+*.stories.tsx
+
+.npmignore
