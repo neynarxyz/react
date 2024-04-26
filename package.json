@@ -1,8 +1,9 @@
 {
   "name": "@neynar/react",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Farcaster frontend component library powered by Neynar",
-  "main": "dist/index.js",
+  "main": "dist/bundle.cjs.js",
+  "module": "dist/bundle.esm.js",
   "types": "dist/index.d.ts",
   "author": "Neynar",
   "license": "MIT",
