@@ -1,7 +1,5 @@
-/** @jsxImportSource @emotion/react */
-import styled from "@emotion/styled";
+import { styled } from "@pigment-css/react";
 import React from "react";
-import PlanetBlackIcon from "./icons/PlanetBlackIcon";
 
 interface ButtonProps {
   label?: string;
@@ -9,7 +7,7 @@ interface ButtonProps {
 }
 
 const Button = styled.button`
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   border: none;
   color: #000000;
   padding: 15px;
@@ -30,9 +28,4 @@ const Button = styled.button`
 export const NeynarAuthButton: React.FC<ButtonProps> = ({
   label = "Sign in with Neynar",
   onClick,
-}) => (
-  <Button onClick={onClick}>
-    <PlanetBlackIcon />
-    {label}
-  </Button>
-);
+}) => <Button onClick={onClick}>{label}</Button>;
