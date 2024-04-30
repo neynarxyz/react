@@ -1,6 +1,6 @@
 {
   "name": "@neynar/react",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "Farcaster frontend component library powered by Neynar",
   "main": "dist/bundle.cjs.js",
   "module": "dist/bundle.es.js",
@@ -44,7 +44,6 @@
     "eslint-plugin-storybook": "^0.8.0",
     "rollup-plugin-css-only": "^4.5.2",
     "storybook": "^8.0.9",
-    "tslib": "^2.6.2",
     "typescript": "^5.4.5",
     "vite": "^5.2.10",
     "vite-plugin-dts": "^3.9.0",

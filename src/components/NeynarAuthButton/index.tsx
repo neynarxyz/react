@@ -1,9 +1,11 @@
-import { styled } from "@pigment-css/react";
 import React from "react";
+import { styled } from "@pigment-css/react";
+import PlanetBlackIcon from "./icons/PlanetBlackIcon";
 
 interface ButtonProps {
   label?: string;
   onClick?: () => void;
+  children?: React.ReactNode;
 }
 
 const Button = styled.button`
@@ -28,4 +30,9 @@ const Button = styled.button`
 export const NeynarAuthButton: React.FC<ButtonProps> = ({
   label = "Sign in with Neynar",
   onClick,
-}) => <Button onClick={onClick}>{label}</Button>;
+}) => (
+  <Button onClick={onClick}>
+    <PlanetBlackIcon />
+    <span>{label}</span>
+  </Button>
+);
