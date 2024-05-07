@@ -8,6 +8,8 @@ interface ButtonProps {
   children?: React.ReactNode;
 }
 
+// color: ${(props) => props.theme.vars.palette.primary};
+
 const Button = styled.button`
   background-color: #ffffff;
   border: none;
