@@ -13,7 +13,7 @@ interface ButtonProps {
 const Button = styled.button`
   background-color: #ffffff;
   border: none;
-  color: #000000;
+  color: ${(props) => props.theme.vars.palette.primary};
   padding: 15px;
   font-size: 15px;
   font-weight: 600;

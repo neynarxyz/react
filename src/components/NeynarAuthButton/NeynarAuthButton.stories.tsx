@@ -7,9 +7,7 @@ export default {
   component: NeynarAuthButton,
 } as Meta;
 
-const Template: StoryFn = (args) => (
-  <NeynarAuthButton onClick={() => alert("Hello from Neynar")} {...args} />
-);
+const Template: StoryFn = (args) => <NeynarAuthButton {...args} />;
 
 export const Primary = Template.bind({});
 Primary.args = {
