@@ -7,13 +7,14 @@ import React, {
   useEffect,
 } from "react";
 import { Theme } from "../enums";
-
-type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
+import { SetState } from "../types/common";
+import { AuthContextProvider } from "./AuthContextProvider";
 
 interface INeynarContext {
   client_id: string;
   theme: Theme;
   setTheme: SetState<Theme>;
+  isAuthenticated: boolean;
 }
 
 const NeynarContext = createContext<INeynarContext | undefined>(undefined);
@@ -30,6 +31,7 @@ export const NeynarContextProvider: React.FC<NeynarContextProviderProps> = ({
   defaultTheme = Theme.Light,
 }) => {
   const [client_id] = useState<string>(clientId);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [theme, setTheme] = useState<Theme>(defaultTheme);
 
   useEffect(() => {
@@ -45,10 +47,21 @@ export const NeynarContextProvider: React.FC<NeynarContextProviderProps> = ({
     }
   }, [theme]);
 
-  const value = useMemo(() => ({ client_id, theme, setTheme }), [theme]);
+  const value = useMemo(
+    () => ({ client_id, theme, isAuthenticated, setTheme }),
+    [client_id, theme, isAuthenticated]
+  );
+
+  const _setIsAuthenticated = (_isAuthenticated: boolean) => {
+    setIsAuthenticated(_isAuthenticated);
+  };
 
   return (
-    <NeynarContext.Provider value={value}>{children}</NeynarContext.Provider>
+    <NeynarContext.Provider value={value}>
+      <AuthContextProvider {...{ _setIsAuthenticated }}>
+        {children}
+      </AuthContextProvider>
+    </NeynarContext.Provider>
   );
 };
 

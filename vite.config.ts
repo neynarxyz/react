@@ -4,6 +4,9 @@ import { pigment } from "@pigment-css/vite-plugin";
 import tsconfigPaths from "vite-tsconfig-paths";
 import dts from "vite-plugin-dts";
 import { theme } from "./src/theme/index";
+import { config } from "dotenv";
+
+config({ path: ".env.local" });
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -17,6 +20,9 @@ export default defineConfig({
       insertTypesEntry: true, // This option adds an entry for the type definitions in your package.json
     }),
   ],
+  define: {
+    "process.env": process.env,
+  },
   build: {
     outDir: "dist",
     lib: {

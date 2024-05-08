@@ -3,3 +3,8 @@
 
 test-sdk.ts
 *storybook.log
+
+.env
+.env.local
+.env.development
+.evn.production

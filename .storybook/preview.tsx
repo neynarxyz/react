@@ -6,7 +6,10 @@ import { Theme } from "../src/enums";
 import "../dist/style.css";
 
 const withNeynarProvider = (Story) => (
-  <NeynarContextProvider clientId="defaultClient" defaultTheme={Theme.Light}>
+  <NeynarContextProvider
+    clientId={process.env.CLIENT_ID || ""}
+    defaultTheme={Theme.Light}
+  >
     <Story />
   </NeynarContextProvider>
 );
