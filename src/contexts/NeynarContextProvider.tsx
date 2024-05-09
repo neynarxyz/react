@@ -9,12 +9,14 @@ import React, {
 import { Theme } from "../enums";
 import { SetState } from "../types/common";
 import { AuthContextProvider } from "./AuthContextProvider";
+import { ToastContainer, ToastItem, ToastType } from "../components/Toast";
 
 interface INeynarContext {
   client_id: string;
   theme: Theme;
   setTheme: SetState<Theme>;
   isAuthenticated: boolean;
+  showToast: (type: ToastType, message: string) => void;
 }
 
 const NeynarContext = createContext<INeynarContext | undefined>(undefined);
@@ -33,6 +35,19 @@ export const NeynarContextProvider: React.FC<NeynarContextProviderProps> = ({
   const [client_id] = useState<string>(clientId);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [theme, setTheme] = useState<Theme>(defaultTheme);
+  const [toasts, setToasts] = useState<{ type: string; message: string }[]>([]);
+
+  const showToast = (type: ToastType, message: string) => {
+    const newToast = { type, message };
+    setToasts((prevToasts) => [...prevToasts, newToast]);
+    setTimeout(() => removeToast(newToast), 5000); // Remove toast after 5 seconds
+  };
+
+  const removeToast = (toastToRemove: { type: string; message: string }) => {
+    setToasts((prevToasts) =>
+      prevToasts.filter((toast) => toast !== toastToRemove)
+    );
+  };
 
   useEffect(() => {
     const root = document.querySelector(":root");
@@ -48,7 +63,7 @@ export const NeynarContextProvider: React.FC<NeynarContextProviderProps> = ({
   }, [theme]);
 
   const value = useMemo(
-    () => ({ client_id, theme, isAuthenticated, setTheme }),
+    () => ({ client_id, theme, isAuthenticated, setTheme, showToast }),
     [client_id, theme, isAuthenticated]
   );
 
@@ -60,6 +75,13 @@ export const NeynarContextProvider: React.FC<NeynarContextProviderProps> = ({
     <NeynarContext.Provider value={value}>
       <AuthContextProvider {...{ _setIsAuthenticated }}>
         {children}
+        <ToastContainer>
+          {toasts.map((toast, index) => (
+            <ToastItem key={index} type={toast.type}>
+              {toast.message}
+            </ToastItem>
+          ))}
+        </ToastContainer>
       </AuthContextProvider>
     </NeynarContext.Provider>
   );

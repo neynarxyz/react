@@ -6,5 +6,8 @@ export * from "./components";
 // Contexts
 export * from "./contexts";
 
+// Hooks
+export * from "./hooks";
+
 // Enums
-export { Theme } from "./enums"
+export { Theme } from "./enums";
