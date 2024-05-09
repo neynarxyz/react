@@ -18,6 +18,7 @@ interface INeynarContext {
   isAuthenticated: boolean;
   showToast: (type: ToastType, message: string) => void;
   user: INeynarAuthenticatedUser | null;
+  signoutUser: () => void;
 }
 
 const NeynarContext = createContext<INeynarContext | undefined>(undefined);
@@ -38,8 +39,6 @@ export const NeynarContextProvider: React.FC<NeynarContextProviderProps> = ({
   const [theme, setTheme] = useState<Theme>(defaultTheme);
   const [toasts, setToasts] = useState<{ type: string; message: string }[]>([]);
   const [user, setUser] = useState<INeynarAuthenticatedUser | null>(null);
-
-  
 
   const showToast = (type: ToastType, message: string) => {
     const newToast = { type, message };
@@ -66,11 +65,6 @@ export const NeynarContextProvider: React.FC<NeynarContextProviderProps> = ({
     }
   }, [theme]);
 
-  const value = useMemo(
-    () => ({ client_id, theme, isAuthenticated, user, setTheme, showToast }),
-    [client_id, theme, isAuthenticated]
-  );
-
   const _setIsAuthenticated = (_isAuthenticated: boolean) => {
     setIsAuthenticated(_isAuthenticated);
   };
@@ -78,6 +72,25 @@ export const NeynarContextProvider: React.FC<NeynarContextProviderProps> = ({
   const _setUser = (_user: INeynarAuthenticatedUser | null) => {
     setUser(_user);
   };
+
+  const signoutUser = () => {
+    localStorage.removeItem("neynar_authenticated_user");
+    setUser(null);
+    setIsAuthenticated(false);
+  };
+
+  const value = useMemo(
+    () => ({
+      client_id,
+      theme,
+      isAuthenticated,
+      user,
+      setTheme,
+      showToast,
+      signoutUser,
+    }),
+    [client_id, theme, isAuthenticated]
+  );
 
   return (
     <NeynarContext.Provider value={value}>
