@@ -197,7 +197,7 @@ export const NeynarAuthButton: React.FC<ButtonProps> = ({
     <>
       {showModal && (
         <Modal>
-       3   <Img src={user?.pfp_url} alt={user?.username} />
+          <Img src={user?.pfp_url} alt={user?.username} />
           <span>@{user?.username}</span>
           <ModalButton onClick={handleSignOut}>Sign out</ModalButton>
         </Modal>
