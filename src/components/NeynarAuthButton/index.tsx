@@ -6,7 +6,7 @@ import { useAuth } from "../../contexts/AuthContextProvider";
 import { useLocalStorage } from "../../hooks";
 import { ToastType } from "../Toast";
 import axios from "axios";
-import { INeynarAuthenticatedUser } from "../../types/common";
+import { INeynarAuthenticatedUser, IUser } from "../../types/common";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   label?: string;
@@ -82,11 +82,8 @@ export const NeynarAuthButton: React.FC<ButtonProps> = ({
 }) => {
   const { client_id, showToast, user } = useNeynarContext();
   const { setIsAuthenticated, isAuthenticated, setUser } = useAuth();
-  const [
-    _,
-    setNeynarAuthenticatedUser,
-    removeNeynarAuthenticatedUser,
-  ] = useLocalStorage<INeynarAuthenticatedUser>("neynar_authenticated_user");
+  const [_, setNeynarAuthenticatedUser, removeNeynarAuthenticatedUser] =
+    useLocalStorage<INeynarAuthenticatedUser>("neynar_authenticated_user");
   const [showModal, setShowModal] = useState(false);
 
   // Using useRef to store the authWindow reference
@@ -100,7 +97,7 @@ export const NeynarAuthButton: React.FC<ButtonProps> = ({
       // TODO: Create a custom hook to fetch data
       const {
         data: { users },
-      } = await axios.get(
+      } = await axios.get<{ users: IUser[] }>(
         `${process.env.API_URL ?? "https://sdk-api.neynar.com"}/v2/farcaster/user/bulk`,
         {
           params: {
@@ -134,11 +131,8 @@ export const NeynarAuthButton: React.FC<ButtonProps> = ({
           return;
         }
         const _user = {
-          fid: Number(event.data.fid),
-          is_authenticated: event.data.is_authenticated,
           signer_uuid: event.data.signer_uuid,
-          username: user.username,
-          pfp_url: user.pfp_url,
+          ...user,
         };
         setNeynarAuthenticatedUser(_user);
         setUser(_user);
