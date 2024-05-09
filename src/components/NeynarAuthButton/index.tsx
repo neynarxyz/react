@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState, useRef } from "react";
 import { styled } from "@pigment-css/react";
 import PlanetBlackIcon from "./icons/PlanetBlackIcon";
-import { useNeynar } from "../../contexts";
+import { useNeynarContext } from "../../contexts";
 import { useAuth } from "../../contexts/AuthContextProvider";
 import { useLocalStorage } from "../../hooks";
 import { ToastType } from "../Toast";
@@ -80,22 +80,14 @@ export const NeynarAuthButton: React.FC<ButtonProps> = ({
   children,
   ...rest
 }) => {
-  const { client_id, showToast } = useNeynar();
-  const { setIsAuthenticated, isAuthenticated } = useAuth();
+  const { client_id, showToast, user } = useNeynarContext();
+  const { setIsAuthenticated, isAuthenticated, setUser } = useAuth();
   const [
-    neynarAuthenticatedUser,
+    _,
     setNeynarAuthenticatedUser,
     removeNeynarAuthenticatedUser,
   ] = useLocalStorage<INeynarAuthenticatedUser>("neynar_authenticated_user");
-  const [user, setUser] = useState<INeynarAuthenticatedUser | null>(null);
   const [showModal, setShowModal] = useState(false);
-
-  useEffect(() => {
-    if (neynarAuthenticatedUser) {
-      setUser(neynarAuthenticatedUser);
-      setIsAuthenticated(true);
-    }
-  }, [neynarAuthenticatedUser]);
 
   // Using useRef to store the authWindow reference
   const authWindowRef = useRef<Window | null>(null);
@@ -149,6 +141,7 @@ export const NeynarAuthButton: React.FC<ButtonProps> = ({
           pfp_url: user.pfp_url,
         };
         setNeynarAuthenticatedUser(_user);
+        setUser(_user);
       }
     },
     [client_id, setIsAuthenticated]

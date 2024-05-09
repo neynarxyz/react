@@ -7,7 +7,7 @@ import React, {
   useEffect,
 } from "react";
 import { Theme } from "../enums";
-import { SetState } from "../types/common";
+import { INeynarAuthenticatedUser, SetState } from "../types/common";
 import { AuthContextProvider } from "./AuthContextProvider";
 import { ToastContainer, ToastItem, ToastType } from "../components/Toast";
 
@@ -17,6 +17,7 @@ interface INeynarContext {
   setTheme: SetState<Theme>;
   isAuthenticated: boolean;
   showToast: (type: ToastType, message: string) => void;
+  user: INeynarAuthenticatedUser | null;
 }
 
 const NeynarContext = createContext<INeynarContext | undefined>(undefined);
@@ -36,6 +37,9 @@ export const NeynarContextProvider: React.FC<NeynarContextProviderProps> = ({
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [theme, setTheme] = useState<Theme>(defaultTheme);
   const [toasts, setToasts] = useState<{ type: string; message: string }[]>([]);
+  const [user, setUser] = useState<INeynarAuthenticatedUser | null>(null);
+
+  
 
   const showToast = (type: ToastType, message: string) => {
     const newToast = { type, message };
@@ -63,7 +67,7 @@ export const NeynarContextProvider: React.FC<NeynarContextProviderProps> = ({
   }, [theme]);
 
   const value = useMemo(
-    () => ({ client_id, theme, isAuthenticated, setTheme, showToast }),
+    () => ({ client_id, theme, isAuthenticated, user, setTheme, showToast }),
     [client_id, theme, isAuthenticated]
   );
 
@@ -71,9 +75,13 @@ export const NeynarContextProvider: React.FC<NeynarContextProviderProps> = ({
     setIsAuthenticated(_isAuthenticated);
   };
 
+  const _setUser = (_user: INeynarAuthenticatedUser | null) => {
+    setUser(_user);
+  };
+
   return (
     <NeynarContext.Provider value={value}>
-      <AuthContextProvider {...{ _setIsAuthenticated }}>
+      <AuthContextProvider {...{ _setIsAuthenticated, _setUser }}>
         {children}
         <ToastContainer>
           {toasts.map((toast, index) => (
@@ -87,10 +95,12 @@ export const NeynarContextProvider: React.FC<NeynarContextProviderProps> = ({
   );
 };
 
-export const useNeynar = () => {
+export const useNeynarContext = () => {
   const context = useContext(NeynarContext);
   if (!context) {
-    throw new Error("useNeynar must be used within a NeynarContextProvider");
+    throw new Error(
+      "useNeynarContext must be used within a NeynarContextProvider"
+    );
   }
   return context;
 };

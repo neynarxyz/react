@@ -1,1 +1,4 @@
-export { NeynarContextProvider, useNeynar } from "./NeynarContextProvider";
+export {
+  NeynarContextProvider,
+  useNeynarContext,
+} from "./NeynarContextProvider";
