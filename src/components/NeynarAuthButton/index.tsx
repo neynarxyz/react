@@ -66,11 +66,10 @@ const ModalButton = styled.button({
   width: "100%",
   padding: "10px 0",
   backgroundColor: "#ffffff",
-  border: "none",
+  border: "1px solid #e0e0e0",
   borderRadius: "8px",
   fontWeight: "bold",
   cursor: "pointer",
-  border: "1px solid #e0e0e0",
   transition: "background-color 0.2s",
   "&:hover": {
     boxShadow: "0 2px 3px rgba(0, 0, 0, 0.1)",
