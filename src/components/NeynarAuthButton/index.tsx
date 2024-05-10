@@ -100,6 +100,8 @@ export const NeynarAuthButton: React.FC<ButtonProps> = ({
   const neynarLoginUrl = `${process.env.NEYNAR_LOGIN_URL ?? "https://app.neynar.com/login"}?client_id=${client_id}`;
   const authOrigin = new URL(neynarLoginUrl).origin;
 
+  const modalRef = useRef<HTMLDivElement>(null);
+
   const handleMessage = useCallback(
     async (event: MessageEvent) => {
       if (
@@ -164,10 +166,28 @@ export const NeynarAuthButton: React.FC<ButtonProps> = ({
     };
   }, [handleMessage]);
 
+  const handleOutsideClick = useCallback((event: any) => {
+    if (modalRef.current && !modalRef.current.contains(event.target)) {
+      closeModal();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (showModal) {
+      document.addEventListener("mousedown", handleOutsideClick);
+    } else {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, [showModal, handleOutsideClick]);
+
   return (
     <>
       {showModal && (
-        <Modal>
+        <Modal ref={modalRef}>
           <Img src={user?.pfp_url} alt={user?.username} />
           <span>@{user?.username}</span>
           <ModalButton onClick={handleSignOut}>Sign out</ModalButton>
