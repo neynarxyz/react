@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef } from "react";
+import { useState } from 'react';
 
-type DeserializeFunction<T> = (value: string) => T;
 type SerializeFunction<T> = (value: T) => string;
+type DeserializeFunction<T> = (value: string) => T;
 
 interface UseLocalStorageStateOptions<T> {
   serialize?: SerializeFunction<T>;
@@ -10,56 +10,45 @@ interface UseLocalStorageStateOptions<T> {
 
 export function useLocalStorage<T>(
   key: string,
-  defaultValue?: T | (() => T),
+  defaultValue: T = "" as T,
   {
     serialize = JSON.stringify,
     deserialize = JSON.parse,
   }: UseLocalStorageStateOptions<T> = {}
-): [
-  T | undefined,
-  React.Dispatch<React.SetStateAction<T | undefined>>,
-  () => void,
-] {
-  const [state, setState] = useState<T | undefined>(() => {
-    if (typeof window !== "undefined") {
-      try {
-        const valueInLocalStorage = window.localStorage.getItem(key);
-        if (valueInLocalStorage !== null) {
-          return deserialize(valueInLocalStorage);
-        } else if (defaultValue instanceof Function) {
-          return defaultValue();
-        } else {
-          return defaultValue;
-        }
-      } catch (error) {
-        console.error("Error reading from localStorage:", error);
-        return defaultValue instanceof Function ? defaultValue() : defaultValue;
-      }
+): [T, (value: T) => void, () => void] {
+  const [storedValue, setStoredValue] = useState<T>(() => {
+    if (typeof window === 'undefined') {
+      return defaultValue;
     }
-    return defaultValue instanceof Function ? defaultValue() : defaultValue;
+    try {
+      const item = window.localStorage.getItem(key);
+      return item ? deserialize(item) : defaultValue;
+    } catch (error) {
+      console.error('Error reading from localStorage', error);
+      return defaultValue;
+    }
   });
 
-  const prevKeyRef = useRef<string>(key);
-
-  useEffect(() => {
-    const prevKey = prevKeyRef.current;
-    if (prevKey !== key && typeof window !== "undefined") {
-      window.localStorage.removeItem(prevKey);
-    }
-    prevKeyRef.current = key;
-    if (state !== undefined) {
-      // Only set item in local storage if state is not undefined
-      try {
-        window.localStorage.setItem(key, serialize(state));
-      } catch (error) {
-        console.error("Error writing to localStorage:", error);
+  const setValue = (value: T) => {
+    try {
+      const valueToStore = value instanceof Function ? value(storedValue) : value;
+      setStoredValue(valueToStore);
+      if (typeof window !== 'undefined') {
+        window.localStorage.setItem(key, serialize(valueToStore));
       }
+    } catch (error) {
+      console.error('Error writing to localStorage', error);
     }
-  }, [key, state, serialize]);
-
-  const removeItem = () => {
-    window.localStorage.removeItem(key);
   };
 
-  return [state, setState, removeItem];
+  const removeItem = () => {
+    try {
+      window.localStorage.removeItem(key);
+      setStoredValue(defaultValue);
+    } catch (error) {
+      console.error('Error removing from localStorage', error);
+    }
+  };
+
+  return [storedValue, setValue, removeItem];
 }
