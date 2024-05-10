@@ -7,7 +7,7 @@ import React, {
   useEffect,
 } from "react";
 import { Theme } from "../enums";
-import { INeynarAuthenticatedUser, SetState } from "../types/common";
+import { INeynarAuthenticatedUser, IUser, SetState } from "../types/common";
 import { AuthContextProvider } from "./AuthContextProvider";
 import { ToastContainer, ToastItem, ToastType } from "../components/Toast";
 
@@ -18,21 +18,25 @@ interface INeynarContext {
   isAuthenticated: boolean;
   showToast: (type: ToastType, message: string) => void;
   user: INeynarAuthenticatedUser | null;
-  signoutUser: () => void;
 }
 
 const NeynarContext = createContext<INeynarContext | undefined>(undefined);
 
 export interface NeynarContextProviderProps {
   children: ReactNode;
-  clientId: string;
-  defaultTheme?: Theme;
+  settings: {
+    clientId: string;
+    defaultTheme?: Theme;
+    eventsCallbacks?: {
+      onAuthSuccess?: (params: { user: IUser }) => void;
+      onSignout?: (user: IUser | undefined) => void;
+    };
+  };
 }
 
 export const NeynarContextProvider: React.FC<NeynarContextProviderProps> = ({
   children,
-  clientId,
-  defaultTheme = Theme.Light,
+  settings: { clientId, defaultTheme = Theme.Light, eventsCallbacks },
 }) => {
   const [client_id] = useState<string>(clientId);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -55,13 +59,14 @@ export const NeynarContextProvider: React.FC<NeynarContextProviderProps> = ({
   useEffect(() => {
     const root = document.querySelector(":root");
     if (root) {
-      if (theme === "dark") {
-        root.classList.add("theme-dark");
-        root.classList.remove("theme-light");
-      } else {
+      if (theme === "light") {
         root.classList.add("theme-light");
-        root.classList.remove("theme-dark");
+        // root.classList.remove("theme-dark");
       }
+      // else {
+      //   root.classList.add("theme-dark");
+      //   root.classList.remove("theme-light");
+      // }
     }
   }, [theme]);
 
@@ -73,12 +78,6 @@ export const NeynarContextProvider: React.FC<NeynarContextProviderProps> = ({
     setUser(_user);
   };
 
-  const signoutUser = () => {
-    localStorage.removeItem("neynar_authenticated_user");
-    setUser(null);
-    setIsAuthenticated(false);
-  };
-
   const value = useMemo(
     () => ({
       client_id,
@@ -87,14 +86,20 @@ export const NeynarContextProvider: React.FC<NeynarContextProviderProps> = ({
       user,
       setTheme,
       showToast,
-      signoutUser,
     }),
     [client_id, theme, isAuthenticated]
   );
 
   return (
     <NeynarContext.Provider value={value}>
-      <AuthContextProvider {...{ _setIsAuthenticated, _setUser }}>
+      <AuthContextProvider
+        {...{
+          _setIsAuthenticated,
+          _setUser,
+          _onAuthSuccess: eventsCallbacks?.onAuthSuccess,
+          _onSignout: eventsCallbacks?.onSignout,
+        }}
+      >
         {children}
         <ToastContainer>
           {toasts.map((toast, index) => (

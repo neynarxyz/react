@@ -7,8 +7,18 @@ import "../dist/style.css";
 
 const withNeynarProvider = (Story) => (
   <NeynarContextProvider
-    clientId={process.env.CLIENT_ID || ""}
-    defaultTheme={Theme.Light}
+    settings={{
+      clientId: process.env.CLIENT_ID || "",
+      defaultTheme: Theme.Light,
+      eventsCallbacks: {
+        onAuthSuccess(params) {
+          console.log(`User ${params.user.username} authenticated`);
+        },
+        onSignout(user) {
+          console.log(`User ${user?.username} signed out`);
+        },
+      },
+    }}
   >
     <Story />
   </NeynarContextProvider>

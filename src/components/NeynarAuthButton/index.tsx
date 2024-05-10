@@ -4,9 +4,7 @@ import PlanetBlackIcon from "./icons/PlanetBlackIcon";
 import { useNeynarContext } from "../../contexts";
 import { useAuth } from "../../contexts/AuthContextProvider";
 import { useLocalStorage } from "../../hooks";
-import { ToastType } from "../Toast";
-import axios from "axios";
-import { INeynarAuthenticatedUser, IUser } from "../../types/common";
+import { INeynarAuthenticatedUser } from "../../types/common";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   label?: string;
@@ -66,6 +64,7 @@ const ModalButton = styled.button({
   width: "100%",
   padding: "10px 0",
   backgroundColor: "#ffffff",
+  color: "#000000",
   border: "1px solid #e0e0e0",
   borderRadius: "8px",
   fontWeight: "bold",
@@ -80,8 +79,14 @@ export const NeynarAuthButton: React.FC<ButtonProps> = ({
   children,
   ...rest
 }) => {
-  const { client_id, showToast, user } = useNeynarContext();
-  const { setIsAuthenticated, isAuthenticated, setUser } = useAuth();
+  const { client_id, user } = useNeynarContext();
+  const {
+    setIsAuthenticated,
+    isAuthenticated,
+    setUser,
+    onAuthSuccess,
+    onSignout,
+  } = useAuth();
   const [_, setNeynarAuthenticatedUser, removeNeynarAuthenticatedUser] =
     useLocalStorage<INeynarAuthenticatedUser>("neynar_authenticated_user");
   const [showModal, setShowModal] = useState(false);
@@ -90,31 +95,6 @@ export const NeynarAuthButton: React.FC<ButtonProps> = ({
   const authWindowRef = useRef<Window | null>(null);
   const neynarLoginUrl = `${process.env.NEYNAR_LOGIN_URL ?? "https://app.neynar.com/login"}?client_id=${client_id}`;
   const authOrigin = new URL(neynarLoginUrl).origin;
-
-  const fetchUser = async (fid: number) => {
-    let user = null;
-    try {
-      // TODO: Create a custom hook to fetch data
-      const {
-        data: { users },
-      } = await axios.get<{ users: IUser[] }>(
-        `${process.env.API_URL ?? "https://sdk-api.neynar.com"}/v2/farcaster/user/bulk`,
-        {
-          params: {
-            fids: fid,
-            client_id,
-          },
-        }
-      );
-
-      user = users[0];
-    } catch (err) {
-      console.error("Failed to fetch user data", err);
-      showToast(ToastType.Error, "Failed to fetch user data");
-    }
-
-    return user;
-  };
 
   const handleMessage = useCallback(
     async (event: MessageEvent) => {
@@ -126,16 +106,13 @@ export const NeynarAuthButton: React.FC<ButtonProps> = ({
         setIsAuthenticated(true);
         authWindowRef.current?.close();
         window.removeEventListener("message", handleMessage); // Remove listener here
-        const user = await fetchUser(Number(event.data.fid));
-        if (!user) {
-          return;
-        }
         const _user = {
           signer_uuid: event.data.signer_uuid,
-          ...user,
+          ...event.data.user,
         };
         setNeynarAuthenticatedUser(_user);
         setUser(_user);
+        onAuthSuccess({ user: _user });
       }
     },
     [client_id, setIsAuthenticated]
@@ -165,9 +142,13 @@ export const NeynarAuthButton: React.FC<ButtonProps> = ({
   }, [client_id, handleMessage]);
 
   const handleSignOut = () => {
-    removeNeynarAuthenticatedUser();
-    setIsAuthenticated(false);
-    closeModal();
+    if (user) {
+      const _user = user;
+      removeNeynarAuthenticatedUser();
+      setIsAuthenticated(false);
+      closeModal();
+      onSignout(_user);
+    }
   };
 
   const openModal = () => setShowModal(true);

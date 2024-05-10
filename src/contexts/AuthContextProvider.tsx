@@ -6,7 +6,7 @@ import React, {
   useMemo,
   useEffect,
 } from "react";
-import { INeynarAuthenticatedUser, SetState } from "../types/common";
+import { INeynarAuthenticatedUser, IUser, SetState } from "../types/common";
 import { useLocalStorage } from "../hooks";
 
 interface IAuthContext {
@@ -14,6 +14,8 @@ interface IAuthContext {
   setIsAuthenticated: SetState<boolean>;
   user: INeynarAuthenticatedUser | null;
   setUser: SetState<INeynarAuthenticatedUser | null>;
+  onAuthSuccess: (params: { user: IUser }) => void;
+  onSignout: (user: IUser | undefined) => void;
 }
 
 const AuthContext = createContext<IAuthContext | undefined>(undefined);
@@ -22,12 +24,16 @@ export interface AuthContextProviderProps {
   children: ReactNode;
   _setIsAuthenticated: (_isAuthenticated: boolean) => void;
   _setUser: (_user: INeynarAuthenticatedUser | null) => void;
+  _onAuthSuccess?: (params: { user: IUser }) => void;
+  _onSignout?: (user: IUser | undefined) => void;
 }
 
 export const AuthContextProvider: React.FC<AuthContextProviderProps> = ({
   children,
   _setIsAuthenticated,
   _setUser,
+  _onAuthSuccess,
+  _onSignout,
 }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [user, setUser] = useState<INeynarAuthenticatedUser | null>(null);
@@ -53,8 +59,23 @@ export const AuthContextProvider: React.FC<AuthContextProviderProps> = ({
     _setUser(user);
   }, [user]);
 
+  const onAuthSuccess = (params: { user: IUser }) => {
+    _onAuthSuccess && _onAuthSuccess(params);
+  };
+
+  const onSignout = (user: IUser | undefined) => {
+    _onSignout && _onSignout(user);
+  };
+
   const value = useMemo(
-    () => ({ isAuthenticated, user, setIsAuthenticated, setUser }),
+    () => ({
+      isAuthenticated,
+      user,
+      setIsAuthenticated,
+      setUser,
+      onAuthSuccess,
+      onSignout,
+    }),
     [isAuthenticated, user]
   );
 
