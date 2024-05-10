@@ -58,6 +58,10 @@ const Modal = styled.div((props) => ({
     height: "80px",
     borderRadius: "50%",
   },
+  "> span": {
+    color: "#000",
+    fontWeight: "bold",
+  },
 }));
 
 const ModalButton = styled.button({
