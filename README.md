@@ -18,14 +18,18 @@ Please make sure that the following dependencies are already a part of your proj
 
 ## Installation
 
-For yarn
+- For yarn
 
-```bash
-yarn add @neynar/react
-```
+  ```bash
+  yarn add @neynar/react
+  ```
 
-For npm
+- For npm
 
-```bash
-npm install @neynar/react
-```
+  ```bash
+  npm install @neynar/react
+  ```
+
+## Example app
+
+Check out our [example app](https://github.com/neynarxyz/farcaster-examples/tree/main/wownar-react-sdk) for a demonstration of how to use `@neynar/react`.
