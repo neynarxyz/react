@@ -10,4 +10,4 @@ export * from "./contexts";
 export * from "./hooks";
 
 // Enums
-export { Theme } from "./enums";
+export { Theme, SIWN_variant } from "./enums";
