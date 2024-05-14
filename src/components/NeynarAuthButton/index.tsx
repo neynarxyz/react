@@ -238,7 +238,9 @@ export const NeynarAuthButton: React.FC<ButtonProps> = ({
             {getIcon()}
             <span
               style={
-                variant === SIWN_variant.NEYNAR ? { marginLeft: "10px" } : {}
+                variant === SIWN_variant.NEYNAR
+                  ? { marginLeft: "10px" }
+                  : { marginRight: "7px" }
               }
             >
               {getLabel()}
