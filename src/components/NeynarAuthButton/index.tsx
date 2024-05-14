@@ -5,9 +5,16 @@ import { useNeynarContext } from "../../contexts";
 import { useAuth } from "../../contexts/AuthContextProvider";
 import { useLocalStorage } from "../../hooks";
 import { INeynarAuthenticatedUser } from "../../types/common";
+import { SIWN_variant } from "../../enums";
+import { FarcasterIcon } from "./icons/FarcasterIcon";
+import { WarpcastIcon } from "./icons/WarpcastIcon";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   label?: string;
+  icon?: React.ReactNode;
+  variant?: SIWN_variant;
+  modalStyle?: React.CSSProperties;
+  modalButtonStyle?: React.CSSProperties;
 }
 
 const Img = styled.img({
@@ -28,7 +35,6 @@ const Button = styled.button<ButtonProps>((props) => ({
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  gap: "10px",
   cursor: "pointer",
   textDecoration: "none",
   boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
@@ -81,6 +87,11 @@ const ModalButton = styled.button({
 
 export const NeynarAuthButton: React.FC<ButtonProps> = ({
   children,
+  label = "Sign in with Neynar",
+  icon = <PlanetBlackIcon />,
+  variant = SIWN_variant.NEYNAR,
+  modalStyle = {},
+  modalButtonStyle = {},
   ...rest
 }) => {
   const { client_id, user } = useNeynarContext();
@@ -184,26 +195,60 @@ export const NeynarAuthButton: React.FC<ButtonProps> = ({
     };
   }, [showModal, handleOutsideClick]);
 
+  const getLabel = () => {
+    switch (variant) {
+      case SIWN_variant.FARCASTER:
+        return "Sign in with Farcaster";
+      case SIWN_variant.NEYNAR:
+        return "Sign in with Neynar";
+      case SIWN_variant.WARPCAST:
+        return "Sign in with Warpcast";
+      default:
+        return "Sign in with Neynar";
+    }
+  };
+
+  const getIcon = () => {
+    switch (variant) {
+      case SIWN_variant.FARCASTER:
+        return <FarcasterIcon />;
+      case SIWN_variant.NEYNAR:
+        return <PlanetBlackIcon />;
+      case SIWN_variant.WARPCAST:
+        return <WarpcastIcon />;
+      default:
+        return <PlanetBlackIcon />;
+    }
+  };
+
   return (
     <>
       {showModal && (
-        <Modal ref={modalRef}>
+        <Modal style={modalStyle} ref={modalRef}>
           <Img src={user?.pfp_url} alt={user?.username} />
           <span>@{user?.username}</span>
-          <ModalButton onClick={handleSignOut}>Sign out</ModalButton>
+          <ModalButton style={modalButtonStyle} onClick={handleSignOut}>
+            Sign out
+          </ModalButton>
         </Modal>
       )}
       <Button onClick={!isAuthenticated ? handleSignIn : openModal} {...rest}>
         {!isAuthenticated ? (
           <>
-            <PlanetBlackIcon />
-            <span>Sign in with Neynar</span>
+            {getIcon()}
+            <span
+              style={
+                variant === SIWN_variant.NEYNAR ? { marginLeft: "10px" } : {}
+              }
+            >
+              {getLabel()}
+            </span>
           </>
         ) : (
           user && (
             <>
               <Img src={user?.pfp_url} alt={user?.username} />
-              <span>@{user?.username}</span>
+              <span style={{ marginLeft: "10px" }}>@{user?.username}</span>
             </>
           )
         )}
