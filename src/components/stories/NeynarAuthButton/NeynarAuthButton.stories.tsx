@@ -1,7 +1,7 @@
 import React from "react";
 import { Meta, StoryFn } from "@storybook/react";
 import { NeynarAuthButton } from "./index";
-import { SIWN_variant } from "../../enums";
+import { SIWN_variant } from "../../../enums";
 
 export default {
   title: "NeynarAuthButton",

@@ -1,7 +1,7 @@
 import "@pigment-css/react/styles.css";
 
 // Components
-export * from "./components";
+export * from "./components/stories";
 
 // Contexts
 export * from "./contexts";

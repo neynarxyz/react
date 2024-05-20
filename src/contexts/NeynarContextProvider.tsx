@@ -9,7 +9,7 @@ import React, {
 import { Theme } from "../enums";
 import { INeynarAuthenticatedUser, IUser, SetState } from "../types/common";
 import { AuthContextProvider } from "./AuthContextProvider";
-import { ToastContainer, ToastItem, ToastType } from "../components/Toast";
+import { ToastContainer, ToastItem, ToastType } from "../components/shared/Toast";
 
 interface INeynarContext {
   client_id: string;
