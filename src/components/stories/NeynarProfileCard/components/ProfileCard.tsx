@@ -97,7 +97,7 @@ export const ProfileCard = memo(({
 }: ProfileCardProps) => {
   const formattedFollowingCount = useMemo(() =>
     formatToReadableNumber(following),
-  [followers]);
+  [following]);
 
   const formattedFollowersCount = useMemo(() =>
     formatToReadableNumber(followers),
