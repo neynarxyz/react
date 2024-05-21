@@ -9,6 +9,7 @@ import React, {
 import { INeynarAuthenticatedUser, IUser, SetState } from "../types/common";
 import { useLocalStorage } from "../hooks";
 import { LocalStorageKeys } from "../hooks/use-local-storage-state";
+import { useNeynarContext } from "./NeynarContextProvider";
 
 interface IAuthContext {
   isAuthenticated: boolean;
@@ -36,6 +37,8 @@ export const AuthContextProvider: React.FC<AuthContextProviderProps> = ({
   _onAuthSuccess,
   _onSignout,
 }) => {
+  const { isAuthenticated: _isAuthenticated } = useNeynarContext();
+
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [user, setUser] = useState<INeynarAuthenticatedUser | null>(null);
   const [neynarAuthenticatedUser] = useLocalStorage<INeynarAuthenticatedUser>(
@@ -45,6 +48,10 @@ export const AuthContextProvider: React.FC<AuthContextProviderProps> = ({
   useEffect(() => {
     _setIsAuthenticated(isAuthenticated);
   }, [isAuthenticated]);
+
+  useEffect(() => {
+    setIsAuthenticated(_isAuthenticated);
+  }, [_isAuthenticated]);
 
   useEffect(() => {
     if (neynarAuthenticatedUser) {
