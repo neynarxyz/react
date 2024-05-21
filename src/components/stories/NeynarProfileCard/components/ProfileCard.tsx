@@ -1,6 +1,7 @@
 import { useMemo, memo } from "react";
 import { styled } from "@pigment-css/react";
 import { Box, HBox, VBox } from "../../../shared/Box";
+import { formatToReadableNumber } from "../../../../utils/formatUtils";
 
 const hexToRgba = (hex: string, alpha: number) => {
   const r = parseInt(hex.slice(1, 3), 16);
@@ -59,7 +60,7 @@ const ProfileMetaCell = styled.div(({ theme }) => ({
   },
 }));
 
-type ProfileCardProps = {
+export type ProfileCardProps = {
   username: string;
   displayName: string;
   avatarImgUrl: string;
@@ -80,15 +81,13 @@ export const ProfileCard = memo(({
   location,
   hasPowerBadge,
 }: ProfileCardProps) => {
-  const formattedFollowingCount = useMemo(() => {
-    // TODO: Handle readable number formatting
-    return following;
-  }, [following]);
+  const formattedFollowingCount = useMemo(() =>
+    formatToReadableNumber(following),
+  [followers]);
 
-  const formattedFollowersCount = useMemo(() => {
-    // TODO: Handle readable number formatting
-    return followers;
-  }, [followers]);
+  const formattedFollowersCount = useMemo(() =>
+    formatToReadableNumber(followers),
+  [followers]);
 
   return (
     <StyledProfileCard>
@@ -116,6 +115,7 @@ export const ProfileCard = memo(({
           </HBox>
         </HBox>
 
+        {/* TODO: Convert channels, mentions and websites to tappable links */}
         <Box spacingVertical="15px">{bio}</Box>
 
         <HBox>
