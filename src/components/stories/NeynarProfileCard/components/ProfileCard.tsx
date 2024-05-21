@@ -60,6 +60,20 @@ const ProfileMetaCell = styled.div(({ theme }) => ({
   },
 }));
 
+const ProfileButton = styled.button(({ theme }) => ({
+  borderSize: "1px",
+  borderStyle: "solid",
+  borderColor: theme.colorSchemes.light.palette.lightGrey,
+  borderRadius: "7px",
+  padding: "10px",
+  backgroundColor: "transparent",
+  color: theme.colorSchemes.light.palette.text,
+  fontWeight: theme.typography.fontWeights.bold,
+  "& + &": {
+    marginLeft: "10px",
+  },
+}));
+
 export type ProfileCardProps = {
   username: string;
   displayName: string;
@@ -109,9 +123,9 @@ export const ProfileCard = memo(({
             <Username>@{username}</Username>
           </VBox>
           <HBox>
-            {/* TODO: Add button styles */}
-            <button>Edit Profile</button>
-            <button>...</button>
+            <ProfileButton>Edit Profile</ProfileButton>
+            {/* TODO: Add more icon */}
+            <ProfileButton>...</ProfileButton>
           </HBox>
         </HBox>
 
