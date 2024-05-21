@@ -9,7 +9,12 @@ import React, {
 import { Theme } from "../enums";
 import { INeynarAuthenticatedUser, IUser, SetState } from "../types/common";
 import { AuthContextProvider } from "./AuthContextProvider";
-import { ToastContainer, ToastItem, ToastType } from "../components/shared/Toast";
+import {
+  ToastContainer,
+  ToastItem,
+  ToastType,
+} from "../components/shared/Toast";
+import { LocalStorageKeys } from "../hooks/use-local-storage-state";
 
 interface INeynarContext {
   client_id: string;
@@ -18,6 +23,7 @@ interface INeynarContext {
   isAuthenticated: boolean;
   showToast: (type: ToastType, message: string) => void;
   user: INeynarAuthenticatedUser | null;
+  logoutUser: () => void;
 }
 
 const NeynarContext = createContext<INeynarContext | undefined>(undefined);
@@ -78,6 +84,18 @@ export const NeynarContextProvider: React.FC<NeynarContextProviderProps> = ({
     setUser(_user);
   };
 
+  const logoutUser = () => {
+    if (user) {
+      const { signer_uuid, ...rest } = user;
+      setUser(null);
+      setIsAuthenticated(false);
+      localStorage.removeItem(LocalStorageKeys.NEYNAR_AUTHENTICATED_USER);
+      if (eventsCallbacks?.onSignout) {
+        eventsCallbacks.onSignout(rest);
+      }
+    }
+  };
+
   const value = useMemo(
     () => ({
       client_id,
@@ -86,8 +104,9 @@ export const NeynarContextProvider: React.FC<NeynarContextProviderProps> = ({
       user,
       setTheme,
       showToast,
+      logoutUser,
     }),
-    [client_id, theme, isAuthenticated]
+    [client_id, theme, isAuthenticated, user, setTheme, showToast, logoutUser]
   );
 
   return (

@@ -1,1 +1,1 @@
-export * from "./use-local-storage-state";
+export { useLocalStorage } from "./use-local-storage-state";

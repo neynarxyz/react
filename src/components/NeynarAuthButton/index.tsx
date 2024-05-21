@@ -4,6 +4,7 @@ import PlanetBlackIcon from "./icons/PlanetBlackIcon";
 import { useNeynarContext } from "../../contexts";
 import { useAuth } from "../../contexts/AuthContextProvider";
 import { useLocalStorage } from "../../hooks";
+import { LocalStorageKeys } from "../../hooks/use-local-storage-state";
 import { INeynarAuthenticatedUser } from "../../types/common";
 import { SIWN_variant } from "../../enums";
 import { FarcasterIcon } from "./icons/FarcasterIcon";
@@ -94,16 +95,12 @@ export const NeynarAuthButton: React.FC<ButtonProps> = ({
   modalButtonStyle = {},
   ...rest
 }) => {
-  const { client_id, user } = useNeynarContext();
-  const {
-    setIsAuthenticated,
-    isAuthenticated,
-    setUser,
-    onAuthSuccess,
-    onSignout,
-  } = useAuth();
+  const { client_id, user, isAuthenticated } = useNeynarContext();
+  const { setIsAuthenticated, setUser, onAuthSuccess, onSignout } = useAuth();
   const [_, setNeynarAuthenticatedUser, removeNeynarAuthenticatedUser] =
-    useLocalStorage<INeynarAuthenticatedUser>("neynar_authenticated_user");
+    useLocalStorage<INeynarAuthenticatedUser>(
+      LocalStorageKeys.NEYNAR_AUTHENTICATED_USER
+    );
   const [showModal, setShowModal] = useState(false);
 
   // Using useRef to store the authWindow reference
@@ -247,12 +244,10 @@ export const NeynarAuthButton: React.FC<ButtonProps> = ({
             </span>
           </>
         ) : (
-          user && (
-            <>
-              <Img src={user?.pfp_url} alt={user?.username} />
-              <span style={{ marginLeft: "10px" }}>@{user?.username}</span>
-            </>
-          )
+          <>
+            <Img src={user?.pfp_url} alt={user?.username} />
+            <span style={{ marginLeft: "10px" }}>@{user?.username}</span>
+          </>
         )}
       </Button>
     </>
