@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useState, useRef } from "react";
 import { styled } from "@pigment-css/react";
 import PlanetBlackIcon from "./icons/PlanetBlackIcon";
-import { useNeynarContext } from "../../../contexts";
-import { useAuth } from "../../../contexts/AuthContextProvider";
-import { useLocalStorage } from "../../../hooks";
-import { INeynarAuthenticatedUser } from "../../../types/common";
-import { SIWN_variant } from "../../../enums";
+import { useNeynarContext } from "../../contexts";
+import { useAuth } from "../../contexts/AuthContextProvider";
+import { useLocalStorage } from "../../hooks";
+import { INeynarAuthenticatedUser } from "../../types/common";
+import { SIWN_variant } from "../../enums";
 import { FarcasterIcon } from "./icons/FarcasterIcon";
 import { WarpcastIcon } from "./icons/WarpcastIcon";
 
