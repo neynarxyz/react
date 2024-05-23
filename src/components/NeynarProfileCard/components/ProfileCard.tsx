@@ -1,7 +1,7 @@
 import { useMemo, memo } from "react";
 import { styled } from "@pigment-css/react";
-import { Box, HBox, VBox } from "../../../shared/Box";
-import { formatToReadableNumber } from "../../../../utils/formatUtils";
+import { Box, HBox, VBox } from "../../shared/Box";
+import { formatToReadableNumber } from "../../../utils/formatUtils";
 
 const hexToRgba = (hex: string, alpha: number) => {
   const r = parseInt(hex.slice(1, 3), 16);

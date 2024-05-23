@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { ProfileCard } from "./components/ProfileCard";
-import { useNeynarContext } from "../../../contexts";
+import { useNeynarContext } from "../../contexts";
 
 async function fetchUserByFid(fid: number, clientId: string): Promise<any | null> {
   try {
