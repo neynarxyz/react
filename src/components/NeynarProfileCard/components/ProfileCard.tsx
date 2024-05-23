@@ -9,6 +9,7 @@ import { MoreMenuIcon } from "../icons/MoreMenuIcon";
 
 const StyledProfileCard = styled.div(({ theme }) => ({
   display: "flex",
+  flexDirection: "column",
   width: "100%",
   maxWidth: "608px",
   borderWidth: "1px",
@@ -41,6 +42,11 @@ const Username = styled.div(() => ({
   color: "var(--palette-textMuted)",
 }));
 
+const UsernameTitle = styled.div(({ theme }) => ({
+  fontSize: theme.typography.fontSizes.large,
+  fontWeight: theme.typography.fontWeights.bold,
+}));
+
 const ProfileMetaCell = styled.div(() => ({
   color: "var(--palette-textMuted)",
   "> strong": {
@@ -65,6 +71,34 @@ const ButtonOutline = styled.button(({ theme }) => ({
   "& + &": {
     marginLeft: "10px",
   },
+}));
+
+const ButtonPrimary = styled.button(({ theme }) => ({
+  border: "none",
+  borderRadius: "7px",
+  padding: "13px 15px",
+  backgroundColor: theme.colors.primary,
+  color: "#fff",
+  fontWeight: theme.typography.fontWeights.bold,
+  lineHeight: 1,
+  cursor: "pointer",
+  "& + &": {
+    marginLeft: "10px",
+  },
+}));
+
+const Tag = styled.div(({ theme }) => ({
+  borderWidth: "1px",
+  borderStyle: "solid",
+  borderColor: "var(--palette-border)",
+  borderRadius: "5px",
+  padding: "3px 6px",
+  marginTop: "3px",
+  marginLeft: "5px",
+  backgroundColor: "transparent",
+  fontSize: theme.typography.fontSizes.small,
+  color:"var(--palette-textMuted)",
+  lineHeight: 1,
 }));
 
 export type ProfileCardProps = {
@@ -105,49 +139,62 @@ export const ProfileCard = memo(({
 
   return (
     <StyledProfileCard>
-      <Box spacingRight="10px">
-        <Avatar
-          src={avatarImgUrl}
-          loading="lazy"
-          alt={`${displayName} Avatar`}
-        />
-      </Box>
-      <Main>
-        <HBox justifyContent="space-between" flexGrow={1}>
-          <VBox>
-            <HBox>
-              <strong>{displayName}</strong>
-              {hasPowerBadge && (
-                <Box spacingLeft="5px">
-                  <WarpcastPowerBadge/>
-                </Box>
-              )}
-            </HBox>
-            <Username>@{username}</Username>
-          </VBox>
-          <HBox>
-            {isCurrentUser && (
-              <ButtonOutline onClick={handleEditProfile}>Edit Profile</ButtonOutline>
-            )}
-            <ButtonOutline>
-              <MoreMenuIcon/>
-            </ButtonOutline>
-          </HBox>
+      {isCurrentUser && (
+        <HBox alignItems="center" justifyContent="space-between" spacingBottom="20px">
+          <UsernameTitle>@{username}</UsernameTitle>
+          <ButtonPrimary>Cast</ButtonPrimary>
         </HBox>
-
-        <Box spacingVertical="15px">
-          <div>{linkifiedBio}</div>
+      )}
+      <HBox>
+        <Box spacingRight="10px">
+          <Avatar
+            src={avatarImgUrl}
+            loading="lazy"
+            alt={`${displayName} Avatar`}
+          />
         </Box>
+        <Main>
+          <HBox justifyContent="space-between" flexGrow={1}>
+            <VBox>
+              <HBox>
+                <strong>{displayName}</strong>
+                {hasPowerBadge && (
+                  <Box spacingLeft="5px">
+                    <WarpcastPowerBadge/>
+                  </Box>
+                )}
+              </HBox>
+              <HBox alignItems="center">
+                <Username>@{username}</Username>
+                {/* TODO: Check if user follows you */}
+                <Tag>Follows you</Tag>
+              </HBox>
+            </VBox>
+            <HBox>
+              {isCurrentUser && (
+                <ButtonOutline onClick={handleEditProfile}>Edit Profile</ButtonOutline>
+              )}
+              <ButtonOutline>
+                {/* TODO: Handle more menu click */}
+                <MoreMenuIcon/>
+              </ButtonOutline>
+            </HBox>
+          </HBox>
 
-        <HBox>
-          <ProfileMetaCell>
-            <strong>{formattedFollowingCount}</strong> Following
-          </ProfileMetaCell>
-          <ProfileMetaCell>
-            <strong>{formattedFollowersCount}</strong> Followers
-          </ProfileMetaCell>
-        </HBox>
-      </Main>
+          <Box spacingVertical="15px">
+            <div>{linkifiedBio}</div>
+          </Box>
+
+          <HBox>
+            <ProfileMetaCell>
+              <strong>{formattedFollowingCount}</strong> Following
+            </ProfileMetaCell>
+            <ProfileMetaCell>
+              <strong>{formattedFollowersCount}</strong> Followers
+            </ProfileMetaCell>
+          </HBox>
+        </Main>
+      </HBox>
     </StyledProfileCard>
   );
 });
