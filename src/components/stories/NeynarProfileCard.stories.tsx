@@ -1,7 +1,7 @@
 import React from "react";
 import { Meta, StoryFn } from "@storybook/react";
-import { ProfileCard, ProfileCardProps } from "./components/ProfileCard";
-import { NeynarProfileCard, NeynarProfileCardProps } from "./index";
+import { ProfileCard, ProfileCardProps } from "../NeynarProfileCard/components/ProfileCard";
+import { NeynarProfileCard, NeynarProfileCardProps } from "../NeynarProfileCard/index";
 
 const meta: Meta<typeof NeynarProfileCard> = {
   title: "NeynarProfileCard",
