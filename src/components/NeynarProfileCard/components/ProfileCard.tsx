@@ -4,6 +4,8 @@ import { Box, HBox, VBox } from "../../shared/Box";
 import { formatToReadableNumber } from "../../../utils/formatUtils";
 import { useLinkifyBio } from "../hooks/useLinkifyBio";
 import { WarpcastPowerBadge } from "../icons/WarpcastPowerBadge";
+import { useNeynarContext } from "../../../contexts";
+import { MoreMenuIcon } from "../icons/MoreMenuIcon";
 
 const StyledProfileCard = styled.div(({ theme }) => ({
   display: "flex",
@@ -52,12 +54,14 @@ const ProfileMetaCell = styled.div(() => ({
 const ButtonOutline = styled.button(({ theme }) => ({
   borderWidth: "1px",
   borderStyle: "solid",
-  borderColor: "var(--palette-textMuted)",
+  borderColor: "var(--palette-border)",
   borderRadius: "7px",
   padding: "10px",
   backgroundColor: "transparent",
   color:"var(--palette-text)",
   fontWeight: theme.typography.fontWeights.bold,
+  lineHeight: 1,
+  cursor: "pointer",
   "& + &": {
     marginLeft: "10px",
   },
@@ -82,6 +86,7 @@ export const ProfileCard = memo(({
   following,
   hasPowerBadge,
 }: ProfileCardProps) => {
+  const { user, isAuthenticated } = useNeynarContext();
   const linkifiedBio = useLinkifyBio(bio);
 
   const formattedFollowingCount = useMemo(() =>
@@ -91,6 +96,12 @@ export const ProfileCard = memo(({
   const formattedFollowersCount = useMemo(() =>
     formatToReadableNumber(followers),
   [followers]);
+
+  const isCurrentUser = isAuthenticated && user?.username === username;
+
+  const handleEditProfile = () => {
+    window.open("https://warpcast.com/~/settings", "_blank");
+  };
 
   return (
     <StyledProfileCard>
@@ -115,9 +126,12 @@ export const ProfileCard = memo(({
             <Username>@{username}</Username>
           </VBox>
           <HBox>
-            <ButtonOutline>Edit Profile</ButtonOutline>
-            {/* TODO: Add more icon */}
-            <ButtonOutline>...</ButtonOutline>
+            {isCurrentUser && (
+              <ButtonOutline onClick={handleEditProfile}>Edit Profile</ButtonOutline>
+            )}
+            <ButtonOutline>
+              <MoreMenuIcon/>
+            </ButtonOutline>
           </HBox>
         </HBox>
 
