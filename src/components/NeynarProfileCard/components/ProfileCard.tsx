@@ -109,6 +109,8 @@ export type ProfileCardProps = {
   followers: number;
   following: number;
   hasPowerBadge: boolean;
+  isFollowing?: boolean;
+  isOwnProfile?: boolean;
 };
 
 export const ProfileCard = memo(({
@@ -119,8 +121,9 @@ export const ProfileCard = memo(({
   followers,
   following,
   hasPowerBadge,
+  isFollowing,
+  isOwnProfile,
 }: ProfileCardProps) => {
-  const { user, isAuthenticated } = useNeynarContext();
   const linkifiedBio = useLinkifyBio(bio);
 
   const formattedFollowingCount = useMemo(() =>
@@ -131,15 +134,13 @@ export const ProfileCard = memo(({
     formatToReadableNumber(followers),
   [followers]);
 
-  const isCurrentUser = isAuthenticated && user?.username === username;
-
   const handleEditProfile = () => {
     window.open("https://warpcast.com/~/settings", "_blank");
   };
 
   return (
     <StyledProfileCard>
-      {isCurrentUser && (
+      {isOwnProfile && (
         <HBox alignItems="center" justifyContent="space-between" spacingBottom="20px">
           <UsernameTitle>@{username}</UsernameTitle>
           <ButtonPrimary>Cast</ButtonPrimary>
@@ -166,12 +167,11 @@ export const ProfileCard = memo(({
               </HBox>
               <HBox alignItems="center">
                 <Username>@{username}</Username>
-                {/* TODO: Check if user follows you */}
-                <Tag>Follows you</Tag>
+                {isFollowing && <Tag>Follows you</Tag>}
               </HBox>
             </VBox>
             <HBox>
-              {isCurrentUser && (
+              {isOwnProfile && (
                 <ButtonOutline onClick={handleEditProfile}>Edit Profile</ButtonOutline>
               )}
               <ButtonOutline>

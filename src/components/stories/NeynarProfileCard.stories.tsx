@@ -11,8 +11,8 @@ const meta: Meta<typeof NeynarProfileCard> = {
 export default meta;
 
 const Template: StoryFn<ProfileCardProps> = (args) => <ProfileCard {...args} />;
-const TemplateWithUser: StoryFn<NeynarProfileCardProps> = ({ fid }) => (
-  <NeynarProfileCard fid={fid} />
+const TemplateWithUser: StoryFn<NeynarProfileCardProps> = ({ fid, viewerFid }) => (
+  <NeynarProfileCard fid={fid} viewerFid={viewerFid} />
 );
 
 export const Primary = Template.bind({});
@@ -24,9 +24,16 @@ Primary.args = {
   followers: 127364,
   following: 676,
   hasPowerBadge: true,
+  isOwnProfile: true,
+  isFollowing: true,
+};
+Primary.argTypes = {
+  fid: { table: { disable: true } },
+  viewerFid: { table: { disable: true } },
 };
 
 export const WithUser = TemplateWithUser.bind({});
 WithUser.args = {
   fid: 1,
+  viewerFid: 1,
 };

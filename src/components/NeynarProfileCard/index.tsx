@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import { ProfileCard } from "./components/ProfileCard";
 import { useNeynarContext } from "../../contexts";
 
-async function fetchUserByFid(fid: number, clientId: string): Promise<any | null> {
+async function fetchUserByFid({ fid, viewerFid, clientId }: { fid: number, viewerFid?: number, clientId: string }): Promise<any | null> {
   try {
-    const response = await fetch(`${process.env.NEYNAR_API_URL}/farcaster/user/bulk?client_id=${clientId}&fids=${fid}`);
+    const response = await fetch(`${process.env.NEYNAR_API_URL}/farcaster/user/bulk?client_id=${clientId}&fids=${fid}&viewer_fid=${viewerFid}`);
     const data = await response.json();
     return data?.users?.[0] ?? null;
   } catch (error) {
@@ -15,10 +15,12 @@ async function fetchUserByFid(fid: number, clientId: string): Promise<any | null
 
 export type NeynarProfileCardProps = {
   fid: number;
+  viewerFid?: number;
 };
 
 export const NeynarProfileCard: React.FC<NeynarProfileCardProps> = ({
   fid,
+  viewerFid,
 }) => {
   const { client_id } = useNeynarContext();
 
@@ -26,12 +28,14 @@ export const NeynarProfileCard: React.FC<NeynarProfileCardProps> = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const isOwnProfile = userData?.fid === viewerFid;
+
   useEffect(() => {
     if (fid) {
       setLoading(true);
       setError(null);
 
-      fetchUserByFid(fid, client_id)
+      fetchUserByFid({ fid, viewerFid, clientId: client_id })
         .then((data) => {
           setUserData(data);
         }).catch((error) => {
@@ -40,7 +44,7 @@ export const NeynarProfileCard: React.FC<NeynarProfileCardProps> = ({
           setLoading(false);
         });
     }
-  }, [fid]);
+  }, [fid, viewerFid]);
 
   if (loading) {
     return <div>Loading...</div>;
@@ -59,6 +63,8 @@ export const NeynarProfileCard: React.FC<NeynarProfileCardProps> = ({
       followers={userData.follower_count}
       following={userData.following_count}
       hasPowerBadge={userData.power_badge}
+      isOwnProfile={isOwnProfile}
+      isFollowing={userData.viewer_context?.followed_by}
     />
   );
 };
