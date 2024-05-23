@@ -23,7 +23,6 @@ Primary.args = {
   bio: "building /neynar 🪐 | neynar.com | /rish",
   followers: 127364,
   following: 676,
-  location: "Boston, USA",
   hasPowerBadge: true,
 };
 

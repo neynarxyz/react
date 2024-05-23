@@ -81,7 +81,6 @@ export type ProfileCardProps = {
   bio: string;
   followers: number;
   following: number;
-  location: string;
   hasPowerBadge: boolean;
 };
 
@@ -92,7 +91,6 @@ export const ProfileCard = memo(({
   bio,
   followers,
   following,
-  location,
   hasPowerBadge,
 }: ProfileCardProps) => {
   const formattedFollowingCount = useMemo(() =>
@@ -138,9 +136,6 @@ export const ProfileCard = memo(({
           </ProfileMetaCell>
           <ProfileMetaCell>
             <strong>{formattedFollowersCount}</strong> Followers
-          </ProfileMetaCell>
-          <ProfileMetaCell>
-            {location}
           </ProfileMetaCell>
         </HBox>
       </Main>

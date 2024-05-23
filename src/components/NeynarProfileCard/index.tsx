@@ -59,8 +59,6 @@ export const NeynarProfileCard: React.FC<NeynarProfileCardProps> = ({
       followers={userData.follower_count}
       following={userData.following_count}
       hasPowerBadge={userData.power_badge}
-      // TODO: Fetch location from user data
-      location=""
     />
   );
 };
