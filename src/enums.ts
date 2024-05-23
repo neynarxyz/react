@@ -1,5 +1,6 @@
 export enum Theme {
   Light = "light",
+  Dark = "dark",
 }
 
 export enum SIWN_variant {

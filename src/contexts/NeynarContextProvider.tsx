@@ -4,7 +4,6 @@ import React, {
   useState,
   ReactNode,
   useMemo,
-  useEffect,
 } from "react";
 import { Theme } from "../enums";
 import { INeynarAuthenticatedUser, IUser, SetState } from "../types/common";
@@ -61,20 +60,6 @@ export const NeynarContextProvider: React.FC<NeynarContextProviderProps> = ({
       prevToasts.filter((toast) => toast !== toastToRemove)
     );
   };
-
-  useEffect(() => {
-    const root = document.querySelector(":root");
-    if (root) {
-      if (theme === "light") {
-        root.classList.add("theme-light");
-        // root.classList.remove("theme-dark");
-      }
-      // else {
-      //   root.classList.add("theme-dark");
-      //   root.classList.remove("theme-light");
-      // }
-    }
-  }, [theme]);
 
   const _setIsAuthenticated = (_isAuthenticated: boolean) => {
     setIsAuthenticated(_isAuthenticated);
