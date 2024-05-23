@@ -2,6 +2,7 @@ import { useMemo, memo } from "react";
 import { styled } from "@pigment-css/react";
 import { Box, HBox, VBox } from "../../shared/Box";
 import { formatToReadableNumber } from "../../../utils/formatUtils";
+import { useLinkifyBio } from "../hooks/useLinkifyBio";
 
 const StyledProfileCard = styled.div(({ theme }) => ({
   display: "flex",
@@ -47,8 +48,8 @@ const ProfileMetaCell = styled.div(() => ({
   },
 }));
 
-const ProfileButton = styled.button(({ theme }) => ({
-  borderSize: "1px",
+const ButtonOutline = styled.button(({ theme }) => ({
+  borderWidth: "1px",
   borderStyle: "solid",
   borderColor: "var(--palette-textMuted)",
   borderRadius: "7px",
@@ -80,6 +81,8 @@ export const ProfileCard = memo(({
   following,
   hasPowerBadge,
 }: ProfileCardProps) => {
+  const linkifiedBio = useLinkifyBio(bio);
+
   const formattedFollowingCount = useMemo(() =>
     formatToReadableNumber(following),
   [following]);
@@ -108,14 +111,15 @@ export const ProfileCard = memo(({
             <Username>@{username}</Username>
           </VBox>
           <HBox>
-            <ProfileButton>Edit Profile</ProfileButton>
+            <ButtonOutline>Edit Profile</ButtonOutline>
             {/* TODO: Add more icon */}
-            <ProfileButton>...</ProfileButton>
+            <ButtonOutline>...</ButtonOutline>
           </HBox>
         </HBox>
 
-        {/* TODO: Convert channels, mentions and websites to tappable links */}
-        <Box spacingVertical="15px">{bio}</Box>
+        <Box spacingVertical="15px">
+          <div>{linkifiedBio}</div>
+        </Box>
 
         <HBox>
           <ProfileMetaCell>
