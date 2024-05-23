@@ -3,6 +3,7 @@ import { styled } from "@pigment-css/react";
 import { Box, HBox, VBox } from "../../shared/Box";
 import { formatToReadableNumber } from "../../../utils/formatUtils";
 import { useLinkifyBio } from "../hooks/useLinkifyBio";
+import { WarpcastPowerBadge } from "../icons/WarpcastPowerBadge";
 
 const StyledProfileCard = styled.div(({ theme }) => ({
   display: "flex",
@@ -105,8 +106,11 @@ export const ProfileCard = memo(({
           <VBox>
             <HBox>
               <strong>{displayName}</strong>
-              {/* TODO: Add power badge icon */}
-              {hasPowerBadge && '⚡'}
+              {hasPowerBadge && (
+                <Box spacingLeft="5px">
+                  <WarpcastPowerBadge/>
+                </Box>
+              )}
             </HBox>
             <Username>@{username}</Username>
           </VBox>
