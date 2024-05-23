@@ -3,32 +3,19 @@ import { styled } from "@pigment-css/react";
 import { Box, HBox, VBox } from "../../shared/Box";
 import { formatToReadableNumber } from "../../../utils/formatUtils";
 
-const hexToRgba = (hex: string, alpha: number) => {
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-};
-
 const StyledProfileCard = styled.div(({ theme }) => ({
   display: "flex",
   width: "100%",
   maxWidth: "608px",
   borderWidth: "1px",
   borderStyle: "solid",
-  borderColor: theme.colorScheme === 'dark'
-    ? hexToRgba('#9FB7CA', 0.2)
-    // TODO: Update light color palette
-    : hexToRgba('#9FB7CA', 0.2),
+  borderColor: "var(--palette-border)",
   borderRadius: "15px",
   padding: "30px",
-  color: theme.colorSchemes.light.palette.text,
+  color: "var(--palette-text)",
   fontFamily: theme.typography.fonts.base,
   fontSize: theme.typography.fontSizes.medium,
-  backgroundColor: theme.colorScheme === 'dark'
-    ? hexToRgba('#151421', 0.8)
-    // TODO: Update light color palette
-    : hexToRgba('#040405', 0.1),
+  backgroundColor: "var(--palette-background)",
 }));
 
 const Avatar = styled.img(() => ({
@@ -46,14 +33,14 @@ const Main = styled.div(() => ({
   flex: 1,
 }));
 
-const Username = styled.div(({ theme }) => ({
-  color: theme.colorSchemes.light.palette.lightGrey,
+const Username = styled.div(() => ({
+  color: "var(--palette-textMuted)",
 }));
 
-const ProfileMetaCell = styled.div(({ theme }) => ({
-  color: theme.colorSchemes.light.palette.lightGrey,
+const ProfileMetaCell = styled.div(() => ({
+  color: "var(--palette-textMuted)",
   "> strong": {
-    color: theme.colorSchemes.light.palette.text,
+    color:"var(--palette-text)",
   },
   "& + &": {
     marginLeft: "15px",
@@ -63,11 +50,11 @@ const ProfileMetaCell = styled.div(({ theme }) => ({
 const ProfileButton = styled.button(({ theme }) => ({
   borderSize: "1px",
   borderStyle: "solid",
-  borderColor: theme.colorSchemes.light.palette.lightGrey,
+  borderColor: "var(--palette-textMuted)",
   borderRadius: "7px",
   padding: "10px",
   backgroundColor: "transparent",
-  color: theme.colorSchemes.light.palette.text,
+  color:"var(--palette-text)",
   fontWeight: theme.typography.fontWeights.bold,
   "& + &": {
     marginLeft: "10px",
