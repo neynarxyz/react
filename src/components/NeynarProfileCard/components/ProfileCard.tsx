@@ -4,8 +4,6 @@ import { Box, HBox, VBox } from "../../shared/Box";
 import { formatToReadableNumber } from "../../../utils/formatUtils";
 import { useLinkifyBio } from "../hooks/useLinkifyBio";
 import { WarpcastPowerBadge } from "../icons/WarpcastPowerBadge";
-import { useNeynarContext } from "../../../contexts";
-import { MoreMenuIcon } from "../icons/MoreMenuIcon";
 
 const StyledProfileCard = styled.div(({ theme }) => ({
   display: "flex",
@@ -174,10 +172,6 @@ export const ProfileCard = memo(({
               {isOwnProfile && (
                 <ButtonOutline onClick={handleEditProfile}>Edit Profile</ButtonOutline>
               )}
-              <ButtonOutline>
-                {/* TODO: Handle more menu click */}
-                <MoreMenuIcon/>
-              </ButtonOutline>
             </HBox>
           </HBox>
 
