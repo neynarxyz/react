@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { ProfileCard } from "./components/ProfileCard";
 import { useNeynarContext } from "../../contexts";
 
@@ -46,6 +46,10 @@ export const NeynarProfileCard: React.FC<NeynarProfileCardProps> = ({
     }
   }, [fid, viewerFid]);
 
+  const handleCast = useCallback(() => {
+    // TODO: Handle cast
+  }, []);
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -65,6 +69,7 @@ export const NeynarProfileCard: React.FC<NeynarProfileCardProps> = ({
       hasPowerBadge={userData.power_badge}
       isOwnProfile={isOwnProfile}
       isFollowing={userData.viewer_context?.followed_by}
+      onCast={handleCast}
     />
   );
 };

@@ -109,6 +109,7 @@ export type ProfileCardProps = {
   hasPowerBadge: boolean;
   isFollowing?: boolean;
   isOwnProfile?: boolean;
+  onCast?: () => void;
 };
 
 export const ProfileCard = memo(({
@@ -121,6 +122,7 @@ export const ProfileCard = memo(({
   hasPowerBadge,
   isFollowing,
   isOwnProfile,
+  onCast,
 }: ProfileCardProps) => {
   const linkifiedBio = useLinkifyBio(bio);
 
@@ -138,10 +140,10 @@ export const ProfileCard = memo(({
 
   return (
     <StyledProfileCard>
-      {isOwnProfile && (
+      {(isOwnProfile && onCast) && (
         <HBox alignItems="center" justifyContent="space-between" spacingBottom="20px">
           <UsernameTitle>@{username}</UsernameTitle>
-          <ButtonPrimary>Cast</ButtonPrimary>
+          <ButtonPrimary onClick={onCast}>Cast</ButtonPrimary>
         </HBox>
       )}
       <HBox>

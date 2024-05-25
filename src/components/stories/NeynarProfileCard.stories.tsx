@@ -26,10 +26,12 @@ Primary.args = {
   hasPowerBadge: true,
   isOwnProfile: true,
   isFollowing: true,
+  onCast: () => {},
 };
 Primary.argTypes = {
   fid: { table: { disable: true } },
   viewerFid: { table: { disable: true } },
+  onCast: { table: { disable: true } },
 };
 
 export const WithUser = TemplateWithUser.bind({});
