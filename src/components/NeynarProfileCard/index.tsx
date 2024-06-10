@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { ProfileCard } from "./components/ProfileCard";
 import { useNeynarContext } from "../../contexts";
+import { NEYNAR_API_URL } from "../../constants";
 
 async function fetchUserByFid({
   fid,
@@ -12,7 +13,7 @@ async function fetchUserByFid({
   clientId: string;
 }): Promise<any | null> {
   try {
-    let url = `https://sdk-api.neynar.com/v2/farcaster/user/bulk?client_id=${clientId}&fids=${fid}`;
+    let url = `${NEYNAR_API_URL}/v2/farcaster/user/bulk?client_id=${clientId}&fids=${fid}`;
 
     if (viewerFid) {
       url += `&viewer_fid=${viewerFid}`;
