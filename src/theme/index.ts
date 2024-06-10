@@ -5,20 +5,22 @@ export const theme = extendTheme({
     light: {
       palette: {
         background: "#FFFFFF",
-        text: "#15111D",
-        primary: "#8A63D2",
-        border: "#2E3031",
-        lightGrey: "#A0A3AD",
+        border: "#E0E0E0",
+        text: "#2B2432",
+        textMuted: "#6A6A6C",
       },
     },
     dark: {
       palette: {
-        background: "240 10% 3.9%",
-        foreground: "0 0% 80%",
-        primary: "0 0% 98%",
-        border: "240 3.7% 15.9%",
+        background: "#15111D",
+        border: "#2E3031",
+        text: "#FFFFFF",
+        textMuted: "#A0A3AD",
       },
     },
+  },
+  colors: {
+    primary: "#8A63D2",
   },
   typography: {
     fonts: {

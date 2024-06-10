@@ -161,7 +161,8 @@ export const NeynarAuthButton: React.FC<ButtonProps> = ({
       removeNeynarAuthenticatedUser();
       setIsAuthenticated(false);
       closeModal();
-      onSignout(_user);
+      const { signer_uuid, ...rest } = _user;
+      onSignout(rest);
     }
   };
 

@@ -1,0 +1,1 @@
+export const NEYNAR_API_URL = "https://sdk-api.neynar.com";
