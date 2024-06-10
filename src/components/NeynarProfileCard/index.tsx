@@ -12,9 +12,13 @@ async function fetchUserByFid({
   clientId: string;
 }): Promise<any | null> {
   try {
-    const response = await fetch(
-      `${process.env.NEYNAR_API_URL}/v2/farcaster/user/bulk?client_id=${clientId}&fids=${fid}&viewer_fid=${viewerFid}`
-    );
+    let url = `https://sdk-api.neynar.com/v2/farcaster/user/bulk?client_id=${clientId}&fids=${fid}`;
+
+    if (viewerFid) {
+      url += `&viewer_fid=${viewerFid}`;
+    }
+
+    const response = await fetch(url);
     const data = await response.json();
     return data?.users?.[0] ?? null;
   } catch (error) {
