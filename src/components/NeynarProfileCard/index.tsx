@@ -2,13 +2,23 @@ import React, { useState, useEffect, useCallback } from "react";
 import { ProfileCard } from "./components/ProfileCard";
 import { useNeynarContext } from "../../contexts";
 
-async function fetchUserByFid({ fid, viewerFid, clientId }: { fid: number, viewerFid?: number, clientId: string }): Promise<any | null> {
+async function fetchUserByFid({
+  fid,
+  viewerFid,
+  clientId,
+}: {
+  fid: number;
+  viewerFid?: number;
+  clientId: string;
+}): Promise<any | null> {
   try {
-    const response = await fetch(`${process.env.NEYNAR_API_URL}/farcaster/user/bulk?client_id=${clientId}&fids=${fid}&viewer_fid=${viewerFid}`);
+    const response = await fetch(
+      `${process.env.NEYNAR_API_URL}/v2/farcaster/user/bulk?client_id=${clientId}&fids=${fid}&viewer_fid=${viewerFid}`
+    );
     const data = await response.json();
     return data?.users?.[0] ?? null;
   } catch (error) {
-    console.error('Error fetching user by fid', error);
+    console.error("Error fetching user by fid", error);
     return null;
   }
 }
@@ -38,9 +48,11 @@ export const NeynarProfileCard: React.FC<NeynarProfileCardProps> = ({
       fetchUserByFid({ fid, viewerFid, clientId: client_id })
         .then((data) => {
           setUserData(data);
-        }).catch((error) => {
+        })
+        .catch((error) => {
           setError(error);
-        }).finally(() => {
+        })
+        .finally(() => {
           setLoading(false);
         });
     }
