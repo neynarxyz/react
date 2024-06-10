@@ -16,7 +16,7 @@ interface IAuthContext {
   setIsAuthenticated: SetState<boolean>;
   user: INeynarAuthenticatedUser | null;
   setUser: SetState<INeynarAuthenticatedUser | null>;
-  onAuthSuccess: (params: { user: IUser }) => void;
+  onAuthSuccess: (params: { user: INeynarAuthenticatedUser }) => void;
   onSignout: (user: IUser | undefined) => void;
 }
 
@@ -26,7 +26,7 @@ export interface AuthContextProviderProps {
   children: ReactNode;
   _setIsAuthenticated: (_isAuthenticated: boolean) => void;
   _setUser: (_user: INeynarAuthenticatedUser | null) => void;
-  _onAuthSuccess?: (params: { user: IUser }) => void;
+  _onAuthSuccess?: (params: { user: INeynarAuthenticatedUser }) => void;
   _onSignout?: (user: IUser | undefined) => void;
 }
 
@@ -67,7 +67,7 @@ export const AuthContextProvider: React.FC<AuthContextProviderProps> = ({
     _setUser(user);
   }, [user]);
 
-  const onAuthSuccess = (params: { user: IUser }) => {
+  const onAuthSuccess = (params: { user: INeynarAuthenticatedUser }) => {
     _onAuthSuccess && _onAuthSuccess(params);
   };
 

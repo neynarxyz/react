@@ -34,7 +34,7 @@ export interface NeynarContextProviderProps {
     clientId: string;
     defaultTheme?: Theme;
     eventsCallbacks?: {
-      onAuthSuccess?: (params: { user: IUser }) => void;
+      onAuthSuccess?: (params: { user: INeynarAuthenticatedUser }) => void;
       onSignout?: (user: IUser | undefined) => void;
     };
   };
