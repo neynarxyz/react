@@ -67,12 +67,11 @@ export const NeynarContextProvider: React.FC<NeynarContextProviderProps> = ({
     if (root) {
       if (theme === "light") {
         root.classList.add("theme-light");
-        // root.classList.remove("theme-dark");
+        root.classList.remove("theme-dark");
+      } else if (theme === "dark") {
+        root.classList.add("theme-dark");
+        root.classList.remove("theme-light");
       }
-      // else {
-      //   root.classList.add("theme-dark");
-      //   root.classList.remove("theme-light");
-      // }
     }
   }, [theme]);
 

@@ -1,14 +1,14 @@
-import React from 'react';
+import React from "react";
 import { styled } from "@pigment-css/react";
 
-const WARPCAST_DOMAIN = 'https://warpcast.com';
+const WARPCAST_DOMAIN = "https://warpcast.com";
 
 const channelRegex = /\/\w+/g;
 const mentionRegex = /@\w+/g;
 const urlRegex = /((https?:\/\/)?([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})(\/[^\s]*)?)/g;
 const combinedRegex = new RegExp(
   `(${channelRegex.source})|(${mentionRegex.source})|(${urlRegex.source})`,
-  'g'
+  "g"
 );
 
 const generateUrl = (match: string): string => {
@@ -17,14 +17,14 @@ const generateUrl = (match: string): string => {
   } else if (mentionRegex.test(match)) {
     return `${WARPCAST_DOMAIN}/${match.substring(1)}`;
   } else if (urlRegex.test(match)) {
-    return match.startsWith('http') ? match : `http://${match}`;
+    return match.startsWith("http") ? match : `http://${match}`;
   }
-  return '';
+  return "";
 };
 
 const StyledLink = styled.a(({ theme }) => ({
   textDecoration: "underline",
-  color: "var(--colors-primary)",
+  color: theme.vars.colors.primary,
 }));
 
 export const useLinkifyBio = (text: string): React.ReactNode[] => {
@@ -40,7 +40,7 @@ export const useLinkifyBio = (text: string): React.ReactNode[] => {
 
     const url = generateUrl(match[0]);
     elements.push(
-      <StyledLink key={matchIndex} href={url} target='_blank'>
+      <StyledLink key={matchIndex} href={url} target="_blank">
         {match[0]}
       </StyledLink>
     );

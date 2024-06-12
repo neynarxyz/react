@@ -15,13 +15,13 @@ const StyledProfileCard = styled.div(({ theme }) => ({
   maxWidth: "608px",
   borderWidth: "1px",
   borderStyle: "solid",
-  borderColor: "var(--palette-border)",
+  borderColor: theme.vars.palette.border,
   borderRadius: "15px",
   padding: "30px",
-  color: "var(--palette-text)",
+  color: theme.vars.palette.text,
   fontFamily: theme.typography.fonts.base,
   fontSize: theme.typography.fontSizes.medium,
-  backgroundColor: "var(--palette-background)",
+  backgroundColor: theme.vars.palette.background,
 }));
 
 const Main = styled.div(() => ({
@@ -31,8 +31,8 @@ const Main = styled.div(() => ({
   flex: 1,
 }));
 
-const Username = styled.div(() => ({
-  color: "var(--palette-textMuted)",
+const Username = styled.div(({ theme }) => ({
+  color: theme.vars.palette.textMuted,
 }));
 
 const UsernameTitle = styled.div(({ theme }) => ({
@@ -40,10 +40,10 @@ const UsernameTitle = styled.div(({ theme }) => ({
   fontWeight: theme.typography.fontWeights.bold,
 }));
 
-const ProfileMetaCell = styled.div(() => ({
-  color: "var(--palette-textMuted)",
+const ProfileMetaCell = styled.div(({ theme }) => ({
+  color: theme.vars.palette.textMuted,
   "> strong": {
-    color: "var(--palette-text)",
+    color: theme.vars.palette.text,
   },
   "& + &": {
     marginLeft: "15px",
@@ -53,14 +53,14 @@ const ProfileMetaCell = styled.div(() => ({
 const Tag = styled.div(({ theme }) => ({
   borderWidth: "1px",
   borderStyle: "solid",
-  borderColor: "var(--palette-border)",
+  borderColor: theme.vars.palette.border,
   borderRadius: "5px",
   padding: "3px 6px",
   marginTop: "3px",
   marginLeft: "5px",
   backgroundColor: "transparent",
   fontSize: theme.typography.fontSizes.small,
-  color: "var(--palette-textMuted)",
+  color: theme.vars.palette.textMuted,
   lineHeight: 1,
 }));
 

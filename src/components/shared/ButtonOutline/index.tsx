@@ -3,11 +3,11 @@ import { styled } from "@pigment-css/react";
 const ButtonOutline = styled.button(({ theme }) => ({
   borderWidth: "1px",
   borderStyle: "solid",
-  borderColor: "var(--palette-border)",
+  borderColor: theme.vars.palette.border,
   borderRadius: "7px",
   padding: "10px",
   backgroundColor: "transparent",
-  color: "var(--palette-text)",
+  color: theme.vars.palette.text,
   fontWeight: theme.typography.fontWeights.bold,
   lineHeight: 1,
   cursor: "pointer",
