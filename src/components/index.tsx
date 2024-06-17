@@ -1,2 +1,2 @@
-export { NeynarAuthButton } from "./NeynarAuthButton";
-export { NeynarProfileCard } from "./NeynarProfileCard";
+export { NeynarProfileCard } from "./organisms/NeynarProfileCard";
+export { NeynarAuthButton } from "./organisms/NeynarAuthButton";

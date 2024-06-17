@@ -21,7 +21,7 @@ interface BoxProps extends HTMLAttributes<HTMLDivElement> {
   spacingHorizontal?: string;
 }
 
-export const Box = styled.div<BoxProps>({
+const Box = styled.div<BoxProps>({
   display: "flex",
   alignItems: (props) => props.alignItems || "flex-start",
   justifyContent: (props) => props.justifyContent || "flex-start",
@@ -44,3 +44,5 @@ export const VBox = styled(Box)({
 export const HBox = styled(Box)({
   flexDirection: "row",
 });
+
+export default Box;

@@ -1,7 +1,11 @@
 import React from "react";
 import { Meta, StoryFn } from "@storybook/react";
-import { ProfileCard, ProfileCardProps } from "../NeynarProfileCard/components/ProfileCard";
-import { NeynarProfileCard, NeynarProfileCardProps } from "../NeynarProfileCard/index";
+
+import {
+  NeynarProfileCard,
+  NeynarProfileCardProps,
+} from "../organisms/NeynarProfileCard";
+import { ProfileCard, ProfileCardProps } from "../molecules/ProfileCard";
 
 const meta: Meta<typeof NeynarProfileCard> = {
   title: "NeynarProfileCard",
@@ -11,9 +15,10 @@ const meta: Meta<typeof NeynarProfileCard> = {
 export default meta;
 
 const Template: StoryFn<ProfileCardProps> = (args) => <ProfileCard {...args} />;
-const TemplateWithUser: StoryFn<NeynarProfileCardProps> = ({ fid, viewerFid }) => (
-  <NeynarProfileCard fid={fid} viewerFid={viewerFid} />
-);
+const TemplateWithUser: StoryFn<NeynarProfileCardProps> = ({
+  fid,
+  viewerFid,
+}) => <NeynarProfileCard fid={fid} viewerFid={viewerFid} />;
 
 export const Primary = Template.bind({});
 Primary.args = {

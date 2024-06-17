@@ -9,12 +9,10 @@ import React, {
 import { Theme } from "../enums";
 import { INeynarAuthenticatedUser, IUser, SetState } from "../types/common";
 import { AuthContextProvider } from "./AuthContextProvider";
-import {
-  ToastContainer,
-  ToastItem,
-  ToastType,
-} from "../components/shared/Toast";
+
 import { LocalStorageKeys } from "../hooks/use-local-storage-state";
+import { ToastContainer } from "../components/atoms/Toast/ToastContainer";
+import { ToastItem, ToastType } from "../components/atoms/Toast/ToastItem";
 
 interface INeynarContext {
   client_id: string;

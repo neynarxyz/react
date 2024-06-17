@@ -15,14 +15,6 @@ const fadeInOut = keyframes`
   }
 `;
 
-// Styled component for the toast container
-export const ToastContainer = styled.div`
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 9999;
-`;
-
 export const ToastItem = styled("div")<{ type: string }>((props) => ({
   padding: "10px 20px",
   marginBottom: "10px",

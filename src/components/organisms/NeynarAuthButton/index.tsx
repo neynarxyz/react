@@ -1,15 +1,15 @@
+// src/components/organisms/NeynarAuthButton/NeynarAuthButton.tsx
 import React, { useCallback, useEffect, useState, useRef } from "react";
 import { styled } from "@pigment-css/react";
-import PlanetBlackIcon from "./icons/PlanetBlackIcon";
-import { useNeynarContext } from "../../contexts";
-import { useAuth } from "../../contexts/AuthContextProvider";
-import { useLocalStorage } from "../../hooks";
-import { LocalStorageKeys } from "../../hooks/use-local-storage-state";
-import { INeynarAuthenticatedUser } from "../../types/common";
-import { SIWN_variant } from "../../enums";
-import { FarcasterIcon } from "./icons/FarcasterIcon";
-import { WarpcastIcon } from "./icons/WarpcastIcon";
-
+import { useNeynarContext } from "../../../contexts";
+import { useAuth } from "../../../contexts/AuthContextProvider";
+import { useLocalStorage } from "../../../hooks";
+import { LocalStorageKeys } from "../../../hooks/use-local-storage-state";
+import { INeynarAuthenticatedUser } from "../../../types/common";
+import { SIWN_variant } from "../../../enums";
+import { FarcasterIcon } from "../../atoms/icons/FarcasterIcon";
+import PlanetBlackIcon from "../../atoms/icons/PlanetBlackIcon";
+import { WarpcastIcon } from "../../atoms/icons/WarpcastIcon";
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   label?: string;
   icon?: React.ReactNode;
@@ -103,7 +103,6 @@ export const NeynarAuthButton: React.FC<ButtonProps> = ({
     );
   const [showModal, setShowModal] = useState(false);
 
-  // Using useRef to store the authWindow reference
   const authWindowRef = useRef<Window | null>(null);
   const neynarLoginUrl = `${process.env.NEYNAR_LOGIN_URL ?? "https://app.neynar.com/login"}?client_id=${client_id}`;
   const authOrigin = new URL(neynarLoginUrl).origin;

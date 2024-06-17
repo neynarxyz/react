@@ -1,12 +1,14 @@
+// src/components/molecules/ProfileCard/ProfileCard.tsx
 import { useMemo, memo } from "react";
 import { styled } from "@pigment-css/react";
-import { Box, HBox, VBox } from "../../shared/Box";
-import { formatToReadableNumber } from "../../../utils/formatUtils";
-import { useLinkifyBio } from "../hooks/useLinkifyBio";
-import { WarpcastPowerBadge } from "../icons/WarpcastPowerBadge";
-import ButtonOutline from "../../shared/ButtonOutline";
-import ButtonPrimary from "../../shared/ButtonPrimary";
-import Avatar from "../../shared/Avatar";
+
+import Avatar from "../atoms/Avatar";
+import ButtonPrimary from "../atoms/Button/ButtonPrimary";
+import ButtonOutlined from "../atoms/Button/ButtonOutlined";
+import { useLinkifyBio } from "../organisms/NeynarProfileCard/hooks/useLinkifyBio";
+import Box, { HBox, VBox } from "../atoms/Box";
+import { WarpcastPowerBadge } from "../atoms/icons/WarpcastPowerBadge";
+import { formatToReadableNumber } from "../../utils/formatUtils";
 
 const StyledProfileCard = styled.div(({ theme }) => ({
   display: "flex",
@@ -144,9 +146,9 @@ export const ProfileCard = memo(
               </VBox>
               <HBox>
                 {isOwnProfile && (
-                  <ButtonOutline onClick={handleEditProfile}>
+                  <ButtonOutlined onClick={handleEditProfile}>
                     Edit Profile
-                  </ButtonOutline>
+                  </ButtonOutlined>
                 )}
               </HBox>
             </HBox>

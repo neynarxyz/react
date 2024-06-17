@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { ProfileCard } from "./components/ProfileCard";
-import { useNeynarContext } from "../../contexts";
-import { NEYNAR_API_URL } from "../../constants";
+
+import { ProfileCard } from "../../molecules/ProfileCard";
+import { NEYNAR_API_URL } from "../../../constants";
+import { useNeynarContext } from "../../../contexts";
 
 async function fetchUserByFid({
   fid,

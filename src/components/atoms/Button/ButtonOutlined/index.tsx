@@ -1,6 +1,6 @@
 import { styled } from "@pigment-css/react";
 
-const ButtonOutline = styled.button(({ theme }) => ({
+const ButtonOutlined = styled.button(({ theme }) => ({
   borderWidth: "1px",
   borderStyle: "solid",
   borderColor: theme.vars.palette.border,
@@ -16,4 +16,4 @@ const ButtonOutline = styled.button(({ theme }) => ({
   },
 }));
 
-export default ButtonOutline;
+export default ButtonOutlined;
