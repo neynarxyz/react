@@ -19,6 +19,7 @@ interface BoxProps extends HTMLAttributes<HTMLDivElement> {
   spacingLeft?: string;
   spacingVertical?: string;
   spacingHorizontal?: string;
+  flexWrap?: "wrap" | "nowrap";
 }
 
 const Box = styled.div<BoxProps>({
@@ -35,6 +36,7 @@ const Box = styled.div<BoxProps>({
     props.spacing ?? props.spacingVertical ?? props.spacingBottom ?? "0px",
   marginLeft: (props) =>
     props.spacing ?? props.spacingHorizontal ?? props.spacingLeft ?? "0px",
+  flexWrap: (props) => props.flexWrap || "nowrap",
 });
 
 export const VBox = styled(Box)({
