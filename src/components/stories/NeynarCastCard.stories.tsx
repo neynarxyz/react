@@ -50,5 +50,29 @@ WithCast.args = {
   identifier: 'url',
   hash: "",
   viewerFid: 2,
+  url: "https://warpcast.com/dylsteck.eth/0xda6b1699"
+};
+
+export const CastWithQuoteCast = TemplateWithCast.bind({});
+CastWithQuoteCast.args = {
+  identifier: 'url',
+  hash: "",
+  viewerFid: 2,
+  url: "https://warpcast.com/nonlinear.eth/0x4e09e86c"
+};
+
+export const CastWithImage = TemplateWithCast.bind({});
+CastWithImage.args = {
+  identifier: 'url',
+  hash: "",
+  viewerFid: 2,
+  url: "https://warpcast.com/rish/0xcc752c55"
+};
+
+export const CastWithTwoImages = TemplateWithCast.bind({});
+CastWithTwoImages.args = {
+  identifier: 'url',
+  hash: "",
+  viewerFid: 2,
   url: "https://warpcast.com/nicholas/0xd06c1e56"
 };
