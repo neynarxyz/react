@@ -5,9 +5,10 @@ import { NeynarCastCard } from '..';
 type OpenGraphData = {
   'og:image'?: string;
   'og:title'?: string;
+  'og:description'?: string;
 };
 
-async function fetchOpenGraphData(url: string): Promise<{ ogImage: string, ogTitle: string }> {
+async function fetchOpenGraphData(url: string): Promise<{ ogImage: string, ogTitle: string, ogDescription: string }> {
   try {
     const allOriginsUrl = `https://api.allorigins.win/get?url=${url}`;
     const response = await fetch(allOriginsUrl);
@@ -21,11 +22,13 @@ async function fetchOpenGraphData(url: string): Promise<{ ogImage: string, ogTit
     const doc = parser.parseFromString(data.contents, 'text/html');
     const ogImageMeta = doc.querySelector('meta[property="og:image"]');
     const ogTitleMeta = doc.querySelector('meta[property="og:title"]');
+    const ogDescriptionMeta = doc.querySelector('meta[property="og:description"]');
 
     const ogImage = ogImageMeta ? ogImageMeta.getAttribute('content') || '' : '';
     const ogTitle = ogTitleMeta ? ogTitleMeta.getAttribute('content') || '' : '';
+    const ogDescription = ogDescriptionMeta ? ogDescriptionMeta.getAttribute('content') || '' : '';
 
-    return { ogImage, ogTitle };
+    return { ogImage, ogTitle, ogDescription };
   } catch (error) {
     console.error("Error fetching Open Graph data", error);
     return { ogImage: '', ogTitle: '' };
@@ -102,7 +105,7 @@ export const useRenderEmbeds = (embeds: Embed[], viewerFid: number): React.React
           if (isImageUrl(embed.url)) {
             return <ImageWrapper key={embed.url} src={embed.url} alt={embed.url} isSingle={embeds.length === 1} />;
           } else {
-            const { ogImage, ogTitle } = await fetchOpenGraphData(embed.url);
+            const { ogImage, ogTitle, ogDescription } = await fetchOpenGraphData(embed.url);
             return (
               <div key={embed.url} style={{
                 display: 'flex',
@@ -119,7 +122,9 @@ export const useRenderEmbeds = (embeds: Embed[], viewerFid: number): React.React
                 boxSizing: 'border-box',
               }}>
                 {ogImage && <img src={ogImage} alt={ogTitle} style={{ marginRight: '10px', height: '100%', width: '100px', objectFit: 'cover', borderRadius: '5px' }} />}
-                <a href={embed.url} target="_blank" rel="noreferrer" style={{ overflowWrap: 'break-word', color: 'white', textDecoration: 'underline' }}>{ogTitle || embed.url}</a>
+                <a href={embed.url} target="_blank" rel="noreferrer" style={{ overflowWrap: 'break-word', color: 'white', textDecoration: 'underline' }}>
+                  {ogTitle || embed.url}
+                </a>
               </div>
             );
           }

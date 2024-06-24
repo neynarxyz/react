@@ -1,5 +1,6 @@
 import { extendTheme } from "@pigment-css/vite-plugin";
 
+
 export const theme = extendTheme({
   colorSchemes: {
     light: {

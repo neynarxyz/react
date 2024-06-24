@@ -69,6 +69,14 @@ CastWithImage.args = {
   url: "https://warpcast.com/rish/0xcc752c55"
 };
 
+export const CastWithImageAndLink = TemplateWithCast.bind({});
+CastWithImageAndLink.args = {
+  identifier: 'url',
+  hash: "",
+  viewerFid: 2,
+  url: "https://warpcast.com/giuseppe/0x1805c345"
+};
+
 export const CastWithTwoImages = TemplateWithCast.bind({});
 CastWithTwoImages.args = {
   identifier: 'url',

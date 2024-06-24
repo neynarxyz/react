@@ -89,6 +89,7 @@ export const NeynarCastCard: React.FC<NeynarCastCardProps> = ({
         name: castData.channel.name,
         url: castData.parent_url
       } : undefined}
+      viewerFid={viewerFid}
       hasPowerBadge={castData.author.power_badge}
       isOwnProfile={isOwnProfile}
     />
