@@ -1,16 +1,13 @@
-// src/components/molecules/ProfileCard.tsx
-import { useMemo, memo } from "react";
+import React, { memo } from "react";
 import { styled } from "@pigment-css/react";
 
 import Avatar from "../atoms/Avatar";
-import ButtonPrimary from "../atoms/Button/ButtonPrimary";
-import ButtonOutlined from "../atoms/Button/ButtonOutlined";
 import { useLinkifyBio } from "../organisms/NeynarProfileCard/hooks/useLinkifyBio";
 import Box, { HBox, VBox } from "../atoms/Box";
 import { WarpcastPowerBadge } from "../atoms/icons/WarpcastPowerBadge";
-import { formatToReadableNumber } from "../../utils/formatUtils";
+import { useRenderEmbeds } from "../organisms/NeynarCastCard/hooks/useRenderEmbeds";
 
-const StyledProfileCard = styled.div(({ theme }) => ({
+const StyledCastCard = styled.div(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   width: "100%",
@@ -24,6 +21,11 @@ const StyledProfileCard = styled.div(({ theme }) => ({
   fontFamily: theme.typography.fonts.base,
   fontSize: theme.typography.fontSizes.medium,
   backgroundColor: theme.vars.palette.background,
+}));
+
+const StyledLink = styled.a(({ theme }) => ({
+  textDecoration: "none",
+  color: theme.vars.palette.textMuted,
 }));
 
 const Main = styled.div(() => ({
@@ -66,60 +68,43 @@ const Tag = styled.div(({ theme }) => ({
   lineHeight: 1,
 }));
 
-export type ProfileCardProps = {
+export type CastCardProps = {
   username: string;
   displayName: string;
   avatarImgUrl: string;
-  bio: string;
-  followers: number;
-  following: number;
+  text: string;
+  hash: string;
+  likes: number;
+  replies: number;
+  embeds: any[];
+  channel?: {
+    id: string;
+    name: string;
+    url: string;
+  };
   hasPowerBadge: boolean;
-  isFollowing?: boolean;
   isOwnProfile?: boolean;
-  onCast?: () => void;
 };
 
-export const ProfileCard = memo(
+export const CastCard = memo(
   ({
     username,
     displayName,
     avatarImgUrl,
-    bio,
-    followers,
-    following,
+    text,
+    hash,
+    likes,
+    replies,
+    embeds,
+    channel,
     hasPowerBadge,
-    isFollowing,
     isOwnProfile,
-    onCast,
-  }: ProfileCardProps) => {
-    const linkifiedBio = useLinkifyBio(bio);
-
-    const formattedFollowingCount = useMemo(
-      () => formatToReadableNumber(following),
-      [following]
-    );
-
-    const formattedFollowersCount = useMemo(
-      () => formatToReadableNumber(followers),
-      [followers]
-    );
-
-    const handleEditProfile = () => {
-      window.open("https://warpcast.com/~/settings", "_blank");
-    };
+  }: CastCardProps) => {
+    const linkifiedText = useLinkifyBio(text);
+    const isSingle = embeds?.length === 1;
 
     return (
-      <StyledProfileCard>
-        {isOwnProfile && onCast && (
-          <HBox
-            alignItems="center"
-            justifyContent="space-between"
-            spacingBottom="20px"
-          >
-            <UsernameTitle>@{username}</UsernameTitle>
-            <ButtonPrimary onClick={onCast}>Cast</ButtonPrimary>
-          </HBox>
-        )}
+      <StyledCastCard>
         <HBox>
           <Box spacingRight="10px">
             <Avatar
@@ -141,33 +126,47 @@ export const ProfileCard = memo(
                 </HBox>
                 <HBox alignItems="center">
                   <Username>@{username}</Username>
-                  {isFollowing && <Tag>Follows you</Tag>}
                 </HBox>
               </VBox>
-              <HBox>
-                {isOwnProfile && (
-                  <ButtonOutlined onClick={handleEditProfile}>
-                    Edit Profile
-                  </ButtonOutlined>
-                )}
-              </HBox>
             </HBox>
 
             <Box spacingVertical="15px">
-              <div>{linkifiedBio}</div>
+              <div>{linkifiedText}</div>
             </Box>
-
-            <HBox>
-              <ProfileMetaCell>
-                <strong>{formattedFollowingCount}</strong> Following
-              </ProfileMetaCell>
-              <ProfileMetaCell>
-                <strong>{formattedFollowersCount}</strong> Followers
-              </ProfileMetaCell>
-            </HBox>
+            {embeds && embeds.length > 0 && (
+              <div style={{
+                display: 'flex',
+                gap: '15px',
+                alignItems: 'center',
+                padding: isSingle ? '0' : '10px',
+                border: 'none',
+                borderRadius: '8px',
+                width: '100%',
+                margin: isSingle ? '10px 0' : '0',
+              }}>
+                {useRenderEmbeds(embeds).map((embed, index) => (
+                  <div key={index}>
+                    {embed}
+                  </div>
+                ))}
+              </div>
+            )}
+            <Box spacingVertical="15px" style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+              <div>{replies ?? 0} replies</div>
+              <div>·</div>
+              <div>{likes ?? 0} likes</div>
+              {channel && 
+                <>
+                  <div>·</div>
+                  <StyledLink href={`https://warpcast.com/~/channel/${channel.id}`} target="_blank">
+                    /{channel.name.toLowerCase()}
+                  </StyledLink>
+                </>
+              }
+            </Box>
           </Main>
         </HBox>
-      </StyledProfileCard>
+      </StyledCastCard>
     );
   }
 );
