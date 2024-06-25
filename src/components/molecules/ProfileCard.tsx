@@ -1,4 +1,4 @@
-// src/components/molecules/ProfileCard/ProfileCard.tsx
+// src/components/molecules/ProfileCard.tsx
 import { useMemo, memo } from "react";
 import { styled } from "@pigment-css/react";
 
