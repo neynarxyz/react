@@ -31,7 +31,7 @@ async function fetchOpenGraphData(url: string): Promise<{ ogImage: string, ogTit
     return { ogImage, ogTitle, ogDescription };
   } catch (error) {
     console.error("Error fetching Open Graph data", error);
-    return { ogImage: '', ogTitle: '' };
+    return { ogImage: '', ogTitle: '' , ogDescription: '' };
   }
 }
 
