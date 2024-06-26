@@ -36,19 +36,18 @@ async function fetchOpenGraphData(url: string): Promise<{ ogImage: string, ogTit
 }
 
 async function fetchCastByIdentifier({
+  type,
   identifier,
-  hash,
-  url,
+  viewerFid,
   client_id
 }: {
-  identifier: 'url' | 'hash';
-  hash?: string;
-  url?: string;
+  type: 'url' | 'hash';
+  identifier: string;
+  viewerFid?: number;
   client_id: string;
 }) {
   try {
-    const identifierValue = identifier === 'url' && url ? url : hash;
-    let requestUrl = `${NEYNAR_API_URL}/v2/farcaster/cast?type=${identifier}&identifier=${identifierValue}&client_id=${client_id}`;
+    let requestUrl = `${NEYNAR_API_URL}/v2/farcaster/cast?type=${identifier}&identifier=${identifier}${viewerFid ? `&viewer_fid=${viewerFid}` : ''}&client_id=${client_id}`;
 
     const response = await fetch(requestUrl);
     const data = await response.json();
@@ -95,7 +94,7 @@ const isImageUrl = (url: string): boolean => {
   return url.startsWith('https://imagedelivery.net') || /\.(jpeg|jpg|gif|png|webp|bmp|svg)$/.test(url);
 };
 
-export const useRenderEmbeds = (embeds: Embed[], viewerFid: number): React.ReactNode[] => {
+export const useRenderEmbeds = (embeds: Embed[], viewerFid?: number): React.ReactNode[] => {
   const [renderedEmbeds, setRenderedEmbeds] = React.useState<React.ReactNode[]>([]);
 
   React.useEffect(() => {
@@ -131,7 +130,7 @@ export const useRenderEmbeds = (embeds: Embed[], viewerFid: number): React.React
         } else if (embed.cast_id) {
           return (
             <div style={{ maxWidth: '85%' }} key={`cast-${embed?.cast_id.hash}`}>
-              <NeynarCastCard key={embed.cast_id.fid} identifier="hash" viewerFid={viewerFid} hash={embed.cast_id.hash} />
+              <NeynarCastCard key={embed.cast_id.fid} type="hash" identifier={embed.cast_id.hash} viewerFid={viewerFid}  />
             </div>
           );
         }

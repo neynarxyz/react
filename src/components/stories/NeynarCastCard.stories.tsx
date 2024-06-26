@@ -16,11 +16,10 @@ export default meta;
 
 const Template: StoryFn<CastCardProps> = (args) => <CastCard {...args} />;
 const TemplateWithCast: StoryFn<NeynarCastCardProps> = ({
+  type,
   identifier,
   viewerFid,
-  hash,
-  url
-}) => <NeynarCastCard identifier={identifier} viewerFid={viewerFid} hash={hash} url={url} />;
+}) => <NeynarCastCard type={type} identifier={identifier} viewerFid={viewerFid} />;
 
 export const Primary = Template.bind({});
 Primary.args = {
@@ -28,8 +27,8 @@ Primary.args = {
   displayName: "rish",
   avatarImgUrl: "https://i.imgur.com/naZWL9n.gif",
   text: "might have gotten too many pastries",
-  identifier: 'hash',
-  hash: "0xcc752c5511366aa87e5628706a94ffb5fea8f12a",
+  type: 'hash',
+  identifier: "0xcc752c5511366aa87e5628706a94ffb5fea8f12a",
   viewerFid: 2,
   replies: 63,
   likes: 413,
@@ -47,40 +46,30 @@ Primary.argTypes = {
 
 export const WithCast = TemplateWithCast.bind({});
 WithCast.args = {
-  identifier: 'url',
-  hash: "",
-  viewerFid: 2,
-  url: "https://warpcast.com/dylsteck.eth/0xda6b1699"
+  type: 'url',
+  identifier: "https://warpcast.com/dylsteck.eth/0xda6b1699"
 };
 
 export const CastWithQuoteCast = TemplateWithCast.bind({});
 CastWithQuoteCast.args = {
-  identifier: 'url',
-  hash: "",
-  viewerFid: 2,
-  url: "https://warpcast.com/nonlinear.eth/0x4e09e86c"
+  type: 'url',
+  identifier: "https://warpcast.com/nonlinear.eth/0x4e09e86c"
 };
 
 export const CastWithImage = TemplateWithCast.bind({});
 CastWithImage.args = {
-  identifier: 'url',
-  hash: "",
-  viewerFid: 2,
-  url: "https://warpcast.com/rish/0xcc752c55"
+  type: 'url',
+  identifier:  "https://warpcast.com/rish/0xcc752c55"
 };
 
 export const CastWithImageAndLink = TemplateWithCast.bind({});
 CastWithImageAndLink.args = {
-  identifier: 'url',
-  hash: "",
-  viewerFid: 2,
-  url: "https://warpcast.com/giuseppe/0x1805c345"
+  type: 'url',
+  identifier: "https://warpcast.com/giuseppe/0x1805c345"
 };
 
 export const CastWithTwoImages = TemplateWithCast.bind({});
 CastWithTwoImages.args = {
-  identifier: 'url',
-  hash: "",
-  viewerFid: 2,
-  url: "https://warpcast.com/nicholas/0xd06c1e56"
+  type: 'url',
+  identifier: "https://warpcast.com/nicholas/0xd06c1e56"
 };
