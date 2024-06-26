@@ -82,7 +82,7 @@ export type CastCardProps = {
     name: string;
     url: string;
   };
-  viewerFid: number;
+  viewerFid?: number;
   hasPowerBadge: boolean;
   isOwnProfile?: boolean;
   onComment?: () => void;

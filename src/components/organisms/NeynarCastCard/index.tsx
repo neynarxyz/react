@@ -5,19 +5,18 @@ import { useNeynarContext } from "../../../contexts";
 import { CastCard } from "../../molecules/CastCard";
 
 async function fetchCastByIdentifier({
+  type,
   identifier,
-  hash,
-  url,
+  viewerFid,
   client_id
 }: {
-  identifier: 'url' | 'hash';
-  hash?: string;
-  url?: string;
+  type: 'url' | 'hash';
+  identifier: string;
+  viewerFid?: number;
   client_id: string;
 }): Promise<any | null> {
   try {
-    const identifierValue = identifier === 'url' && url ? url : hash;
-    let requestUrl = `${NEYNAR_API_URL}/v2/farcaster/cast?type=${identifier}&identifier=${identifierValue}&client_id=${client_id}`;
+    let requestUrl = `${NEYNAR_API_URL}/v2/farcaster/cast?type=${type}&identifier=${identifier}${viewerFid ? `&viewer_fid=${viewerFid}` : ''}&client_id=${client_id}`;
 
     const response = await fetch(requestUrl);
     const data = await response.json();
@@ -29,17 +28,15 @@ async function fetchCastByIdentifier({
 }
 
 export type NeynarCastCardProps = {
-  identifier: 'url' | 'hash';
-  viewerFid: number;
-  hash?: string;
-  url?: string;
+  type: 'url' | 'hash';
+  identifier: string;
+  viewerFid?: number;
 };
 
 export const NeynarCastCard: React.FC<NeynarCastCardProps> = ({
+  type,
   identifier,
-  viewerFid,
-  hash,
-  url
+  viewerFid
 }) => {
   const { client_id } = useNeynarContext();
 
@@ -50,10 +47,10 @@ export const NeynarCastCard: React.FC<NeynarCastCardProps> = ({
   const isOwnProfile = castData?.author.fid === viewerFid;
 
   useEffect(() => {
-    if (identifier && (hash || url)) {
+    if (type && identifier) {
       setLoading(true);
       setError(null);
-      fetchCastByIdentifier({ identifier, hash, url, client_id })
+      fetchCastByIdentifier({ type, identifier, viewerFid, client_id })
         .then((data) => {
           setCastData(data);
         })
@@ -64,7 +61,7 @@ export const NeynarCastCard: React.FC<NeynarCastCardProps> = ({
           setLoading(false);
         });
     }
-  }, [identifier, hash, url, client_id]);
+  }, [type, identifier, viewerFid, client_id]);
 
   if (loading) {
     return <div>Loading...</div>;
