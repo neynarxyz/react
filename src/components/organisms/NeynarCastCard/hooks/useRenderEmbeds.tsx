@@ -1,12 +1,19 @@
 import React from 'react';
 import { METADATA_PROXY_URL, NEYNAR_API_URL } from '../../../../constants';
 import { NeynarCastCard } from '..';
+import { styled } from '@pigment-css/react';
 
 type OpenGraphData = {
   'og:image'?: string;
   'og:title'?: string;
   'og:description'?: string;
 };
+
+const StyledLink = styled.a(({ theme }) => ({
+  textDecoration: "underline",
+  color: theme.vars.palette.text,
+  overflowWrap: 'break-word',
+}));
 
 async function fetchOpenGraphData(url: string): Promise<{ ogImage: string, ogTitle: string, ogDescription: string }> {
   try {
@@ -121,9 +128,9 @@ export const useRenderEmbeds = (embeds: Embed[], viewerFid?: number): React.Reac
                 boxSizing: 'border-box',
               }}>
                 {ogImage && <img src={ogImage} alt={ogTitle} style={{ marginRight: '10px', height: '100%', width: '100px', objectFit: 'cover', borderRadius: '5px' }} />}
-                <a href={embed.url} target="_blank" rel="noreferrer" style={{ overflowWrap: 'break-word', color: 'white', textDecoration: 'underline' }}>
+                <StyledLink href={embed.url} target="_blank" rel="noreferrer">
                   {ogTitle || embed.url}
-                </a>
+                </StyledLink>
               </div>
             );
           }
