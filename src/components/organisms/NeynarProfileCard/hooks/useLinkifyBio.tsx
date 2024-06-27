@@ -3,7 +3,7 @@ import { styled } from "@pigment-css/react";
 
 const WARPCAST_DOMAIN = "https://warpcast.com";
 
-const channelRegex = /\/\w+/g;
+const channelRegex = /(^|\s)\/\w+/g;
 const mentionRegex = /@\w+/g;
 const urlRegex = /((https?:\/\/)?([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})(\/[^\s]*)?)/g;
 const combinedRegex = new RegExp(
@@ -13,7 +13,7 @@ const combinedRegex = new RegExp(
 
 const generateUrl = (match: string): string => {
   if (channelRegex.test(match)) {
-    return `${WARPCAST_DOMAIN}/~/channel${match}`;
+    return `${WARPCAST_DOMAIN}/~/channel${match.trim()}`;
   } else if (mentionRegex.test(match)) {
     return `${WARPCAST_DOMAIN}/${match.substring(1)}`;
   } else if (urlRegex.test(match)) {
@@ -41,7 +41,7 @@ export const useLinkifyBio = (text: string): React.ReactNode[] => {
     const url = generateUrl(match[0]);
     elements.push(
       <StyledLink key={matchIndex} href={url} target="_blank">
-        {match[0]}
+        {match[0].trim()}
       </StyledLink>
     );
 
