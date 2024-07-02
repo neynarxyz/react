@@ -31,12 +31,14 @@ export type NeynarCastCardProps = {
   type: 'url' | 'hash';
   identifier: string;
   viewerFid?: number;
+  allowReactions: boolean;
 };
 
 export const NeynarCastCard: React.FC<NeynarCastCardProps> = ({
   type,
   identifier,
-  viewerFid
+  viewerFid,
+  allowReactions
 }) => {
   const { client_id } = useNeynarContext();
 
@@ -87,6 +89,7 @@ export const NeynarCastCard: React.FC<NeynarCastCardProps> = ({
         url: castData.parent_url
       } : undefined}
       viewerFid={viewerFid}
+      allowReactions={allowReactions}
       hasPowerBadge={castData.author.power_badge}
       isOwnProfile={isOwnProfile}
     />
