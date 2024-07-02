@@ -155,7 +155,7 @@ export const CastCard = memo(
                 width: '100%',
                 margin: isSingle ? '10px 0' : '0',
               }}>
-                {useRenderEmbeds(embeds, viewerFid).map((embed, index) => (
+                {useRenderEmbeds(embeds, allowReactions, viewerFid).map((embed, index) => (
                   <div key={index}>
                     {embed}
                   </div>

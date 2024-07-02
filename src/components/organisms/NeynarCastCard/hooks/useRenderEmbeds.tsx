@@ -101,7 +101,7 @@ const isImageUrl = (url: string): boolean => {
   return url.startsWith('https://imagedelivery.net') || /\.(jpeg|jpg|gif|png|webp|bmp|svg)$/.test(url);
 };
 
-export const useRenderEmbeds = (embeds: Embed[], viewerFid?: number): React.ReactNode[] => {
+export const useRenderEmbeds = (embeds: Embed[], allowReactions: boolean, viewerFid?: number,): React.ReactNode[] => {
   const [renderedEmbeds, setRenderedEmbeds] = React.useState<React.ReactNode[]>([]);
 
   React.useEffect(() => {
@@ -137,7 +137,7 @@ export const useRenderEmbeds = (embeds: Embed[], viewerFid?: number): React.Reac
         } else if (embed.cast_id) {
           return (
             <div style={{ maxWidth: '85%' }} key={`cast-${embed?.cast_id.hash}`}>
-              <NeynarCastCard key={embed.cast_id.fid} type="hash" identifier={embed.cast_id.hash} viewerFid={viewerFid}  />
+              <NeynarCastCard key={embed.cast_id.fid} type="hash" identifier={embed.cast_id.hash} viewerFid={viewerFid} allowReactions={allowReactions}  />
             </div>
           );
         }
@@ -153,8 +153,8 @@ export const useRenderEmbeds = (embeds: Embed[], viewerFid?: number): React.Reac
   return renderedEmbeds;
 };
 
-export const EmbedContainer: React.FC<{ embeds: Embed[], viewerFid: number }> = ({ embeds, viewerFid }) => {
-  const renderedEmbeds = useRenderEmbeds(embeds, viewerFid);
+export const EmbedContainer: React.FC<{ embeds: Embed[], viewerFid: number, allowReactions: boolean }> = ({ embeds, viewerFid, allowReactions }) => {
+  const renderedEmbeds = useRenderEmbeds(embeds, allowReactions, viewerFid);
 
   const hasTwoImages = renderedEmbeds.length === 2 && renderedEmbeds.every(embed => 
     React.isValidElement(embed) && (embed as React.ReactElement<any>).type === ImageWrapper
