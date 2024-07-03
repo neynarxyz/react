@@ -183,7 +183,7 @@ export const CastCard = memo(
                 <>
                   <div>·</div>
                   <StyledLink href={`https://warpcast.com/~/channel/${channel.id}`} target="_blank">
-                    /{channel.name.toLowerCase()}
+                    /{channel.id}
                   </StyledLink>
                 </>
               }
