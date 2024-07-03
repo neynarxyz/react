@@ -5,6 +5,7 @@ import { NeynarAuthButton } from "../../organisms/NeynarAuthButton";
 import { LocalStorageKeys } from "../../../hooks/use-local-storage-state";
 import { NEYNAR_API_URL } from "../../../constants";
 import { useNeynarContext } from "../../../contexts";
+import { SIWN_variant } from "../../../enums";
 
 const ReactionWrapper = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -17,9 +18,9 @@ const Popover = styled(Box)(({ theme }) => ({
   position: "absolute",
   backgroundColor: theme?.colors?.background || "#fff",
   boxShadow: theme?.shadows?.[2] || "0px 4px 6px rgba(0, 0, 0, 0.1)",
-  padding: theme?.spacing?.(2) || "16px",
-  borderRadius: theme?.borderRadius || "8px",
   zIndex: theme?.zIndex?.popover || 2000,
+  minWidth: 215,
+  width: 'auto'
 }));
 
 type ReactionsProps = {
@@ -43,15 +44,7 @@ const Reactions: React.FC<ReactionsProps> = ({
   const [isRecasted, setIsRecasted] = useState(false);
 
   React.useEffect(() => {
-    if(isAuthenticated && showPopover) {
-      setShowPopover(false);
-    }
-  }, [isAuthenticated, showPopover]);
-
-  React.useEffect(() => {
-    const signer = localStorage.getItem(
-      LocalStorageKeys.NEYNAR_AUTHENTICATED_USER
-    );
+    const signer = localStorage.getItem(LocalStorageKeys.NEYNAR_AUTHENTICATED_USER);
     if (signer) {
       try {
         setSignerValue(JSON.parse(signer).signer_uuid);
@@ -62,9 +55,20 @@ const Reactions: React.FC<ReactionsProps> = ({
     } else {
       console.warn("No NEYNAR_AUTHENTICATED_USER found in local storage.");
     }
-  }, []);
+  }, [isAuthenticated]);
+
+  React.useEffect(() => {
+    if ((signerValue || isAuthenticated) && showPopover) {
+      setShowPopover(false);
+    }
+  }, [signerValue, isAuthenticated, showPopover]);
 
   const postReaction = async (type: string) => {
+    if (!signerValue) {
+      console.error("signerValue is null, cannot post reaction.");
+      return;
+    }
+
     const request = await fetch(
       `${NEYNAR_API_URL}/v2/farcaster/reaction?client_id=${client_id}`,
       {
@@ -90,7 +94,7 @@ const Reactions: React.FC<ReactionsProps> = ({
         setIsRecasted(!isRecasted);
       }
     }
-  };  
+  };
 
   const handleAction = async (
     event: React.MouseEvent<SVGSVGElement>,
@@ -113,21 +117,25 @@ const Reactions: React.FC<ReactionsProps> = ({
     }
     if (action && !signerValue) {
       action();
+    } else {
+      setShowPopover(true);
     }
+  
     const target = event.currentTarget;
-    const iconRect = target.getBoundingClientRect();
-    setPopoverPosition({
-      top: iconRect.bottom,
-      left: iconRect.left + iconRect.width / 2,
-    });
-    setShowPopover(true);
-  };
+    if (target) {
+      const iconRect = target.getBoundingClientRect();
+      setPopoverPosition({
+        top: iconRect.bottom,
+        left: iconRect.left + iconRect.width / 2,
+      });
+    }
+  };  
 
   return (
     <ReactionWrapper>
       {showPopover && (
         <Popover>
-          <NeynarAuthButton />
+          <NeynarAuthButton variant={SIWN_variant.NEYNAR} />
         </Popover>
       )}
       <Box
