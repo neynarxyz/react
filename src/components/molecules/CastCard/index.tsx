@@ -142,7 +142,7 @@ export const CastCard = memo(
             </HBox>
 
             <Box spacingVertical="15px">
-              <div>{linkifiedText}</div>
+              <div style={{whiteSpace: 'pre-line'}}>{linkifiedText}</div>
             </Box>
             {embeds && embeds.length > 0 && (
               <div style={{
