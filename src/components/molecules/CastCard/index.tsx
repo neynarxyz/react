@@ -162,14 +162,19 @@ export const CastCard = memo(
                 ))}
               </div>
             )}
-            {allowReactions && (
-              <Reactions
-                hash={hash}
-                onComment={onComment}
-                onRecast={onRecast}
-                onLike={onLike}
-              />
-            )}
+            <div style={{ flexDirection: 'row', justifyContent: allowReactions ? 'space-between' : 'flex-end', display: 'flex', alignItems: 'center', paddingRight: 4 }}>
+              {allowReactions && (
+                <Reactions
+                  hash={hash}
+                  onComment={onComment}
+                  onRecast={onRecast}
+                  onLike={onLike}
+                />
+              )}
+              <svg style={{cursor: 'pointer' }} width="16" height="15" viewBox="0 0 16 15" fill="none" xmlns="http://www.w3.org/2000/svg" onClick={() => navigator.clipboard.writeText(`https://warpcast.com/${username}/${hash.slice(0, 10)}`)}>
+                <path d="M15.2003 7.49063C14.7504 7.49063 14.4504 7.79057 14.4504 8.24048V12.7396C14.4504 13.1895 14.1505 13.4894 13.7006 13.4894H3.20268C2.75277 13.4894 2.45283 13.1895 2.45283 12.7396V8.24048C2.45283 7.79057 2.15289 7.49063 1.70298 7.49063C1.25307 7.49063 0.953125 7.79057 0.953125 8.24048V12.7396C0.953125 14.0143 1.92793 14.9891 3.20268 14.9891H13.7006C14.9753 14.9891 15.9501 14.0143 15.9501 12.7396V8.24048C15.9501 7.79057 15.6502 7.49063 15.2003 7.49063ZM5.97713 4.26627L7.70178 2.54161V9.74018C7.70178 10.1901 8.00172 10.49 8.45163 10.49C8.90155 10.49 9.20149 10.1901 9.20149 9.74018V2.54161L10.9261 4.26627C11.2261 4.56621 11.676 4.56621 11.9759 4.26627C12.2759 3.96633 12.2759 3.51642 11.9759 3.21648L8.97653 0.217073C8.90155 0.142088 8.82656 0.0671031 8.75157 0.0671031C8.6016 -0.00788202 8.37665 -0.00788202 8.15169 0.0671031C8.07671 0.0671031 8.00172 0.142088 7.92674 0.217073L4.92734 3.21648C4.62739 3.51642 4.62739 3.96633 4.92734 4.26627C5.22728 4.56621 5.67719 4.56621 5.97713 4.26627Z" fill="#A0A3AD"/>
+              </svg>
+            </div>
             <Box spacingVertical="15px" style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
               <div>{replies ?? 0} replies</div>
               <div>·</div>
