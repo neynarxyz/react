@@ -38,8 +38,17 @@ const Reactions: React.FC<ReactionsProps> = ({ hash, onComment, onRecast, onLike
 
     React.useEffect(() => {
         const signer = localStorage.getItem(LocalStorageKeys.NEYNAR_AUTHENTICATED_USER);
-        setSignerValue(JSON.parse(signer ?? '').signer_uuid);
-    }, []);
+        if (signer) {
+            try {
+                setSignerValue(JSON.parse(signer).signer_uuid);
+            } catch (e) {
+                console.error('Error parsing JSON from local storage:', e);
+                setSignerValue(null);
+            }
+        } else {
+            console.warn('No NEYNAR_AUTHENTICATED_USER found in local storage.');
+        }
+    }, []);    
 
     const postReaction = async(type: string) => {
         const request = await fetch(`${NEYNAR_API_URL}/v2/farcaster/reaction?client_id=${client_id}`, {
