@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React from "react";
 
 import { NEYNAR_API_URL } from "../../../constants";
 import { useNeynarContext } from "../../../contexts";
@@ -42,13 +42,13 @@ export const NeynarCastCard: React.FC<NeynarCastCardProps> = ({
 }) => {
   const { client_id } = useNeynarContext();
 
-  const [castData, setCastData] = useState<any | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [castData, setCastData] = React.useState<any | null>(null);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState(null);
 
   const isOwnProfile = castData?.author.fid === viewerFid;
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (type && identifier) {
       setLoading(true);
       setError(null);

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { styled } from "@pigment-css/react";
 import Box from "../Box";
 import { NeynarAuthButton } from "../../organisms/NeynarAuthButton";
@@ -9,22 +9,43 @@ import { SIWN_variant } from "../../../enums";
 import { CommentIcon } from "../icons/CommentIcon";
 import { RecastIcon } from "../icons/RecastIcon";
 import { LikeIcon } from "../icons/LikeIcon";
+import XIcon from "../icons/XIcon";
 
 const ReactionWrapper = styled(Box)(({ theme }) => ({
   display: "flex",
   justifyContent: "space-between",
   alignItems: "center",
   position: "relative",
-}));
+})) as typeof Box;
 
 const Popover = styled(Box)(({ theme }) => ({
   position: "absolute",
+  display: 'flex',
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'space-between',
   backgroundColor: theme?.colors?.background || "#fff",
+  padding: '5px 8px',
   boxShadow: theme?.shadows?.[2] || "0px 4px 6px rgba(0, 0, 0, 0.1)",
   zIndex: theme?.zIndex?.popover || 2000,
-  minWidth: 215,
-  width: 'auto'
-}));
+  borderRadius: 4,
+  minWidth: '245px',
+  width: 'auto',
+  maxWidth: '90vw',
+})) as typeof Box;
+
+const PopoverContent = styled(Box)({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  flex: 1,
+}) as typeof Box;
+
+const CloseButtonWrapper = styled(Box)({
+  display: 'flex',
+  alignItems: 'center',
+  marginLeft: '8px',
+}) as typeof Box;
 
 type ReactionsProps = {
   hash: string;
@@ -40,11 +61,17 @@ const Reactions: React.FC<ReactionsProps> = ({
   onLike,
 }) => {
   const { client_id, isAuthenticated } = useNeynarContext();
-  const [showPopover, setShowPopover] = useState(false);
-  const [popoverPosition, setPopoverPosition] = useState({ top: 0, left: 0 });
-  const [signerValue, setSignerValue] = useState<string | null>(null);
-  const [isLiked, setIsLiked] = useState(false);
-  const [isRecasted, setIsRecasted] = useState(false);
+  const [showPopover, setShowPopover] = React.useState(false);
+  const [popoverPosition, setPopoverPosition] = React.useState({ top: 0, left: 0 });
+  const [signerValue, setSignerValue] = React.useState<string | null>(null);
+  const [isLiked, setIsLiked] = React.useState<boolean>(false);
+  const [isRecasted, setIsRecasted] = React.useState<boolean>(false);
+  const popoverRef = React.useRef<HTMLDivElement>(null);
+  const iconRefs = React.useRef<{ [key: string]: HTMLDivElement | null }>({
+    comment: null,
+    recast: null,
+    like: null,
+  });
 
   React.useEffect(() => {
     const signer = localStorage.getItem(LocalStorageKeys.NEYNAR_AUTHENTICATED_USER);
@@ -120,25 +147,34 @@ const Reactions: React.FC<ReactionsProps> = ({
     }
     if (action && !signerValue) {
       action();
-    } else if(actionName !== 'comment') {
+    } else if (actionName !== 'comment') {
       setShowPopover(true);
     }
   
-    const target = event.currentTarget;
-    if (target) {
-      const iconRect = target.getBoundingClientRect();
-      setPopoverPosition({
-        top: iconRect.bottom,
-        left: iconRect.left + iconRect.width / 2,
-      });
+    const iconElement = iconRefs.current[actionName];
+    if (iconElement) {
+      const iconRect = iconElement.getBoundingClientRect();
+      const popoverElement = popoverRef.current;
+      if (popoverElement) {
+        const popoverRect = popoverElement.getBoundingClientRect();
+        setPopoverPosition({
+          top: iconRect.top - popoverRect.height - 10,
+          left: iconRect.left + (iconRect.width / 2) - (popoverRect.width / 2),
+        });
+      }
     }
   };  
 
   return (
     <ReactionWrapper>
       {showPopover && (
-        <Popover>
-          <NeynarAuthButton variant={SIWN_variant.NEYNAR} />
+        <Popover ref={popoverRef} style={{ top: popoverPosition.top, left: popoverPosition.left }}>
+          <PopoverContent>
+            <NeynarAuthButton variant={SIWN_variant.NEYNAR} />
+          </PopoverContent>
+          <CloseButtonWrapper>
+            <XIcon onClick={() => setShowPopover(false)} size={16} />
+          </CloseButtonWrapper>
         </Popover>
       )}
       <Box
@@ -149,9 +185,15 @@ const Reactions: React.FC<ReactionsProps> = ({
         }}
       >
         <Box spacingVertical="15px" style={{ display: "flex", gap: "10px" }}>
-          <CommentIcon onClick={(e) => handleAction(e, "comment", onComment)} />
-          <RecastIcon fill={isRecasted ? "green" : undefined} onClick={(e) => handleAction(e, "recast", onRecast)} />
-          <LikeIcon fill={isLiked ? "red" : undefined} onClick={(e) => handleAction(e, "like", onLike)} />
+          <div ref={(el) => (iconRefs.current.comment = el)}>
+            <CommentIcon onClick={(e) => handleAction(e, "comment", onComment)} />
+          </div>
+          <div ref={(el) => (iconRefs.current.recast = el)}>
+            <RecastIcon fill={isRecasted ? "green" : undefined} onClick={(e) => handleAction(e, "recast", onRecast)} />
+          </div>
+          <div ref={(el) => (iconRefs.current.like = el)}>
+            <LikeIcon fill={isLiked ? "red" : undefined} onClick={(e) => handleAction(e, "like", onLike)} />
+          </div>
         </Box>
       </Box>
     </ReactionWrapper>
