@@ -19,7 +19,8 @@ const TemplateWithCast: StoryFn<NeynarCastCardProps> = ({
   type,
   identifier,
   viewerFid,
-}) => <NeynarCastCard type={type} identifier={identifier} viewerFid={viewerFid} />;
+  allowReactions
+}) => <NeynarCastCard type={type} identifier={identifier} viewerFid={viewerFid} allowReactions={allowReactions} />;
 
 export const Primary = Template.bind({});
 Primary.args = {
@@ -37,6 +38,7 @@ Primary.args = {
   hasPowerBadge: true,
   isOwnProfile: true,
   onCast: () => {},
+  allowReactions: false
 };
 Primary.argTypes = {
   fid: { table: { disable: true } },
@@ -47,29 +49,34 @@ Primary.argTypes = {
 export const WithCast = TemplateWithCast.bind({});
 WithCast.args = {
   type: 'url',
-  identifier: "https://warpcast.com/dylsteck.eth/0xda6b1699"
+  identifier: "https://warpcast.com/dylsteck.eth/0xda6b1699",
+  allowReactions: true
 };
 
 export const CastWithQuoteCast = TemplateWithCast.bind({});
 CastWithQuoteCast.args = {
   type: 'url',
-  identifier: "https://warpcast.com/nonlinear.eth/0x4e09e86c"
+  identifier: "https://warpcast.com/nonlinear.eth/0x4e09e86c",
+  allowReactions: true
 };
 
 export const CastWithImage = TemplateWithCast.bind({});
 CastWithImage.args = {
   type: 'url',
-  identifier:  "https://warpcast.com/rish/0xcc752c55"
+  identifier:  "https://warpcast.com/rish/0xcc752c55",
+  allowReactions: true
 };
 
 export const CastWithImageAndLink = TemplateWithCast.bind({});
 CastWithImageAndLink.args = {
   type: 'url',
-  identifier: "https://warpcast.com/giuseppe/0x1805c345"
+  identifier: "https://warpcast.com/giuseppe/0x1805c345",
+  allowReactions: true
 };
 
 export const CastWithTwoImages = TemplateWithCast.bind({});
 CastWithTwoImages.args = {
   type: 'url',
-  identifier: "https://warpcast.com/nicholas/0xd06c1e56"
+  identifier: "https://warpcast.com/nicholas/0xd06c1e56",
+  allowReactions: true
 };
