@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import useSWRInfinite from 'swr/infinite';
 import { useNeynarContext } from '../../../contexts';
 import { CastCardProps } from '../../molecules/CastCard';
 import { NEYNAR_API_URL } from '../../../constants';
@@ -18,48 +19,8 @@ export type NeynarFeedListProps = {
     with_recasts?: boolean;
     limit?: number;
     viewerFid?: number;
+    client_id?: string;
 };
-
-async function fetchFeedByIdentifiers({
-    feed_type,
-    filter_type,
-    fid,
-    fids,
-    parent_url,
-    channel_id,
-    embed_url,
-    with_recasts = true,
-    limit = 25,
-    viewerFid,
-    client_id
-}: NeynarFeedListProps & { client_id: string }): Promise<any | null> {
-    try {
-        let requestUrl = `${NEYNAR_API_URL}/v2/farcaster/feed?feed_type=${feed_type}&client_id=${client_id}`;
-        
-        if (filter_type) requestUrl += `&filter_type=${filter_type}`;
-        if (fid) requestUrl += `&fid=${fid}`;
-        if (fids) requestUrl += `&fids=${fids}`;
-        if (parent_url) requestUrl += `&parent_url=${parent_url}`;
-        if (channel_id) requestUrl += `&channel_id=${channel_id}`;
-        if (embed_url) requestUrl += `&embed_url=${embed_url}`;
-        requestUrl += `&with_recasts=${with_recasts}&limit=${limit}`;
-        if (viewerFid) requestUrl += `&viewer_fid=${viewerFid}`;
-        
-        const response = await fetch(requestUrl, {
-            method: 'GET',
-            headers: {
-                'accept': 'application/json',
-            }
-        });
-        
-        const data = await response.json();
-        console.log(data);
-        return data || null;
-    } catch (error) {
-        console.error("Error fetching feed", error);
-        return null;
-    }
-}
 
 function formatCasts(casts: any[]): CastCardProps[] {
     return casts.map((cast: any) => {
@@ -77,59 +38,72 @@ function formatCasts(casts: any[]): CastCardProps[] {
             hasPowerBadge: cast.author.power_badge,
             isOwnProfile: false,
             allowReactions: true
-            // onComment: () => {},
-            // onRecast: () => {},
-            // onLike: () => {}
         };
     });
 }
 
-export const NeynarFeedList: React.FC<NeynarFeedListProps> = ({
-    feed_type,
-    filter_type,
-    fid,
-    fids,
-    parent_url,
-    channel_id,
-    embed_url,
-    with_recasts = true,
-    limit = 25,
-    viewerFid,
-}) => {
+const fetcher = (url: string) => fetch(url).then(res => res.json());
+
+const getKey = (pageIndex: number, previousPageData: any, props: NeynarFeedListProps) => {
+    if (previousPageData && !previousPageData.casts.length) return null;
+
+    let requestUrl = `${NEYNAR_API_URL}/v2/farcaster/feed?feed_type=${props.feed_type}&client_id=${props.client_id}`;
+    if (props.filter_type) requestUrl += `&filter_type=${props.filter_type}`;
+    if (props.fid) requestUrl += `&fid=${props.fid}`;
+    if (props.fids) requestUrl += `&fids=${props.fids}`;
+    if (props.parent_url) requestUrl += `&parent_url=${props.parent_url}`;
+    if (props.channel_id) requestUrl += `&channel_id=${props.channel_id}`;
+    if (props.embed_url) requestUrl += `&embed_url=${props.embed_url}`;
+    requestUrl += `&with_recasts=${props.with_recasts}&limit=${props.limit}`;
+    if (props.viewerFid) requestUrl += `&viewer_fid=${props.viewerFid}`;
+    if (previousPageData) requestUrl += `&cursor=${previousPageData.next.cursor}`;
+
+    return requestUrl;
+};
+
+export const NeynarFeedList: React.FC<NeynarFeedListProps> = (props) => {
     const { client_id } = useNeynarContext();
-    const [feedData, setFeedData] = React.useState<any | null>(null);
-    const [loading, setLoading] = React.useState(true);
-    const [error, setError] = React.useState<Error | null>(null);
+    const ref = useRef<HTMLDivElement | null>(null);
+    const [feedData, setFeedData] = useState<CastCardProps[]>([]);
+    const [isFetchingNextPage, setIsFetchingNextPage] = useState(false);
 
-    React.useEffect(() => {
-        setLoading(true);
-        setError(null);
-        
-        fetchFeedByIdentifiers({
-            feed_type,
-            filter_type,
-            fid,
-            fids,
-            parent_url,
-            channel_id,
-            embed_url,
-            with_recasts,
-            limit,
-            viewerFid,
-            client_id
-        })
-        .then((data) => {
-            setFeedData(data);
-        })
-        .catch((error) => {
-            setError(error);
-        })
-        .finally(() => {
-            setLoading(false);
-        });
-    }, [feed_type, filter_type, fid, fids, parent_url, channel_id, embed_url, with_recasts, limit, viewerFid, client_id]);
+    const { data, error, size, setSize, isValidating } = useSWRInfinite(
+        (pageIndex, previousPageData) => getKey(pageIndex, previousPageData, { ...props, client_id }),
+        fetcher
+    );
 
-    if (loading) {
+    const allCasts = data ? data.flatMap(page => page.casts) : [];
+    const uniqueCasts = Array.from(new Set(allCasts.map(cast => cast.hash)))
+                            .map(hash => allCasts.find(cast => cast.hash === hash)!);
+    const formattedCasts = formatCasts(uniqueCasts);
+
+    useEffect(() => {
+        setFeedData(formattedCasts);
+    }, [data]);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting && !isFetchingNextPage) {
+                    setIsFetchingNextPage(true);
+                    setSize(size + 1).then(() => setIsFetchingNextPage(false));
+                }
+            },
+            { rootMargin: '100px' }
+        );
+
+        if (ref.current) {
+            observer.observe(ref.current);
+        }
+
+        return () => {
+            if (ref.current) {
+                observer.unobserve(ref.current);
+            }
+        };
+    }, [ref.current, isFetchingNextPage]);
+
+    if (!data && !error) {
         return <div>Loading...</div>;
     }
 
@@ -137,5 +111,22 @@ export const NeynarFeedList: React.FC<NeynarFeedListProps> = ({
         return <div>Error fetching feed data</div>;
     }
 
-    return <FeedList casts={formatCasts(feedData.casts)} cursor={feedData.cursor} />;
+    return (
+        <div>
+            <FeedList casts={feedData} cursor={''} />
+            {isValidating && (
+                <div style={{ display: 'flex', justifyContent: 'center', padding: '10px' }}>
+                    <span style={{ animation: 'blink 1.5s infinite' }}>Loading<span className="dots">...</span></span>
+                    <style>{`
+                        @keyframes blink {
+                            0% { opacity: 1; }
+                            50% { opacity: 0; }
+                            100% { opacity: 1; }
+                        }
+                    `}</style>
+                </div>
+            )}
+            <div ref={ref} />
+        </div>
+    );
 };

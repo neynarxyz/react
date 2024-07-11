@@ -36,7 +36,7 @@ export const FeedList = memo(
     return (
       <StyledFeedList>
         {casts.map((cast: CastCardProps, index: number) => (
-          <React.Fragment key={index}>
+          <React.Fragment key={cast.hash}>
             <CastCard isEmbed={false} {...cast} />
             {index < casts.length - 1 && <HorizontalLine />}
           </React.Fragment>

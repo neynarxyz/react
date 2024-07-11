@@ -37,9 +37,10 @@ async function fetchOpenGraphData(url: string): Promise<{ ogImage: string, ogTit
     const ogImageMeta = doc.querySelector('meta[property="og:image"]');
     const ogTitleMeta = doc.querySelector('meta[property="og:title"]');
     const ogDescriptionMeta = doc.querySelector('meta[property="og:description"]');
+    const titleTag = doc.querySelector('title');
 
     const ogImage = ogImageMeta ? ogImageMeta.getAttribute('content') || '' : '';
-    const ogTitle = ogTitleMeta ? ogTitleMeta.getAttribute('content') || '' : '';
+    const ogTitle = ogTitleMeta ? ogTitleMeta.getAttribute('content') || '' : (titleTag ? titleTag.innerText : '');
     const ogDescription = ogDescriptionMeta ? ogDescriptionMeta.getAttribute('content') || '' : '';
 
     return { ogImage, ogTitle, ogDescription };

@@ -44,3 +44,9 @@ WithUser.args = {
   fid: 1,
   viewerFid: 1,
 };
+
+export const WithEmptyPFPUser = TemplateWithUser.bind({});
+WithEmptyPFPUser.args = {
+  fid: 512026,
+  viewerFid: 1,
+};
