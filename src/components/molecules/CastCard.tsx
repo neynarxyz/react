@@ -21,6 +21,7 @@ const StyledCastCard = styled.div(({ theme }) => ({
   fontFamily: theme.typography.fonts.base,
   fontSize: theme.typography.fontSizes.medium,
   backgroundColor: theme.vars.palette.background,
+  position: "relative"
 }));
 
 const StyledLink = styled.a(({ theme }) => ({
