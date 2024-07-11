@@ -1,6 +1,5 @@
 import React, { memo } from "react";
 import { styled } from "@pigment-css/react";
-
 import Avatar from "../atoms/Avatar";
 import { useLinkifyBio } from "../organisms/NeynarProfileCard/hooks/useLinkifyBio";
 import Box, { HBox, VBox } from "../atoms/Box";
@@ -91,6 +90,7 @@ export type CastCardProps = {
   onComment?: () => void;
   onRecast?: () => void;
   onLike?: () => void;
+  direct_replies?: CastCardProps[];
 };
 
 export const CastCard = memo(
@@ -98,7 +98,7 @@ export const CastCard = memo(
     username,
     displayName,
     avatarImgUrl,
-    text,
+    text = '',
     hash,
     likes,
     replies,
@@ -112,12 +112,13 @@ export const CastCard = memo(
     onComment,
     onRecast,
     onLike,
+    direct_replies
   }: CastCardProps) => {
     const linkifiedText = useLinkifyBio(text);
     const isSingle = embeds?.length === 1;
 
     return (
-      <StyledCastCard style={{borderWidth: isEmbed ? "1px" : "0"}}>
+      <StyledCastCard style={{ borderWidth: isEmbed ? "1px" : "0" }}>
         <HBox>
           <Box spacingRight="10px">
             <Avatar

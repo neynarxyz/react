@@ -27,7 +27,9 @@ const StyledLink = styled.a(({ theme }) => ({
   color: theme.vars.colors.primary,
 }));
 
-export const useLinkifyBio = (text: string): React.ReactNode[] => {
+export const useLinkifyBio = (text: string | undefined): React.ReactNode[] => {
+  if (!text) return [];
+  
   const elements: React.ReactNode[] = [];
   let lastIndex = 0;
 
