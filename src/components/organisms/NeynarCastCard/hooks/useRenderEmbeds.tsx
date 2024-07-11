@@ -1,18 +1,25 @@
-import React from 'react';
-import { METADATA_PROXY_URL, NEYNAR_API_URL } from '../../../../constants';
-import { NeynarCastCard } from '..';
-import { styled } from '@pigment-css/react';
+import React, { useEffect, useRef } from "react";
+import Hls from 'hls.js';
+import { METADATA_PROXY_URL, NEYNAR_API_URL } from "../../../../constants";
+import { NeynarCastCard } from "..";
+import { styled } from "@pigment-css/react";
 
 type OpenGraphData = {
-  'og:image'?: string;
-  'og:title'?: string;
-  'og:description'?: string;
+  "og:image"?: string;
+  "og:title"?: string;
+  "og:description"?: string;
 };
 
 const StyledLink = styled.a(({ theme }) => ({
-  textDecoration: "underline",
+  textDecoration: "none",
   color: theme.vars.palette.text,
-  overflowWrap: 'break-word',
+  overflowWrap: "break-word",
+  display: 'flex',
+  alignItems: 'center',
+  border: '1px solid grey',
+  borderRadius: '8px',
+  padding: '8px',
+  gap: '8px',
 }));
 
 async function fetchOpenGraphData(url: string): Promise<{ ogImage: string, ogTitle: string, ogDescription: string }> {
@@ -38,30 +45,7 @@ async function fetchOpenGraphData(url: string): Promise<{ ogImage: string, ogTit
     return { ogImage, ogTitle, ogDescription };
   } catch (error) {
     console.error("Error fetching Open Graph data", error);
-    return { ogImage: '', ogTitle: '' , ogDescription: '' };
-  }
-}
-
-async function fetchCastByIdentifier({
-  type,
-  identifier,
-  viewerFid,
-  client_id
-}: {
-  type: 'url' | 'hash';
-  identifier: string;
-  viewerFid?: number;
-  client_id: string;
-}) {
-  try {
-    let requestUrl = `${NEYNAR_API_URL}/v2/farcaster/cast?type=${identifier}&identifier=${identifier}${viewerFid ? `&viewer_fid=${viewerFid}` : ''}&client_id=${client_id}`;
-
-    const response = await fetch(requestUrl);
-    const data = await response.json();
-    return data?.cast || null;
-  } catch (error) {
-    console.error("Error fetching cast by identifier", error);
-    return null;
+    return { ogImage: '', ogTitle: '', ogDescription: '' };
   }
 }
 
@@ -101,6 +85,51 @@ const isImageUrl = (url: string): boolean => {
   return url.startsWith('https://imagedelivery.net') || /\.(jpeg|jpg|gif|png|webp|bmp|svg)$/.test(url);
 };
 
+const isM3u8Url = (url: string): boolean => {
+  return url.endsWith('.m3u8');
+};
+
+const isMp4Url = (url: string): boolean => {
+  return url.endsWith('.mp4');
+};
+
+const NativeVideoPlayer: React.FC<{ url: string }> = ({ url }) => {
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      if (Hls.isSupported() && isM3u8Url(url)) {
+        const hls = new Hls();
+        hls.loadSource(url);
+        hls.attachMedia(videoRef.current);
+        hls.on(Hls.Events.MANIFEST_PARSED, () => {
+          videoRef.current!.play();
+        });
+      } else {
+        videoRef.current.src = url;
+        videoRef.current.addEventListener('loadedmetadata', () => {
+          videoRef.current!.play();
+        });
+      }
+    }
+  }, [url]);
+
+  return (
+    <video
+      ref={videoRef}
+      controls
+      style={{
+        width: 'auto',
+        maxWidth: '100%',
+        maxHeight: '400px',
+        borderRadius: '10px',
+        margin: '10px 0',
+        objectFit: 'contain',
+      }}
+    />
+  );
+};
+
 export const useRenderEmbeds = (embeds: Embed[], allowReactions: boolean, viewerFid?: number,): React.ReactNode[] => {
   const [renderedEmbeds, setRenderedEmbeds] = React.useState<React.ReactNode[]>([]);
 
@@ -110,34 +139,25 @@ export const useRenderEmbeds = (embeds: Embed[], allowReactions: boolean, viewer
         if (embed.url) {
           if (isImageUrl(embed.url)) {
             return <ImageWrapper key={embed.url} src={embed.url} alt={embed.url} isSingle={embeds.length === 1} />;
+          } else if (isM3u8Url(embed.url) || isMp4Url(embed.url)) {
+            return <NativeVideoPlayer key={embed.url} url={embed.url} />;
           } else {
             const { ogImage, ogTitle, ogDescription } = await fetchOpenGraphData(embed.url);
+            const domain = new URL(embed.url).hostname.replace('www.', '');
             return (
-              <div key={embed.url} style={{
-                display: 'flex',
-                alignItems: 'center',
-                height: '100px',
-                width: '100%',
-                maxWidth: '80%',
-                padding: '10px',
-                border: '1px solid grey',
-                borderRadius: '10px',
-                margin: '10px 0',
-                wordWrap: 'break-word',
-                overflow: 'hidden',
-                boxSizing: 'border-box',
-              }}>
-                {ogImage && <img src={ogImage} alt={ogTitle} style={{ marginRight: '10px', height: '100%', width: '100px', objectFit: 'cover', borderRadius: '5px' }} />}
-                <StyledLink href={embed.url} target="_blank" rel="noreferrer">
-                  {ogTitle || embed.url}
-                </StyledLink>
-              </div>
+              <StyledLink key={embed.url} href={embed.url} target="_blank" rel="noreferrer">
+                {ogImage && <img src={ogImage} alt={ogTitle} style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '5px' }} />}
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <p style={{ margin: 0 }}>{ogTitle || embed.url}</p>
+                  <p style={{ margin: 0, color: 'grey', fontSize: '12px' }}>{domain}</p>
+                </div>
+              </StyledLink>
             );
           }
         } else if (embed.cast_id) {
           return (
             <div style={{ maxWidth: '85%' }} key={`cast-${embed?.cast_id.hash}`}>
-              <NeynarCastCard key={embed.cast_id.fid} type="hash" identifier={embed.cast_id.hash} viewerFid={viewerFid} allowReactions={allowReactions}  />
+              <NeynarCastCard key={embed.cast_id.fid} type="hash" identifier={embed.cast_id.hash} viewerFid={viewerFid} allowReactions={allowReactions} />
             </div>
           );
         }
@@ -156,27 +176,19 @@ export const useRenderEmbeds = (embeds: Embed[], allowReactions: boolean, viewer
 export const EmbedContainer: React.FC<{ embeds: Embed[], viewerFid: number, allowReactions: boolean }> = ({ embeds, viewerFid, allowReactions }) => {
   const renderedEmbeds = useRenderEmbeds(embeds, allowReactions, viewerFid);
 
-  const hasTwoImages = renderedEmbeds.length === 2 && renderedEmbeds.every(embed => 
-    React.isValidElement(embed) && (embed as React.ReactElement<any>).type === ImageWrapper
-  );
-
-  const hasImageAndLink = renderedEmbeds.length === 2 && renderedEmbeds.some(embed => 
-    React.isValidElement(embed) && (embed as React.ReactElement<any>).type === ImageWrapper
-  );
-
   return (
     <div style={{
       display: 'flex',
-      flexDirection: hasImageAndLink || hasTwoImages ? 'row' : 'column',
-      gap: '10px',
+      flexDirection: 'column',
+      gap: '2.5px',
       alignItems: 'stretch',
       width: '100%',
       overflow: 'hidden'
     }}>
       {renderedEmbeds.map((embed, index) => (
-        <div key={index} style={{ flex: hasImageAndLink || hasTwoImages ? '1' : 'none', width: '100%', height: '100%', overflow: 'hidden' }}>
-          {React.isValidElement(embed) && (embed as React.ReactElement<any>).type === ImageWrapper ? 
-            React.cloneElement(embed as React.ReactElement<any>, { style: { height: '150px', width: '150px' } }) 
+        <div key={index} style={{ width: '100%', overflow: 'hidden' }}>
+          {React.isValidElement(embed) && (embed as React.ReactElement<any>).type === ImageWrapper ?
+            React.cloneElement(embed as React.ReactElement<any>, { style: { height: '150px', width: '100%' } })
             : embed}
         </div>
       ))}

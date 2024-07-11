@@ -9,7 +9,6 @@ import { useRenderEmbeds } from "../organisms/NeynarCastCard/hooks/useRenderEmbe
 import Reactions from "../atoms/Reactions";
 import { ShareToClipboardIcon } from "../atoms/icons/ShareToClipboardIcon";
 
-
 const StyledCastCard = styled.div(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
@@ -144,21 +143,23 @@ export const CastCard = memo(
             </HBox>
 
             <Box spacingVertical="15px">
-              <div style={{whiteSpace: 'pre-line'}}>{linkifiedText}</div>
+              <div style={{ whiteSpace: 'pre-line' }}>{linkifiedText}</div>
             </Box>
             {embeds && embeds.length > 0 && (
               <div style={{
                 display: 'flex',
-                gap: '15px',
+                flexDirection: 'column',
+                gap: '1px',
                 alignItems: 'center',
-                padding: isSingle ? '0' : '10px',
+                padding: 0,
                 border: 'none',
                 borderRadius: '8px',
                 width: '100%',
                 margin: isSingle ? '10px 0' : '0',
+                marginBottom: '15px',
               }}>
                 {useRenderEmbeds(embeds, allowReactions, viewerFid).map((embed, index) => (
-                  <div key={index}>
+                  <div key={index} style={{ width: '100%' }}>
                     {embed}
                   </div>
                 ))}
@@ -173,13 +174,13 @@ export const CastCard = memo(
                   onLike={onLike}
                 />
               )}
-              {username && hash && <ShareToClipboardIcon url={`https://warpcast.com/${username}/${hash.slice(0, 10)}`} /> }
+              {username && hash && <ShareToClipboardIcon url={`https://warpcast.com/${username}/${hash.slice(0, 10)}`} />}
             </div>
             <Box spacingVertical="15px" style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
               <div>{replies ?? 0} replies</div>
               <div>·</div>
               <div>{likes ?? 0} likes</div>
-              {channel && 
+              {channel &&
                 <>
                   <div>·</div>
                   <StyledLink href={`https://warpcast.com/~/channel/${channel.id}`} target="_blank">

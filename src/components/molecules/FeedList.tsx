@@ -5,30 +5,26 @@ import { CastCard, CastCardProps } from "./CastCard";
 const StyledFeedList = styled.div(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
-  alignItems: "center",
   borderWidth: "1px",
   borderStyle: "solid",
   borderColor: theme.vars.palette.border,
-  borderRadius: "15px",
-  padding: "10px",
+  borderRadius: "0px",
   color: theme.vars.palette.text,
   fontFamily: theme.typography.fonts.base,
   fontSize: theme.typography.fontSizes.medium,
   backgroundColor: theme.vars.palette.background,
-  boxSizing: "border-box",
-  gap: "10px",
-  margin: "0 auto",
-  width: "auto",
-  maxWidth: "100%"
+  gap: "5px",
+  paddingTop: "10px",
+  paddingBottom: "10px",
+  paddingLeft: "20px",
+  width: 'auto',
+  maxWidth: "700px",
 }));
 
-const VBoxContainer = styled.div(() => ({
-  display: "flex",
-  flexDirection: "column",
-  gap: "10px",
-  width: "auto",
-  maxWidth: "608px",
-  boxSizing: "border-box"
+const HorizontalLine = styled.div(({ theme }) => ({
+  width: "100%",
+  height: "1px",
+  backgroundColor: theme.vars.palette.border,
 }));
 
 export type FeedListProps = {
@@ -40,11 +36,11 @@ export const FeedList = memo(
   ({ casts, cursor }: FeedListProps) => {
     return (
       <StyledFeedList>
-        <VBoxContainer>
-          {casts.map((cast: CastCardProps, index: number) => (
-            <CastCard key={index} {...cast} />
-          ))}
-        </VBoxContainer>
+        {casts.map((cast: CastCardProps, index: number) => (
+          <React.Fragment key={index}>
+            <CastCard {...cast} />
+          </React.Fragment>
+        ))}
       </StyledFeedList>
     );
   }
