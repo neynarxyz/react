@@ -23,3 +23,42 @@ Primary.args = {
   limit: 25,
   viewerFid: 2,
 };
+
+export const ChannelById = Template.bind({});
+ChannelById.args = {
+  feed_type: 'filter',
+  filter_type: 'channel_id',
+  fid: 2,
+  parent_url: "",
+  channel_id: "dev",
+  embed_url: "",
+  with_recasts: true,
+  limit: 25,
+  viewerFid: 2,
+};
+
+export const ChannelByParentUrl = Template.bind({});
+ChannelByParentUrl.args = {
+  feed_type: 'filter',
+  filter_type: 'parent_url',
+  fid: 2,
+  parent_url: "chain://eip155:1/erc721:0xa45662638e9f3bbb7a6fecb4b17853b7ba0f3a60",
+  channel_id: "",
+  embed_url: "",
+  with_recasts: true,
+  limit: 25,
+  viewerFid: 2,
+};
+
+export const EmbedUrl = Template.bind({});
+EmbedUrl.args = {
+  feed_type: 'filter',
+  filter_type: 'embed_url',
+  fid: 2,
+  parent_url: "",
+  channel_id: "",
+  embed_url: "paragraph.xyz",
+  with_recasts: true,
+  limit: 25,
+  viewerFid: 2,
+};

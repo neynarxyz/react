@@ -14,7 +14,6 @@ const StyledCastCard = styled.div(({ theme }) => ({
   flexDirection: "column",
   width: "100%",
   maxWidth: "608px",
-  borderWidth: "1px",
   borderStyle: "solid",
   borderColor: theme.vars.palette.border,
   borderRadius: "15px",
@@ -87,6 +86,7 @@ export type CastCardProps = {
   viewerFid?: number;
   hasPowerBadge: boolean;
   isOwnProfile?: boolean;
+  isEmbed?: boolean;
   allowReactions: boolean;
   onComment?: () => void;
   onRecast?: () => void;
@@ -107,6 +107,7 @@ export const CastCard = memo(
     viewerFid,
     hasPowerBadge,
     isOwnProfile,
+    isEmbed = true,
     allowReactions,
     onComment,
     onRecast,
@@ -116,7 +117,7 @@ export const CastCard = memo(
     const isSingle = embeds?.length === 1;
 
     return (
-      <StyledCastCard>
+      <StyledCastCard style={{borderWidth: isEmbed ? "1px" : "0"}}>
         <HBox>
           <Box spacingRight="10px">
             <Avatar

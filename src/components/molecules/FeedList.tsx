@@ -14,9 +14,8 @@ const StyledFeedList = styled.div(({ theme }) => ({
   fontSize: theme.typography.fontSizes.medium,
   backgroundColor: theme.vars.palette.background,
   gap: "5px",
-  paddingTop: "10px",
-  paddingBottom: "10px",
-  paddingLeft: "20px",
+  paddingTop: "5px",
+  paddingBottom: "5px",
   width: 'auto',
   maxWidth: "700px",
 }));
@@ -38,7 +37,8 @@ export const FeedList = memo(
       <StyledFeedList>
         {casts.map((cast: CastCardProps, index: number) => (
           <React.Fragment key={index}>
-            <CastCard {...cast} />
+            <CastCard isEmbed={false} {...cast} />
+            {index < casts.length - 1 && <HorizontalLine />}
           </React.Fragment>
         ))}
       </StyledFeedList>
