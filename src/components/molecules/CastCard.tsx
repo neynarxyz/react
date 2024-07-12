@@ -22,7 +22,12 @@ const StyledCastCard = styled.div(({ theme }) => ({
   fontFamily: theme.typography.fonts.base,
   fontSize: theme.typography.fontSizes.medium,
   backgroundColor: theme.vars.palette.background,
-  position: "relative"
+  position: "relative",
+  "@media (max-width: 600px)": {
+    padding: "15px",
+    fontSize: theme.typography.fontSizes.small,
+    borderRadius: "0px",
+  }
 }));
 
 const StyledLink = styled.a(({ theme }) => ({
@@ -44,6 +49,9 @@ const Username = styled.div(({ theme }) => ({
 const UsernameTitle = styled.div(({ theme }) => ({
   fontSize: theme.typography.fontSizes.large,
   fontWeight: theme.typography.fontWeights.bold,
+  "@media (max-width: 600px)": {
+    fontSize: theme.typography.fontSizes.medium,
+  }
 }));
 
 const ProfileMetaCell = styled.div(({ theme }) => ({
