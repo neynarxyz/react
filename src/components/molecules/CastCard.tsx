@@ -114,7 +114,7 @@ export const CastCard = memo(
     onComment,
     onRecast,
     onLike,
-    direct_replies
+    direct_replies,
   }: CastCardProps) => {
     const linkifiedText = useLinkifyCast(text, embeds);
     const isSingle = embeds?.length === 1;

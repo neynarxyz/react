@@ -62,3 +62,17 @@ EmbedUrl.args = {
   limit: 25,
   viewerFid: 2,
 };
+
+export const ProfileByFID = Template.bind({});
+ProfileByFID.args = {
+  feed_type: 'filter',
+  filter_type: 'fids',
+  fid: 2,
+  fids: "616",
+  parent_url: "",
+  channel_id: "",
+  embed_url: "",
+  with_recasts: true,
+  limit: 25,
+  viewerFid: 2,
+};

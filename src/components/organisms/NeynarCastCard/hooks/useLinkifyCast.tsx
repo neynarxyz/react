@@ -3,9 +3,9 @@ import { styled } from "@pigment-css/react";
 
 const WARPCAST_DOMAIN = "https://warpcast.com";
 
-const channelRegex = /(\/\w+)/g;
+const channelRegex = /(^|\s)\/\w+/g;
 const mentionRegex = /@\w+(\.eth)?/g;
-const urlRegex = /((https?:\/\/)?([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})(\/[^\s]*)?(\?[^\s]*)?)/g;
+const urlRegex = /((https?:\/\/)?([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})(\/[^\s]*)?)/g;
 const combinedRegex = new RegExp(
   `(${channelRegex.source})|(${mentionRegex.source})|(${urlRegex.source})`,
   "g"
@@ -55,13 +55,12 @@ export const useLinkifyCast = (text: string, embeds: Embed[]): React.ReactNode[]
     if (!excludedUrls.includes(matchedUrl)) {
       const url = generateUrl(matchedUrl);
       elements.push(
-        <>
-          {text.slice(lastIndex, matchIndex)}
-          <StyledLink key={matchIndex} href={url} target="_blank">
-            {matchedUrl}
-          </StyledLink>
-        </>
+        <StyledLink key={matchIndex} href={url} target="_blank">
+          {matchedUrl}
+        </StyledLink>
       );
+    } else {
+      elements.push(matchedUrl);
     }
 
     lastIndex = combinedRegex.lastIndex;

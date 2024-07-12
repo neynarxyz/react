@@ -30,6 +30,7 @@ async function fetchOpenGraphData(url: string): Promise<{ ogImage: string, ogTit
     if (!response.ok) {
       throw new Error(`Failed to fetch Open Graph data: ${response.statusText}`);
     }
+
     const data = await response.json();
     const parser = new DOMParser();
     const doc = parser.parseFromString(data.contents, 'text/html');
@@ -37,9 +38,11 @@ async function fetchOpenGraphData(url: string): Promise<{ ogImage: string, ogTit
     const ogTitleMeta = doc.querySelector('meta[property="og:title"]');
     const ogDescriptionMeta = doc.querySelector('meta[property="og:description"]');
     const titleTag = doc.querySelector('title');
+
     const ogImage = ogImageMeta ? ogImageMeta.getAttribute('content') || '' : '';
     const ogTitle = ogTitleMeta ? ogTitleMeta.getAttribute('content') || '' : (titleTag ? titleTag.innerText : '');
     const ogDescription = ogDescriptionMeta ? ogDescriptionMeta.getAttribute('content') || '' : '';
+
     return { ogImage, ogTitle, ogDescription };
   } catch (error) {
     console.error("Error fetching Open Graph data", error);
@@ -60,8 +63,10 @@ const ImageWrapper: React.FC<ImageWrapperProps> = ({ src, alt, isSingle, style }
     alt={alt}
     style={{
       display: 'block',
-      height: '150px',
-      width: '150px',
+      height: 'auto',
+      maxHeight: '150px',
+      width: 'auto',
+      maxWidth: '100%',
       objectFit: 'cover',
       border: '1px solid grey',
       borderRadius: '10px',
@@ -131,10 +136,10 @@ const NativeVideoPlayer: React.FC<{ url: string }> = ({ url }) => {
 const removeLinksFromText = (text: string, urls: string[]): string => {
   let modifiedText = text;
   urls.forEach(url => {
-    const linkRegex = new RegExp(url, 'g');
+    const linkRegex = new RegExp(url.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'g');
     modifiedText = modifiedText.replace(linkRegex, '');
   });
-  return modifiedText;
+  return modifiedText.trim();
 };
 
 export const useRenderEmbeds = (embeds: Embed[], allowReactions: boolean, viewerFid?: number): React.ReactNode[] => {
@@ -164,12 +169,12 @@ export const useRenderEmbeds = (embeds: Embed[], allowReactions: boolean, viewer
         } else if (embed.cast_id) {
           return (
             <div style={{ maxWidth: '85%' }} key={`cast-${embed?.cast_id.hash}`}>
-              <NeynarCastCard 
-                key={embed.cast_id.fid} 
-                type="hash" 
-                identifier={embed.cast_id.hash} 
-                viewerFid={viewerFid} 
-                allowReactions={allowReactions} 
+              <NeynarCastCard
+                key={embed.cast_id.fid}
+                type="hash"
+                identifier={embed.cast_id.hash}
+                viewerFid={viewerFid}
+                allowReactions={allowReactions}
                 renderEmbeds={false}
               />
             </div>
@@ -201,7 +206,7 @@ export const EmbedContainer: React.FC<{ embeds: Embed[], viewerFid: number, allo
       width: '100%',
       overflow: 'hidden'
     }}>
-      <div>{modifiedText}</div>
+      <div style={{ maxWidth: '100%', wordWrap: 'break-word', whiteSpace: 'pre-wrap' }}>{modifiedText}</div>
       {renderedEmbeds.map((embed, index) => (
         <div key={index} style={{ width: '100%', overflow: 'hidden' }}>
           {React.isValidElement(embed) && (embed as React.ReactElement<any>).type === ImageWrapper ?

@@ -80,3 +80,10 @@ CastWithTwoImages.args = {
   identifier: "https://warpcast.com/nicholas/0xd06c1e56",
   allowReactions: true
 };
+
+export const CastWithVideo = TemplateWithCast.bind({});
+CastWithVideo.args = {
+  type: 'url',
+  identifier:  "https://warpcast.com/coinbasewallet/0xb9dee5f9",
+  allowReactions: true
+};
