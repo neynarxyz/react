@@ -29,7 +29,7 @@ export type NeynarCastCardProps = {
   type: 'url' | 'hash';
   identifier: string;
   viewerFid?: number;
-  allowReactions: boolean;
+  allowReactions?: boolean;
   renderEmbeds?: boolean;
   customStyles?: React.CSSProperties;
 };
@@ -38,7 +38,7 @@ export const NeynarCastCard: React.FC<NeynarCastCardProps> = ({
   type,
   identifier,
   viewerFid,
-  allowReactions,
+  allowReactions = true,
   renderEmbeds = true,
   customStyles
 }) => {

@@ -78,6 +78,16 @@ const Tag = styled.div(({ theme }) => ({
   lineHeight: 1,
 }));
 
+const LinkifiedText = styled.div(() => ({
+  whiteSpace: 'pre-line',
+}));
+
+const RepliesLikesContainer = styled.div(() => ({
+  display: 'flex',
+  gap: '4px',
+  alignItems: 'center',
+}));
+
 export type CastCardProps = {
   username: string;
   displayName: string;
@@ -186,7 +196,7 @@ export const CastCard = memo(
             </HBox>
 
             <Box spacingVertical="15px">
-              <div style={{ whiteSpace: 'pre-line' }}>{linkifiedText}</div>
+              <LinkifiedText>{linkifiedText}</LinkifiedText>
             </Box>
             {embeds && embeds.length > 0 && (
               <div style={{
@@ -221,7 +231,7 @@ export const CastCard = memo(
               )}
               {username && hash && <ShareToClipboardIcon url={`https://warpcast.com/${username}/${hash.slice(0, 10)}`} />}
             </div>
-            <Box spacingVertical="15px" style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+            <RepliesLikesContainer style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
               <div>{replies} replies</div>
               <div>·</div>
               <div>{likesCount} likes</div>
@@ -233,7 +243,7 @@ export const CastCard = memo(
                   </StyledLink>
                 </>
               }
-            </Box>
+            </RepliesLikesContainer>
           </Main>
         </HBox>
       </StyledCastCard>

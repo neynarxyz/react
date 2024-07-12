@@ -24,22 +24,24 @@ You can also test the components out in our [Storybook](https://neynar-react.ver
 
    ```json
    {
-     "react": "^18.3.0",
-     "react-dom": "^18.3.0",
-     "@pigment-css/react": "^0.0.9"
-   }
+    "hls.js": "^1.5.13",
+    "@pigment-css/react": "^0.0.9",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0",
+    "swr": "^2.2.5"
+  }
    ```
 
    or if you want to install all at once:
 
    For **yarn**:
    ```bash
-   yarn add react react-dom @pigment-css/react
+   yarn add react react-dom @pigment-css/react hls.js swr
    ```
 
    For **npm**:
    ```bash
-   npm install react react-dom @pigment-css/react
+   npm install react react-dom @pigment-css/react hls.js swr
    ```
 
 3. Import the following CSS file in your project's root file (e.g., `layout.tsx` for a Next.js app).
@@ -95,7 +97,7 @@ Params:
 - `type` ('url' | 'hash'): The type of identifier used for the cast.
 - `identifier` (string): The identifier (either URL or hash) for the cast.
 - `viewerFid?` (number): The Farcaster ID of the viewer. Default: undefined.
-- `allowReactions` (boolean): Whether to allow reactions on the cast.
+- `allowReactions?` (boolean, default = true): Whether to allow reactions on the cast, and when this is true the component default to using Neynar reactions
 
 Usage:
 ```tsx
@@ -104,8 +106,7 @@ import { NeynarCastCard } from "@neynar/react";
 <NeynarCastCard 
   type="url" 
   identifier="https://warpcast.com/dylsteck.eth/0xda6b1699" 
-  viewerFid={1} 
-  allowReactions={true} 
+  viewerFid={1}  
 />
 ```
 
