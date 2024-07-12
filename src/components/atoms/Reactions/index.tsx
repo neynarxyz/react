@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { styled } from "@pigment-css/react";
 import Box from "../Box";
 import { NeynarAuthButton } from "../../organisms/NeynarAuthButton";
@@ -63,7 +63,8 @@ type ReactionsProps = {
   };
   onComment?: () => void;
   onRecast?: () => void;
-  onLike?: () => void;
+  onLike?: (newVal: boolean) => void;
+  isLiked: boolean;
 };
 
 const Reactions: React.FC<ReactionsProps> = ({
@@ -72,12 +73,13 @@ const Reactions: React.FC<ReactionsProps> = ({
   onComment,
   onRecast,
   onLike,
+  isLiked: isLikedProp,
 }) => {
   const { client_id, user, isAuthenticated } = useNeynarContext();
   const [showPopover, setShowPopover] = React.useState(false);
   const [popoverPosition, setPopoverPosition] = React.useState({ top: 0, left: 0 });
   const [signerValue, setSignerValue] = React.useState<string | null>(null);
-  const [isLiked, setIsLiked] = React.useState<boolean>(false);
+  const [isLiked, setIsLiked] = React.useState<boolean>(isLikedProp);
   const [isRecasted, setIsRecasted] = React.useState<boolean>(false);
   const popoverRef = React.useRef<HTMLDivElement>(null);
   const iconRefs = React.useRef<{ [key: string]: HTMLDivElement | null }>({
@@ -86,16 +88,12 @@ const Reactions: React.FC<ReactionsProps> = ({
     like: null,
   });
 
-  React.useEffect(() => {
-    if(reactions.likes.find(like => like.fid === user?.fid)) {
-      setIsLiked(true);
-    };
-    if(reactions.recasts.find(recast => recast.fid === user?.fid)) {
-      setIsRecasted(true);
-    };
-  }, [reactions])
+  useEffect(() => {
+    setIsLiked(reactions.likes.some(like => like.fid === user?.fid));
+    setIsRecasted(reactions.recasts.some(recast => recast.fid === user?.fid));
+  }, [reactions, user]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const signer = localStorage.getItem(LocalStorageKeys.NEYNAR_AUTHENTICATED_USER);
     if (signer) {
       try {
@@ -109,7 +107,7 @@ const Reactions: React.FC<ReactionsProps> = ({
     }
   }, [isAuthenticated]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if ((signerValue || isAuthenticated) && showPopover) {
       setShowPopover(false);
     }
@@ -142,6 +140,9 @@ const Reactions: React.FC<ReactionsProps> = ({
     } else {
       if (type === "like") {
         setIsLiked(!isLiked);
+        if (onLike) {
+          onLike(!isLiked);
+        }
       } else if (type === "recast") {
         setIsRecasted(!isRecasted);
       }
@@ -172,7 +173,7 @@ const Reactions: React.FC<ReactionsProps> = ({
     } else if (actionName !== 'comment') {
       setShowPopover(true);
     }
-  
+
     const iconElement = iconRefs.current[actionName];
     if (iconElement) {
       const iconRect = iconElement.getBoundingClientRect();
@@ -185,7 +186,7 @@ const Reactions: React.FC<ReactionsProps> = ({
         });
       }
     }
-  };  
+  };
 
   return (
     <ReactionWrapper>
@@ -214,7 +215,7 @@ const Reactions: React.FC<ReactionsProps> = ({
             <RecastIcon fill={isRecasted ? "green" : undefined} onClick={(e) => handleAction(e, "recast", onRecast)} />
           </div>
           <div ref={(el) => (iconRefs.current.like = el)}>
-            <LikeIcon fill={isLiked ? "red" : undefined} onClick={(e) => handleAction(e, "like", onLike)} />
+            <LikeIcon fill={isLiked ? "red" : undefined} onClick={(e) => handleAction(e, "like", () => onLike && onLike(!isLiked))} />
           </div>
         </Box>
       </Box>

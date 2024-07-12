@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import React, { memo, useState, useEffect } from "react";
 import { styled } from "@pigment-css/react";
 import Avatar from "../atoms/Avatar";
 import { useLinkifyCast } from "../organisms/NeynarCastCard/hooks/useLinkifyCast";
@@ -110,7 +110,7 @@ export type CastCardProps = {
   allowReactions: boolean;
   onComment?: () => void;
   onRecast?: () => void;
-  onLike?: () => void;
+  onLike?: (newVal: boolean) => void;
   direct_replies?: CastCardProps[];
   customStyles?: React.CSSProperties;
 };
@@ -137,10 +137,24 @@ export const CastCard = memo(
     direct_replies,
     customStyles
   }: CastCardProps) => {
+    const [likesCount, setLikesCount] = useState(reactions.likes_count);
+    const [isLiked, setIsLiked] = useState(reactions.likes.some(like => like.fid === viewerFid));
     const linkifiedText = useLinkifyCast(text, embeds);
     const isSingle = embeds?.length === 1;
     const handleError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
       e.currentTarget.src = SKELETON_PFP_URL;
+    };
+
+    useEffect(() => {
+      setIsLiked(reactions.likes.some(like => like.fid === viewerFid));
+    }, [reactions.likes, viewerFid]);
+
+    const handleLike = (newVal: boolean) => {
+      setLikesCount(prev => newVal ? prev + 1 : prev - 1);
+      setIsLiked(newVal);
+      if (onLike) {
+        onLike(newVal);
+      }
     };
 
     return (
@@ -201,15 +215,16 @@ export const CastCard = memo(
                   reactions={reactions}
                   onComment={onComment}
                   onRecast={onRecast}
-                  onLike={onLike}
+                  onLike={handleLike}
+                  isLiked={isLiked}
                 />
               )}
               {username && hash && <ShareToClipboardIcon url={`https://warpcast.com/${username}/${hash.slice(0, 10)}`} />}
             </div>
             <Box spacingVertical="15px" style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-              <div>{replies ?? 0} replies</div>
+              <div>{replies} replies</div>
               <div>·</div>
-              <div>{reactions.likes_count ?? 0} likes</div>
+              <div>{likesCount} likes</div>
               {channel &&
                 <>
                   <div>·</div>
