@@ -1,12 +1,13 @@
 import React, { memo } from "react";
 import { styled } from "@pigment-css/react";
 import Avatar from "../atoms/Avatar";
-import { useLinkifyBio } from "../organisms/NeynarProfileCard/hooks/useLinkifyBio";
+import { useLinkifyCast } from "../organisms/NeynarCastCard/hooks/useLinkifyCast";
 import Box, { HBox, VBox } from "../atoms/Box";
 import { WarpcastPowerBadge } from "../atoms/icons/WarpcastPowerBadge";
 import { useRenderEmbeds } from "../organisms/NeynarCastCard/hooks/useRenderEmbeds";
 import Reactions from "../atoms/Reactions";
 import { ShareToClipboardIcon } from "../atoms/icons/ShareToClipboardIcon";
+import { SKELETON_PFP_URL } from "../../constants";
 
 const StyledCastCard = styled.div(({ theme }) => ({
   display: "flex",
@@ -115,17 +116,21 @@ export const CastCard = memo(
     onLike,
     direct_replies
   }: CastCardProps) => {
-    const linkifiedText = useLinkifyBio(text);
+    const linkifiedText = useLinkifyCast(text, embeds);
     const isSingle = embeds?.length === 1;
+    const handleError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+      e.currentTarget.src = SKELETON_PFP_URL;
+    };
 
     return (
       <StyledCastCard style={{ borderWidth: isEmbed ? "1px" : "0" }}>
         <HBox>
           <Box spacingRight="10px">
             <Avatar
-              src={avatarImgUrl}
+              src={avatarImgUrl ?? SKELETON_PFP_URL}
+              onError={handleError}
               loading="lazy"
-              alt={`${displayName} Avatar`}
+              alt={`${displayName ?? 'Skeleton'} Avatar`}
             />
           </Box>
           <Main>

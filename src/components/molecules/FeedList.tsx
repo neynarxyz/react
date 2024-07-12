@@ -8,7 +8,7 @@ const StyledFeedList = styled.div(({ theme }) => ({
   borderWidth: "1px",
   borderStyle: "solid",
   borderColor: theme.vars.palette.border,
-  borderRadius: "0px",
+  borderRadius: "12px",
   color: theme.vars.palette.text,
   fontFamily: theme.typography.fonts.base,
   fontSize: theme.typography.fontSizes.medium,

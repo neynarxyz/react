@@ -1,5 +1,4 @@
 import React from "react";
-
 import { NEYNAR_API_URL } from "../../../constants";
 import { useNeynarContext } from "../../../contexts";
 import { CastCard } from "../../molecules/CastCard";
@@ -17,7 +16,6 @@ async function fetchCastByIdentifier({
 }): Promise<any | null> {
   try {
     let requestUrl = `${NEYNAR_API_URL}/v2/farcaster/cast?type=${type}&identifier=${identifier}${viewerFid ? `&viewer_fid=${viewerFid}` : ''}&client_id=${client_id}`;
-
     const response = await fetch(requestUrl);
     const data = await response.json();
     return data?.cast || null;
@@ -32,20 +30,20 @@ export type NeynarCastCardProps = {
   identifier: string;
   viewerFid?: number;
   allowReactions: boolean;
+  renderEmbeds?: boolean;
 };
 
 export const NeynarCastCard: React.FC<NeynarCastCardProps> = ({
   type,
   identifier,
   viewerFid,
-  allowReactions
+  allowReactions,
+  renderEmbeds = true
 }) => {
   const { client_id } = useNeynarContext();
-
   const [castData, setCastData] = React.useState<any | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
-
   const isOwnProfile = castData?.author.fid === viewerFid;
 
   React.useEffect(() => {
@@ -82,7 +80,7 @@ export const NeynarCastCard: React.FC<NeynarCastCardProps> = ({
       hash={castData.hash}
       likes={castData.reactions.likes_count}
       replies={castData.replies.count}
-      embeds={castData.embeds}
+      embeds={renderEmbeds ? castData.embeds : []}
       channel={castData.channel ? {
         id: castData.channel.id,
         name: castData.channel.name,

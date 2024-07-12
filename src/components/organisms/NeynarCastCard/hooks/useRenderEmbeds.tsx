@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import Hls from 'hls.js';
-import { METADATA_PROXY_URL, NEYNAR_API_URL } from "../../../../constants";
+import { METADATA_PROXY_URL } from "../../../../constants";
 import { NeynarCastCard } from "..";
 import { styled } from "@pigment-css/react";
 
@@ -30,7 +30,6 @@ async function fetchOpenGraphData(url: string): Promise<{ ogImage: string, ogTit
     if (!response.ok) {
       throw new Error(`Failed to fetch Open Graph data: ${response.statusText}`);
     }
-
     const data = await response.json();
     const parser = new DOMParser();
     const doc = parser.parseFromString(data.contents, 'text/html');
@@ -38,11 +37,9 @@ async function fetchOpenGraphData(url: string): Promise<{ ogImage: string, ogTit
     const ogTitleMeta = doc.querySelector('meta[property="og:title"]');
     const ogDescriptionMeta = doc.querySelector('meta[property="og:description"]');
     const titleTag = doc.querySelector('title');
-
     const ogImage = ogImageMeta ? ogImageMeta.getAttribute('content') || '' : '';
     const ogTitle = ogTitleMeta ? ogTitleMeta.getAttribute('content') || '' : (titleTag ? titleTag.innerText : '');
     const ogDescription = ogDescriptionMeta ? ogDescriptionMeta.getAttribute('content') || '' : '';
-
     return { ogImage, ogTitle, ogDescription };
   } catch (error) {
     console.error("Error fetching Open Graph data", error);
@@ -131,7 +128,16 @@ const NativeVideoPlayer: React.FC<{ url: string }> = ({ url }) => {
   );
 };
 
-export const useRenderEmbeds = (embeds: Embed[], allowReactions: boolean, viewerFid?: number,): React.ReactNode[] => {
+const removeLinksFromText = (text: string, urls: string[]): string => {
+  let modifiedText = text;
+  urls.forEach(url => {
+    const linkRegex = new RegExp(url, 'g');
+    modifiedText = modifiedText.replace(linkRegex, '');
+  });
+  return modifiedText;
+};
+
+export const useRenderEmbeds = (embeds: Embed[], allowReactions: boolean, viewerFid?: number): React.ReactNode[] => {
   const [renderedEmbeds, setRenderedEmbeds] = React.useState<React.ReactNode[]>([]);
 
   React.useEffect(() => {
@@ -158,7 +164,14 @@ export const useRenderEmbeds = (embeds: Embed[], allowReactions: boolean, viewer
         } else if (embed.cast_id) {
           return (
             <div style={{ maxWidth: '85%' }} key={`cast-${embed?.cast_id.hash}`}>
-              <NeynarCastCard key={embed.cast_id.fid} type="hash" identifier={embed.cast_id.hash} viewerFid={viewerFid} allowReactions={allowReactions} />
+              <NeynarCastCard 
+                key={embed.cast_id.fid} 
+                type="hash" 
+                identifier={embed.cast_id.hash} 
+                viewerFid={viewerFid} 
+                allowReactions={allowReactions} 
+                renderEmbeds={false}
+              />
             </div>
           );
         }
@@ -169,13 +182,15 @@ export const useRenderEmbeds = (embeds: Embed[], allowReactions: boolean, viewer
     };
 
     processEmbeds();
-  }, [embeds, viewerFid]);
+  }, [embeds, viewerFid, allowReactions]);
 
   return renderedEmbeds;
 };
 
-export const EmbedContainer: React.FC<{ embeds: Embed[], viewerFid: number, allowReactions: boolean }> = ({ embeds, viewerFid, allowReactions }) => {
+export const EmbedContainer: React.FC<{ embeds: Embed[], viewerFid: number, allowReactions: boolean, text: string }> = ({ embeds, viewerFid, allowReactions, text }) => {
   const renderedEmbeds = useRenderEmbeds(embeds, allowReactions, viewerFid);
+  const embedUrls = embeds.map(embed => embed.url).filter(url => url) as string[];
+  const modifiedText = removeLinksFromText(text, embedUrls);
 
   return (
     <div style={{
@@ -186,6 +201,7 @@ export const EmbedContainer: React.FC<{ embeds: Embed[], viewerFid: number, allo
       width: '100%',
       overflow: 'hidden'
     }}>
+      <div>{modifiedText}</div>
       {renderedEmbeds.map((embed, index) => (
         <div key={index} style={{ width: '100%', overflow: 'hidden' }}>
           {React.isValidElement(embed) && (embed as React.ReactElement<any>).type === ImageWrapper ?
