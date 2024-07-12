@@ -37,7 +37,6 @@ async function fetchConversationByIdentifier({
         });
         
         const data = await response.json();
-        console.log(data);
         return data || null;
     } catch (error) {
         console.error("Error fetching conversation", error);
@@ -52,7 +51,7 @@ function formatCast(cast: any): CastCardProps {
         avatarImgUrl: cast.author.pfp_url,
         text: cast.text,
         hash: cast.hash,
-        likes: cast.reactions.likes_count,
+        reactions: cast.reactions,
         replies: cast.replies.count,
         embeds: cast.embeds,
         channel: cast.channel,

@@ -84,7 +84,18 @@ export type CastCardProps = {
   avatarImgUrl: string;
   text: string;
   hash: string;
-  likes: number;
+  reactions: {
+    likes_count: number;
+    recasts_count: number;
+    likes: {
+      fid: number;
+      fname: string;
+    }[];
+    recasts: {
+      fid: number;
+      fname: string;
+    }[];
+  };
   replies: number;
   embeds: any[];
   channel?: {
@@ -111,7 +122,7 @@ export const CastCard = memo(
     avatarImgUrl,
     text = '',
     hash,
-    likes,
+    reactions,
     replies,
     embeds,
     channel,
@@ -187,6 +198,7 @@ export const CastCard = memo(
               {allowReactions && (
                 <Reactions
                   hash={hash}
+                  reactions={reactions}
                   onComment={onComment}
                   onRecast={onRecast}
                   onLike={onLike}
@@ -197,7 +209,7 @@ export const CastCard = memo(
             <Box spacingVertical="15px" style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
               <div>{replies ?? 0} replies</div>
               <div>·</div>
-              <div>{likes ?? 0} likes</div>
+              <div>{reactions.likes_count ?? 0} likes</div>
               {channel &&
                 <>
                   <div>·</div>

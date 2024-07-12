@@ -30,7 +30,7 @@ function formatCasts(casts: any[]): CastCardProps[] {
             avatarImgUrl: cast.author.pfp_url,
             text: cast.text,
             hash: cast.hash,
-            likes: cast.reactions.likes_count,
+            reactions: cast.reactions,
             replies: cast.replies.count,
             embeds: cast.embeds,
             channel: cast.channel,

@@ -49,6 +49,18 @@ const CloseButtonWrapper = styled(Box)({
 
 type ReactionsProps = {
   hash: string;
+  reactions: {
+    likes_count: number;
+    recasts_count: number;
+    likes: {
+      fid: number;
+      fname: string;
+    }[];
+    recasts: {
+      fid: number;
+      fname: string;
+    }[];
+  };
   onComment?: () => void;
   onRecast?: () => void;
   onLike?: () => void;
@@ -56,11 +68,12 @@ type ReactionsProps = {
 
 const Reactions: React.FC<ReactionsProps> = ({
   hash,
+  reactions,
   onComment,
   onRecast,
   onLike,
 }) => {
-  const { client_id, isAuthenticated } = useNeynarContext();
+  const { client_id, user, isAuthenticated } = useNeynarContext();
   const [showPopover, setShowPopover] = React.useState(false);
   const [popoverPosition, setPopoverPosition] = React.useState({ top: 0, left: 0 });
   const [signerValue, setSignerValue] = React.useState<string | null>(null);
@@ -72,6 +85,15 @@ const Reactions: React.FC<ReactionsProps> = ({
     recast: null,
     like: null,
   });
+
+  React.useEffect(() => {
+    if(reactions.likes.find(like => like.fid === user?.fid)) {
+      setIsLiked(true);
+    };
+    if(reactions.recasts.find(recast => recast.fid === user?.fid)) {
+      setIsRecasted(true);
+    };
+  }, [reactions])
 
   React.useEffect(() => {
     const signer = localStorage.getItem(LocalStorageKeys.NEYNAR_AUTHENTICATED_USER);
