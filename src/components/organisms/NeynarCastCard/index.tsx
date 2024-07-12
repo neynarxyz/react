@@ -31,6 +31,7 @@ export type NeynarCastCardProps = {
   viewerFid?: number;
   allowReactions: boolean;
   renderEmbeds?: boolean;
+  customStyles?: React.CSSProperties;
 };
 
 export const NeynarCastCard: React.FC<NeynarCastCardProps> = ({
@@ -38,7 +39,8 @@ export const NeynarCastCard: React.FC<NeynarCastCardProps> = ({
   identifier,
   viewerFid,
   allowReactions,
-  renderEmbeds = true
+  renderEmbeds = true,
+  customStyles
 }) => {
   const { client_id } = useNeynarContext();
   const [castData, setCastData] = React.useState<any | null>(null);
@@ -90,6 +92,7 @@ export const NeynarCastCard: React.FC<NeynarCastCardProps> = ({
       allowReactions={allowReactions}
       hasPowerBadge={castData.author.power_badge}
       isOwnProfile={isOwnProfile}
+      customStyles={customStyles}
     />
   );
 };

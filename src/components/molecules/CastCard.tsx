@@ -93,6 +93,7 @@ export type CastCardProps = {
   onRecast?: () => void;
   onLike?: () => void;
   direct_replies?: CastCardProps[];
+  customStyles?: React.CSSProperties;
 };
 
 export const CastCard = memo(
@@ -115,6 +116,7 @@ export const CastCard = memo(
     onRecast,
     onLike,
     direct_replies,
+    customStyles
   }: CastCardProps) => {
     const linkifiedText = useLinkifyCast(text, embeds);
     const isSingle = embeds?.length === 1;
@@ -123,7 +125,7 @@ export const CastCard = memo(
     };
 
     return (
-      <StyledCastCard style={{ borderWidth: isEmbed ? "1px" : "0" }}>
+      <StyledCastCard style={{ ...customStyles, borderWidth: isEmbed ? "1px" : "0" }}>
         <HBox>
           <Box spacingRight="10px">
             <Avatar
