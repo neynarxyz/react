@@ -82,10 +82,36 @@ const LinkifiedText = styled.div(() => ({
   whiteSpace: 'pre-line',
 }));
 
+const EmbedsContainer = styled.div(() => ({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '1px',
+  alignItems: 'center',
+  padding: 0,
+  border: 'none',
+  borderRadius: '8px',
+  width: '100%',
+  marginBottom: '15px'
+}));
+
 const RepliesLikesContainer = styled.div(() => ({
   display: 'flex',
   gap: '4px',
   alignItems: 'center',
+}));
+
+const ReactionsContainer = styled.div(() => ({
+  flexDirection: 'row', 
+  display: 'flex', 
+  alignItems: 'center', 
+  paddingRight: 4
+}));
+
+const SpaceBetweenContainer = styled.div(() => ({
+  flexDirection: 'row', 
+  display: 'flex', 
+  alignItems: 'center', 
+  paddingRight: 4
 }));
 
 export type CastCardProps = {
@@ -199,26 +225,15 @@ export const CastCard = memo(
               <LinkifiedText>{linkifiedText}</LinkifiedText>
             </Box>
             {embeds && embeds.length > 0 && (
-              <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '1px',
-                alignItems: 'center',
-                padding: 0,
-                border: 'none',
-                borderRadius: '8px',
-                width: '100%',
-                margin: isSingle ? '10px 0' : '0',
-                marginBottom: '15px',
-              }}>
+              <EmbedsContainer style={{ margin: isSingle ? '10px 0' : '0' }}>
                 {useRenderEmbeds(embeds, allowReactions, viewerFid).map((embed, index) => (
                   <div key={index} style={{ width: '100%' }}>
                     {embed}
                   </div>
                 ))}
-              </div>
+              </EmbedsContainer>
             )}
-            <div style={{ flexDirection: 'row', justifyContent: allowReactions ? 'space-between' : 'flex-end', display: 'flex', alignItems: 'center', paddingRight: 4 }}>
+            <ReactionsContainer style={{ justifyContent: allowReactions ? 'space-between' : 'flex-end' }}>
               {allowReactions && (
                 <Reactions
                   hash={hash}
@@ -230,9 +245,9 @@ export const CastCard = memo(
                 />
               )}
               {allowReactions && username && hash && <ShareToClipboardIcon url={`https://warpcast.com/${username}/${hash.slice(0, 10)}`} />}
-            </div>
-            <RepliesLikesContainer style={{ flexDirection: 'row', justifyContent: allowReactions ? '' : 'space-between', display: 'flex', alignItems: 'center', paddingRight: 4 }}>
-              <RepliesLikesContainer style={{ flexDirection: 'row', justifyContent: allowReactions ? '' : 'space-between', display: 'flex', alignItems: 'center', gap: 6, paddingRight: 4 }}>
+            </ReactionsContainer>
+            <SpaceBetweenContainer style={{  justifyContent: allowReactions ? '' : 'space-between' }}>
+              <SpaceBetweenContainer style={{ justifyContent: allowReactions ? '' : 'space-between', gap: 6 }}>
                 <div>{replies} replies</div>
                 <div>·</div>
                 <div>{likesCount} likes</div>
@@ -244,9 +259,9 @@ export const CastCard = memo(
                     </StyledLink>
                   </>
                 }
-              </RepliesLikesContainer>
+              </SpaceBetweenContainer>
               {!allowReactions && username && hash && <ShareToClipboardIcon url={`https://warpcast.com/${username}/${hash.slice(0, 10)}`} />}
-            </RepliesLikesContainer>
+            </SpaceBetweenContainer>
           </Main>
         </HBox>
       </StyledCastCard>
