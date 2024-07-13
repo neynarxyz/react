@@ -9,17 +9,17 @@ type FeedType = 'following' | 'filter';
 type FeedFilterType = 'fids' | 'parent_url' | 'channel_id' | 'embed_url' | 'global_trending';
 
 export type NeynarFeedListProps = {
-    feed_type: FeedType;
-    filter_type?: FeedFilterType;
+    feedType: FeedType;
+    filterType?: FeedFilterType;
     fid?: number;
     fids?: string;
-    parent_url?: string;
-    channel_id?: string;
-    embed_url?: string;
-    with_recasts?: boolean;
+    parentUrl?: string;
+    channelId?: string;
+    embedUrl?: string;
+    withRecasts?: boolean;
     limit?: number;
     viewerFid?: number;
-    client_id?: string;
+    clientId?: string;
 };
 
 function formatCasts(casts: any[]): CastCardProps[] {
@@ -44,17 +44,17 @@ function formatCasts(casts: any[]): CastCardProps[] {
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
-const getKey = (pageIndex: number, previousPageData: any, props: NeynarFeedListProps) => {
+const getKey = (pageIndex: number, previousPageData: any, props: NeynarFeedListProps & { clientId: string }) => {
     if (previousPageData && !previousPageData.casts.length) return null;
 
-    let requestUrl = `${NEYNAR_API_URL}/v2/farcaster/feed?feed_type=${props.feed_type}&client_id=${props.client_id}`;
-    if (props.filter_type) requestUrl += `&filter_type=${props.filter_type}`;
+    let requestUrl = `${NEYNAR_API_URL}/v2/farcaster/feed?feed_type=${props.feedType}&client_id=${props.clientId}`;
+    if (props.filterType) requestUrl += `&filter_type=${props.filterType}`;
     if (props.fid) requestUrl += `&fid=${props.fid}`;
     if (props.fids) requestUrl += `&fids=${props.fids}`;
-    if (props.parent_url) requestUrl += `&parent_url=${props.parent_url}`;
-    if (props.channel_id) requestUrl += `&channel_id=${props.channel_id}`;
-    if (props.embed_url) requestUrl += `&embed_url=${props.embed_url}`;
-    requestUrl += `&with_recasts=${props.with_recasts}&limit=${props.limit}`;
+    if (props.parentUrl) requestUrl += `&parent_url=${props.parentUrl}`;
+    if (props.channelId) requestUrl += `&channel_id=${props.channelId}`;
+    if (props.embedUrl) requestUrl += `&embed_url=${props.embedUrl}`;
+    requestUrl += `&with_recasts=${props.withRecasts}&limit=${props.limit}`;
     if (props.viewerFid) requestUrl += `&viewer_fid=${props.viewerFid}`;
     if (previousPageData) requestUrl += `&cursor=${previousPageData.next.cursor}`;
 
@@ -68,7 +68,7 @@ export const NeynarFeedList: React.FC<NeynarFeedListProps> = (props) => {
     const [isFetchingNextPage, setIsFetchingNextPage] = useState(false);
 
     const { data, error, size, setSize, isValidating } = useSWRInfinite(
-        (pageIndex, previousPageData) => getKey(pageIndex, previousPageData, { ...props, client_id }),
+        (pageIndex, previousPageData) => getKey(pageIndex, previousPageData, { ...props, clientId: client_id }),
         fetcher
     );
 

@@ -114,17 +114,17 @@ import { NeynarCastCard } from "@neynar/react";
 This component displays a list of casts (posts) on Farcaster.
 
 Params:
-- `feed_type` ('following' | 'filter'): The type of feed to display.
-- `filter_type?` ('fids' | 'parent_url' | 'channel_id' | 'embed_url' | 'global_trending'): The filter type to apply to the feed. Default: undefined.
+- `feedType` ('following' | 'filter'): The type of feed to display.
+- `filterType?` ('fids' | 'parent_url' | 'channel_id' | 'embed_url' | 'global_trending'): The filter type to apply to the feed. Default: undefined.
 - `fid?` (number): The FID to filter the feed by. Default: undefined.
 - `fids?` (string): The FIDs to filter the feed by. Default: undefined.
-- `parent_url?` (string): The parent URL to filter the feed by. Default: undefined.
-- `channel_id?` (string): The channel ID to filter the feed by. Default: undefined.
-- `embed_url?` (string): The embed URL to filter the feed by. Default: undefined.
-- `with_recasts?` (boolean): Whether to include recasts in the feed. Default: true.
+- `parentUrl?` (string): The parent URL to filter the feed by. Default: undefined.
+- `channelId?` (string): The channel ID to filter the feed by. Default: undefined.
+- `embedUrl?` (string): The embed URL to filter the feed by. Default: undefined.
+- `withRecasts?` (boolean): Whether to include recasts in the feed. Default: true.
 - `limit?` (number): The number of casts to display. Default: undefined.
 - `viewerFid?` (number): The FID of the viewer. Default: undefined.
-- `client_id?` (string): The client ID for the Neynar API. Default: undefined.
+- `clientId?` (string): The client ID for the Neynar API. Default: undefined.
 
 Usage:
 ```tsx
@@ -144,10 +144,10 @@ This component displays a conversation (thread) of casts (posts) on Farcaster.
 Params:
 - `type` ('url' | 'hash'): The type of identifier used for the conversation.
 - `identifier` (string): The identifier (either URL or hash) for the conversation.
-- `reply_depth?` (number): The depth of replies to include in the conversation. Default: 2.
-- `include_chronological_parent_casts?` (boolean): Whether to include chronological parent casts in the conversation. Default: false.
+- `replyDepth?` (number): The depth of replies to include in the conversation. Default: 2.
+- `includeChronologicalParentCasts?` (boolean): Whether to include chronological parent casts in the conversation. Default: false.
 - `limit?` (number): The number of casts to display. Default: 20.
-- `viewer_fid?` (number): The FID of the viewer. Default: undefined.
+- `viewerFid?` (number): The FID of the viewer. Default: undefined.
 
 Usage:
 ```tsx
@@ -158,7 +158,7 @@ import { NeynarConversationList } from "@neynar/react";
   identifier="https://warpcast.com/dwr.eth/0x1b0792bc" 
   replyDepth={2}
   limit={50}
-  viewer_fid={1}  
+  viewerFid={1}  
 />
 ```
 

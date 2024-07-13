@@ -15,8 +15,8 @@ export const Primary = Template.bind({});
 Primary.args = {
   type: 'url',
   identifier: 'https://warpcast.com/dwr.eth/0x1b0792bc',
-  reply_depth: 5,
-  include_chronological_parent_casts: false,
+  replyDepth: 5,
+  includeChronologicalParentCasts: false,
   limit: 50,
-  viewer_fid: 2,
+  viewerFid: 2,
 };

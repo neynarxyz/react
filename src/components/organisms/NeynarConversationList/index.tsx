@@ -9,25 +9,25 @@ type FeedType = 'url' | 'hash';
 export type NeynarConversationListProps = {
     type: FeedType;
     identifier: string;
-    reply_depth?: number;
-    include_chronological_parent_casts?: boolean;
+    replyDepth?: number;
+    includeChronologicalParentCasts?: boolean;
     limit?: number;
-    viewer_fid?: number;
+    viewerFid?: number;
 };
 
 async function fetchConversationByIdentifier({
     type,
     identifier,
-    reply_depth = 2,
-    include_chronological_parent_casts = false,
+    replyDepth = 2,
+    includeChronologicalParentCasts = false,
     limit = 20,
-    viewer_fid,
-    client_id
-}: NeynarConversationListProps & { client_id: string }): Promise<any | null> {
+    viewerFid,
+    clientId
+}: NeynarConversationListProps & { clientId: string }): Promise<any | null> {
     try {
-        let requestUrl = `${NEYNAR_API_URL}/v2/farcaster/cast/conversation?identifier=${encodeURIComponent(identifier)}&type=${type}&reply_depth=${reply_depth}&include_chronological_parent_casts=${include_chronological_parent_casts}&limit=${limit}&client_id=${client_id}`;
+        let requestUrl = `${NEYNAR_API_URL}/v2/farcaster/cast/conversation?identifier=${encodeURIComponent(identifier)}&type=${type}&reply_depth=${replyDepth}&include_chronological_parent_casts=${includeChronologicalParentCasts}&limit=${limit}&client_id=${clientId}`;
         
-        if (viewer_fid) requestUrl += `&viewer_fid=${viewer_fid}`;
+        if (viewerFid) requestUrl += `&viewer_fid=${viewerFid}`;
         
         const response = await fetch(requestUrl, {
             method: 'GET',
@@ -76,10 +76,10 @@ function formatCasts(conversation: any): CastCardProps[] {
 export const NeynarConversationList: React.FC<NeynarConversationListProps> = ({
     type,
     identifier,
-    reply_depth = 2,
-    include_chronological_parent_casts = false,
+    replyDepth = 2,
+    includeChronologicalParentCasts = false,
     limit = 20,
-    viewer_fid,
+    viewerFid,
 }) => {
     const { client_id } = useNeynarContext();
     const [conversationData, setConversationData] = React.useState<any | null>(null);
@@ -93,11 +93,11 @@ export const NeynarConversationList: React.FC<NeynarConversationListProps> = ({
         fetchConversationByIdentifier({
             type,
             identifier,
-            reply_depth,
-            include_chronological_parent_casts,
+            replyDepth,
+            includeChronologicalParentCasts,
             limit,
-            viewer_fid,
-            client_id
+            viewerFid,
+            clientId: client_id
         })
         .then((data) => {
             setConversationData(data);
@@ -108,7 +108,7 @@ export const NeynarConversationList: React.FC<NeynarConversationListProps> = ({
         .finally(() => {
             setLoading(false);
         });
-    }, [type, identifier, reply_depth, include_chronological_parent_casts, limit, viewer_fid, client_id]);
+    }, [type, identifier, replyDepth, includeChronologicalParentCasts, limit, viewerFid, client_id]);
 
     if (loading) {
         return <> </>;
