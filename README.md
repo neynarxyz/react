@@ -20,7 +20,7 @@ You can also test the components out in our [Storybook](https://neynar-react.ver
    npm install @neynar/react
    ```
 
-2. Make sure peer dependencies are installed: `react`, `react-dom`, and `@pigment-css/react`.
+2. Make sure that the following peer dependencies are installed.
 
    ```json
    {
@@ -32,7 +32,7 @@ You can also test the components out in our [Storybook](https://neynar-react.ver
    }
    ```
 
-   or if you want to install all at once:
+   or if you want to install them all at once:
 
    For **yarn**:
    ```bash
