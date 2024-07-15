@@ -22,6 +22,13 @@ export type NeynarFeedListProps = {
     clientId?: string;
 };
 
+type PreviousPageData = {
+    casts: any[];
+    next: {
+        cursor: string;
+    };
+};
+
 function formatCasts(casts: any[]): CastCardProps[] {
     return casts.map((cast: any) => {
         return {
@@ -44,7 +51,7 @@ function formatCasts(casts: any[]): CastCardProps[] {
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
-const getKey = (pageIndex: number, previousPageData: any, props: NeynarFeedListProps & { clientId: string }) => {
+const getKey = (pageIndex: number, previousPageData: PreviousPageData | null, props: NeynarFeedListProps & { clientId: string }) => {
     if (previousPageData && !previousPageData.casts.length) return null;
 
     let requestUrl = `${NEYNAR_API_URL}/v2/farcaster/feed?feed_type=${props.feedType}&client_id=${props.clientId}`;
@@ -68,7 +75,7 @@ export const NeynarFeedList: React.FC<NeynarFeedListProps> = (props) => {
     const [isFetchingNextPage, setIsFetchingNextPage] = useState(false);
 
     const { data, error, size, setSize, isValidating } = useSWRInfinite(
-        (pageIndex, previousPageData) => getKey(pageIndex, previousPageData, { ...props, clientId: client_id }),
+        (pageIndex: number, previousPageData: PreviousPageData | null) => getKey(pageIndex, previousPageData, { ...props, clientId: client_id }),
         fetcher
     );
 

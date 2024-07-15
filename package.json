@@ -19,8 +19,8 @@
     ]
   },
   "peerDependencies": {
-    "hls.js": "^1.5.13",
     "@pigment-css/react": "^0.0.9",
+    "hls.js": "^1.5.13",
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
     "swr": "^2.2.5"
@@ -47,7 +47,9 @@
     "axios": "^1.6.8",
     "dotenv": "^16.4.5",
     "eslint-plugin-storybook": "^0.8.0",
+    "hls.js": "^1.5.13",
     "storybook": "^8.1.11",
+    "swr": "^2.2.5",
     "typescript": "^5.4.5",
     "vite": "^5.2.10",
     "vite-plugin-dts": "^3.9.0",
