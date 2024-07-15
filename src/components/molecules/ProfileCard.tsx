@@ -9,6 +9,7 @@ import { useLinkifyBio } from "../organisms/NeynarProfileCard/hooks/useLinkifyBi
 import Box, { HBox, VBox } from "../atoms/Box";
 import { WarpcastPowerBadge } from "../atoms/icons/WarpcastPowerBadge";
 import { formatToReadableNumber } from "../../utils/formatUtils";
+import { SKELETON_PFP_URL } from "../../constants";
 
 const StyledProfileCard = styled.div(({ theme }) => ({
   display: "flex",
@@ -67,6 +68,7 @@ const Tag = styled.div(({ theme }) => ({
 }));
 
 export type ProfileCardProps = {
+  fid?: number;
   username: string;
   displayName: string;
   avatarImgUrl: string;
@@ -81,6 +83,7 @@ export type ProfileCardProps = {
 
 export const ProfileCard = memo(
   ({
+    fid,
     username,
     displayName,
     avatarImgUrl,
@@ -123,16 +126,16 @@ export const ProfileCard = memo(
         <HBox>
           <Box spacingRight="10px">
             <Avatar
-              src={avatarImgUrl}
+              src={avatarImgUrl ?? SKELETON_PFP_URL}
               loading="lazy"
-              alt={`${displayName} Avatar`}
+              alt={`${displayName ?? 'Skeleton'} Avatar`}
             />
           </Box>
           <Main>
             <HBox justifyContent="space-between" flexGrow={1}>
               <VBox>
                 <HBox>
-                  <strong>{displayName}</strong>
+                  <strong>{displayName || `!${fid}`}</strong>
                   {hasPowerBadge && (
                     <Box spacingLeft="5px">
                       <WarpcastPowerBadge />

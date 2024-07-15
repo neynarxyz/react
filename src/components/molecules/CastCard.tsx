@@ -1,21 +1,19 @@
-import React, { memo } from "react";
+import React, { memo, useState, useEffect } from "react";
 import { styled } from "@pigment-css/react";
-
 import Avatar from "../atoms/Avatar";
-import { useLinkifyBio } from "../organisms/NeynarProfileCard/hooks/useLinkifyBio";
+import { useLinkifyCast } from "../organisms/NeynarCastCard/hooks/useLinkifyCast";
 import Box, { HBox, VBox } from "../atoms/Box";
 import { WarpcastPowerBadge } from "../atoms/icons/WarpcastPowerBadge";
 import { useRenderEmbeds } from "../organisms/NeynarCastCard/hooks/useRenderEmbeds";
 import Reactions from "../atoms/Reactions";
 import { ShareToClipboardIcon } from "../atoms/icons/ShareToClipboardIcon";
-
+import { SKELETON_PFP_URL } from "../../constants";
 
 const StyledCastCard = styled.div(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   width: "100%",
   maxWidth: "608px",
-  borderWidth: "1px",
   borderStyle: "solid",
   borderColor: theme.vars.palette.border,
   borderRadius: "15px",
@@ -24,6 +22,12 @@ const StyledCastCard = styled.div(({ theme }) => ({
   fontFamily: theme.typography.fonts.base,
   fontSize: theme.typography.fontSizes.medium,
   backgroundColor: theme.vars.palette.background,
+  position: "relative",
+  "@media (max-width: 600px)": {
+    padding: "15px",
+    fontSize: theme.typography.fontSizes.small,
+    borderRadius: "0px",
+  }
 }));
 
 const StyledLink = styled.a(({ theme }) => ({
@@ -45,6 +49,9 @@ const Username = styled.div(({ theme }) => ({
 const UsernameTitle = styled.div(({ theme }) => ({
   fontSize: theme.typography.fontSizes.large,
   fontWeight: theme.typography.fontWeights.bold,
+  "@media (max-width: 600px)": {
+    fontSize: theme.typography.fontSizes.medium,
+  }
 }));
 
 const ProfileMetaCell = styled.div(({ theme }) => ({
@@ -71,13 +78,60 @@ const Tag = styled.div(({ theme }) => ({
   lineHeight: 1,
 }));
 
+const LinkifiedText = styled.div(() => ({
+  whiteSpace: 'pre-line',
+}));
+
+const EmbedsContainer = styled.div(() => ({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '1px',
+  alignItems: 'center',
+  padding: 0,
+  border: 'none',
+  borderRadius: '8px',
+  width: '100%',
+  marginBottom: '15px'
+}));
+
+const RepliesLikesContainer = styled.div(() => ({
+  display: 'flex',
+  gap: '4px',
+  alignItems: 'center',
+}));
+
+const ReactionsContainer = styled.div(() => ({
+  flexDirection: 'row', 
+  display: 'flex', 
+  alignItems: 'center', 
+  paddingRight: 4
+}));
+
+const SpaceBetweenContainer = styled.div(() => ({
+  flexDirection: 'row', 
+  display: 'flex', 
+  alignItems: 'center', 
+  paddingRight: 4
+}));
+
 export type CastCardProps = {
   username: string;
   displayName: string;
   avatarImgUrl: string;
   text: string;
   hash: string;
-  likes: number;
+  reactions: {
+    likes_count: number;
+    recasts_count: number;
+    likes: {
+      fid: number;
+      fname: string;
+    }[];
+    recasts: {
+      fid: number;
+      fname: string;
+    }[];
+  };
   replies: number;
   embeds: any[];
   channel?: {
@@ -88,10 +142,13 @@ export type CastCardProps = {
   viewerFid?: number;
   hasPowerBadge: boolean;
   isOwnProfile?: boolean;
+  isEmbed?: boolean;
   allowReactions: boolean;
   onComment?: () => void;
   onRecast?: () => void;
-  onLike?: () => void;
+  onLike?: (newVal: boolean) => void;
+  direct_replies?: CastCardProps[];
+  customStyles?: React.CSSProperties;
 };
 
 export const CastCard = memo(
@@ -99,31 +156,52 @@ export const CastCard = memo(
     username,
     displayName,
     avatarImgUrl,
-    text,
+    text = '',
     hash,
-    likes,
+    reactions,
     replies,
     embeds,
     channel,
     viewerFid,
     hasPowerBadge,
     isOwnProfile,
+    isEmbed = true,
     allowReactions,
     onComment,
     onRecast,
     onLike,
+    direct_replies,
+    customStyles
   }: CastCardProps) => {
-    const linkifiedText = useLinkifyBio(text);
+    const [likesCount, setLikesCount] = useState(reactions.likes_count);
+    const [isLiked, setIsLiked] = useState(reactions.likes.some(like => like.fid === viewerFid));
+    const linkifiedText = useLinkifyCast(text, embeds);
     const isSingle = embeds?.length === 1;
+    const handleError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+      e.currentTarget.src = SKELETON_PFP_URL;
+    };
+
+    useEffect(() => {
+      setIsLiked(reactions.likes.some(like => like.fid === viewerFid));
+    }, [reactions.likes, viewerFid]);
+
+    const handleLike = (newVal: boolean) => {
+      setLikesCount(prev => newVal ? prev + 1 : prev - 1);
+      setIsLiked(newVal);
+      if (onLike) {
+        onLike(newVal);
+      }
+    };
 
     return (
-      <StyledCastCard>
+      <StyledCastCard style={{ ...customStyles, borderWidth: isEmbed ? "1px" : "0" }}>
         <HBox>
           <Box spacingRight="10px">
             <Avatar
-              src={avatarImgUrl}
+              src={avatarImgUrl ?? SKELETON_PFP_URL}
+              onError={handleError}
               loading="lazy"
-              alt={`${displayName} Avatar`}
+              alt={`${displayName ?? 'Skeleton'} Avatar`}
             />
           </Box>
           <Main>
@@ -144,50 +222,46 @@ export const CastCard = memo(
             </HBox>
 
             <Box spacingVertical="15px">
-              <div style={{whiteSpace: 'pre-line'}}>{linkifiedText}</div>
+              <LinkifiedText>{linkifiedText}</LinkifiedText>
             </Box>
             {embeds && embeds.length > 0 && (
-              <div style={{
-                display: 'flex',
-                gap: '15px',
-                alignItems: 'center',
-                padding: isSingle ? '0' : '10px',
-                border: 'none',
-                borderRadius: '8px',
-                width: '100%',
-                margin: isSingle ? '10px 0' : '0',
-              }}>
+              <EmbedsContainer style={{ margin: isSingle ? '10px 0' : '0' }}>
                 {useRenderEmbeds(embeds, allowReactions, viewerFid).map((embed, index) => (
-                  <div key={index}>
+                  <div key={index} style={{ width: '100%' }}>
                     {embed}
                   </div>
                 ))}
-              </div>
+              </EmbedsContainer>
             )}
-            <div style={{ flexDirection: 'row', justifyContent: allowReactions ? 'space-between' : 'flex-end', display: 'flex', alignItems: 'center', paddingRight: 4 }}>
+            <ReactionsContainer style={{ justifyContent: allowReactions ? 'space-between' : 'flex-end' }}>
               {allowReactions && (
                 <Reactions
                   hash={hash}
+                  reactions={reactions}
                   onComment={onComment}
                   onRecast={onRecast}
-                  onLike={onLike}
+                  onLike={handleLike}
+                  isLiked={isLiked}
                 />
               )}
-              {username && hash && <ShareToClipboardIcon url={`https://warpcast.com/${username}/${hash.slice(0, 10)}`} /> }
-            </div>
-            <Box spacingVertical="15px" style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-              <div>{replies ?? 0} replies</div>
-              <div>·</div>
-              <div>{likes ?? 0} likes</div>
-              {channel && 
-                <>
-                  <div>·</div>
-                  <StyledLink href={`https://warpcast.com/~/channel/${channel.id}`} target="_blank">
-                    /{channel.id}
-                  </StyledLink>
-                </>
-              }
-            </Box>
+              {allowReactions && username && hash && <ShareToClipboardIcon url={`https://warpcast.com/${username}/${hash.slice(0, 10)}`} />}
+            </ReactionsContainer>
+            <SpaceBetweenContainer style={{  justifyContent: allowReactions ? '' : 'space-between' }}>
+              <SpaceBetweenContainer style={{ justifyContent: allowReactions ? '' : 'space-between', gap: 6 }}>
+                <div>{replies} replies</div>
+                <div>·</div>
+                <div>{likesCount} likes</div>
+                {channel &&
+                  <>
+                    <div>·</div>
+                    <StyledLink href={`https://warpcast.com/~/channel/${channel.id}`} target="_blank">
+                      /{channel.id}
+                    </StyledLink>
+                  </>
+                }
+              </SpaceBetweenContainer>
+              {!allowReactions && username && hash && <ShareToClipboardIcon url={`https://warpcast.com/${username}/${hash.slice(0, 10)}`} />}
+            </SpaceBetweenContainer>
           </Main>
         </HBox>
       </StyledCastCard>

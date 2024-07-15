@@ -78,6 +78,7 @@ export const NeynarProfileCard: React.FC<NeynarProfileCardProps> = ({
 
   return (
     <ProfileCard
+      fid={fid}
       username={userData.username}
       displayName={userData.display_name}
       avatarImgUrl={userData.pfp_url}
