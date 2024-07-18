@@ -1,4 +1,3 @@
-// src/components/molecules/ProfileCard.tsx
 import { useMemo, memo } from "react";
 import { styled } from "@pigment-css/react";
 
@@ -79,6 +78,7 @@ export type ProfileCardProps = {
   isFollowing?: boolean;
   isOwnProfile?: boolean;
   onCast?: () => void;
+  customStyles?: React.CSSProperties;
 };
 
 export const ProfileCard = memo(
@@ -94,6 +94,7 @@ export const ProfileCard = memo(
     isFollowing,
     isOwnProfile,
     onCast,
+    customStyles,
   }: ProfileCardProps) => {
     const linkifiedBio = useLinkifyBio(bio);
 
@@ -111,15 +112,19 @@ export const ProfileCard = memo(
       window.open("https://warpcast.com/~/settings", "_blank");
     };
 
+    const customNumberStyle = {
+      color: customStyles?.color,
+    };
+
     return (
-      <StyledProfileCard>
+      <StyledProfileCard style={customStyles}>
         {isOwnProfile && onCast && (
           <HBox
             alignItems="center"
             justifyContent="space-between"
             spacingBottom="20px"
           >
-            <UsernameTitle>@{username}</UsernameTitle>
+            <UsernameTitle style={customStyles}>@{username}</UsernameTitle>
             <ButtonPrimary onClick={onCast}>Cast</ButtonPrimary>
           </HBox>
         )}
@@ -143,13 +148,13 @@ export const ProfileCard = memo(
                   )}
                 </HBox>
                 <HBox alignItems="center">
-                  <Username>@{username}</Username>
-                  {isFollowing && <Tag>Follows you</Tag>}
+                  <Username style={customStyles}>@{username}</Username>
+                  {isFollowing && <Tag style={customStyles}>Follows you</Tag>}
                 </HBox>
               </VBox>
               <HBox>
                 {isOwnProfile && (
-                  <ButtonOutlined onClick={handleEditProfile}>
+                  <ButtonOutlined style={customStyles} onClick={handleEditProfile}>
                     Edit Profile
                   </ButtonOutlined>
                 )}
@@ -157,15 +162,15 @@ export const ProfileCard = memo(
             </HBox>
 
             <Box spacingVertical="15px">
-              <div>{linkifiedBio}</div>
+              <div style={customStyles}>{linkifiedBio}</div>
             </Box>
 
             <HBox>
               <ProfileMetaCell>
-                <strong>{formattedFollowingCount}</strong> Following
+                <strong style={customNumberStyle}>{formattedFollowingCount}</strong> Following
               </ProfileMetaCell>
               <ProfileMetaCell>
-                <strong>{formattedFollowersCount}</strong> Followers
+                <strong style={customNumberStyle}>{formattedFollowersCount}</strong> Followers
               </ProfileMetaCell>
             </HBox>
           </Main>
