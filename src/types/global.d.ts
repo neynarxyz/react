@@ -17,3 +17,6 @@ declare module "@pigment-css/react/theme" {
     }>;
   }
 }
+
+declare module '@pigment-css/react';
+declare module 'react/jsx-runtime';

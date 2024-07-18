@@ -18,12 +18,25 @@ jobs:
         with:
           node-version: '^22.4.1'
 
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.npm
+            ~/.cache/yarn
+          key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
       - name: Install dependencies
         run: yarn install
 
+      - name: Verify TypeScript setup
+        run: yarn tsc --noEmit
+
       - name: Build
         run: yarn build
-      
+
       - name: Set npm Config
         run: npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
 
