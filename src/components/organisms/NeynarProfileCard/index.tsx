@@ -32,11 +32,13 @@ async function fetchUserByFid({
 export type NeynarProfileCardProps = {
   fid: number;
   viewerFid?: number;
+  customStyles?: React.CSSProperties;
 };
 
 export const NeynarProfileCard: React.FC<NeynarProfileCardProps> = ({
   fid,
   viewerFid,
+  customStyles
 }) => {
   const { client_id } = useNeynarContext();
 
@@ -89,6 +91,7 @@ export const NeynarProfileCard: React.FC<NeynarProfileCardProps> = ({
       isOwnProfile={isOwnProfile}
       isFollowing={userData.viewer_context?.followed_by}
       onCast={handleCast}
+      customStyles={customStyles}
     />
   );
 };

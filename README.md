@@ -79,6 +79,7 @@ This component displays a user's Farcaster profile information.
 Params:
 - `fid` (number): The FID of the user to display.
 - `viewerFid?` (number): The FID of the viewer. Default: undefined.
+- `customStyles?` (CSSProperties): Custom styles for the profile card. Default: {}
 
 Usage:
 ```tsx
@@ -98,6 +99,7 @@ Params:
 - `identifier` (string): The identifier (either URL or hash) for the cast.
 - `viewerFid?` (number): The FID of the viewer. Default: undefined.
 - `allowReactions?` (boolean, default = true): Whether to allow reactions on the cast, and when this is true the component default to using Neynar reactions
+- `customStyles?` (CSSProperties): Custom styles for the cast card. Default: {}
 
 Usage:
 ```tsx
