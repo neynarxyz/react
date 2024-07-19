@@ -8,3 +8,5 @@ test-sdk.ts
 .env.local
 .env.development
 .evn.production
+storybook-static
+yarn.lock

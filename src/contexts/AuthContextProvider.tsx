@@ -57,6 +57,7 @@ export const AuthContextProvider: React.FC<AuthContextProviderProps> = ({
     if (neynarAuthenticatedUser) {
       setUser(neynarAuthenticatedUser);
       setIsAuthenticated(true);
+      onAuthSuccess({ user: neynarAuthenticatedUser });
     } else {
       setUser(null);
       setIsAuthenticated(false);
