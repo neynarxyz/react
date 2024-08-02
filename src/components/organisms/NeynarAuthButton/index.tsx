@@ -14,6 +14,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   label?: string;
   icon?: React.ReactNode;
   variant?: SIWN_variant;
+  customLogoUrl?: string;
   modalStyle?: React.CSSProperties;
   modalButtonStyle?: React.CSSProperties;
 }
@@ -86,11 +87,60 @@ const ModalButton = styled.button({
   },
 });
 
+const getLabel = (variant: SIWN_variant, label: string | undefined) => {
+  if (label) {
+    return label;
+  }
+
+  switch (variant) {
+    case SIWN_variant.FARCASTER:
+      return "Sign in with Farcaster";
+    case SIWN_variant.NEYNAR:
+      return "Sign in with Neynar";
+    case SIWN_variant.WARPCAST:
+      return "Sign in with Warpcast";
+    default:
+      return "Sign in with Neynar";
+  }
+};
+
+const getIcon = (
+  variant: SIWN_variant,
+  icon: React.ReactNode,
+  customLogoUrl: string | undefined
+) => {
+  if (icon) {
+    return icon;
+  }
+
+  if (customLogoUrl) {
+    return (
+      <Img
+        src={customLogoUrl}
+        alt="Custom logo"
+        style={{ marginRight: "10px" }}
+      />
+    );
+  }
+
+  switch (variant) {
+    case SIWN_variant.FARCASTER:
+      return <FarcasterIcon />;
+    case SIWN_variant.NEYNAR:
+      return <PlanetBlackIcon />;
+    case SIWN_variant.WARPCAST:
+      return <WarpcastIcon />;
+    default:
+      return <PlanetBlackIcon />;
+  }
+};
+
 export const NeynarAuthButton: React.FC<ButtonProps> = ({
   children,
-  label = "Sign in with Neynar",
-  icon = <PlanetBlackIcon />,
+  label,
   variant = SIWN_variant.NEYNAR,
+  icon,
+  customLogoUrl,
   modalStyle = {},
   modalButtonStyle = {},
   ...rest
@@ -192,32 +242,6 @@ export const NeynarAuthButton: React.FC<ButtonProps> = ({
     };
   }, [showModal, handleOutsideClick]);
 
-  const getLabel = () => {
-    switch (variant) {
-      case SIWN_variant.FARCASTER:
-        return "Sign in with Farcaster";
-      case SIWN_variant.NEYNAR:
-        return "Sign in with Neynar";
-      case SIWN_variant.WARPCAST:
-        return "Sign in with Warpcast";
-      default:
-        return "Sign in with Neynar";
-    }
-  };
-
-  const getIcon = () => {
-    switch (variant) {
-      case SIWN_variant.FARCASTER:
-        return <FarcasterIcon />;
-      case SIWN_variant.NEYNAR:
-        return <PlanetBlackIcon />;
-      case SIWN_variant.WARPCAST:
-        return <WarpcastIcon />;
-      default:
-        return <PlanetBlackIcon />;
-    }
-  };
-
   return (
     <>
       {showModal && (
@@ -232,7 +256,7 @@ export const NeynarAuthButton: React.FC<ButtonProps> = ({
       <Button onClick={!isAuthenticated ? handleSignIn : openModal} {...rest}>
         {!isAuthenticated ? (
           <>
-            {getIcon()}
+            {getIcon(variant, icon, customLogoUrl)}
             <span
               style={
                 variant === SIWN_variant.NEYNAR
@@ -240,12 +264,15 @@ export const NeynarAuthButton: React.FC<ButtonProps> = ({
                   : { marginRight: "7px" }
               }
             >
-              {getLabel()}
+              {getLabel(variant, label)}
             </span>
           </>
         ) : (
           <>
-            <Img src={user?.pfp_url} alt={user?.username} />
+            <Img
+              src={user?.pfp_url}
+              alt={`${user?.username} profile picture`}
+            />
             <span style={{ marginLeft: "10px" }}>@{user?.username}</span>
           </>
         )}
