@@ -114,13 +114,7 @@ const getIcon = (
   }
 
   if (customLogoUrl) {
-    return (
-      <Img
-        src={customLogoUrl}
-        alt="Custom logo"
-        style={{ marginRight: "10px" }}
-      />
-    );
+    return <Img src={customLogoUrl} alt="Custom logo" />;
   }
 
   switch (variant) {
@@ -257,13 +251,7 @@ export const NeynarAuthButton: React.FC<ButtonProps> = ({
         {!isAuthenticated ? (
           <>
             {getIcon(variant, icon, customLogoUrl)}
-            <span
-              style={
-                variant === SIWN_variant.NEYNAR
-                  ? { marginLeft: "10px" }
-                  : { marginRight: "7px" }
-              }
-            >
+            <span style={{ marginLeft: "5px" }}>
               {getLabel(variant, label)}
             </span>
           </>
