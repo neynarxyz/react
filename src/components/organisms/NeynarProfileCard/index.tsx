@@ -3,6 +3,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { ProfileCard } from "../../molecules/ProfileCard";
 import { NEYNAR_API_URL } from "../../../constants";
 import { useNeynarContext } from "../../../contexts";
+import customFetch from "../../../utils/fetcher";
 
 async function fetchUserByFid({
   fid,
@@ -20,7 +21,7 @@ async function fetchUserByFid({
       url += `&viewer_fid=${viewerFid}`;
     }
 
-    const response = await fetch(url);
+    const response = await customFetch(url);
     const data = await response.json();
     return data?.users?.[0] ?? null;
   } catch (error) {

@@ -2,6 +2,7 @@ import React from "react";
 import { NEYNAR_API_URL } from "../../../constants";
 import { useNeynarContext } from "../../../contexts";
 import { CastCard } from "../../molecules/CastCard";
+import customFetch from "../../../utils/fetcher";
 
 async function fetchCastByIdentifier({
   type,
@@ -16,7 +17,7 @@ async function fetchCastByIdentifier({
 }): Promise<any | null> {
   try {
     let requestUrl = `${NEYNAR_API_URL}/v2/farcaster/cast?type=${type}&identifier=${identifier}${viewerFid ? `&viewer_fid=${viewerFid}` : ''}&client_id=${client_id}`;
-    const response = await fetch(requestUrl);
+    const response = await customFetch(requestUrl);
     const data = await response.json();
     return data?.cast || null;
   } catch (error) {
