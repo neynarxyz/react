@@ -37,7 +37,7 @@ const FrameContainer = styled.div({
     border: "0.5px solid rgba(128, 128, 128, 0.7)",
     margin: "8px 0",
     padding: "16px",
-    backgroundColor: "#1a1a1a",
+    backgroundColor: "transparent",
     borderRadius: "12px",
     display: "flex",
     flexDirection: "column",
