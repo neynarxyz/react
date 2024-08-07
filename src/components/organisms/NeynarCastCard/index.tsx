@@ -84,6 +84,7 @@ export const NeynarCastCard: React.FC<NeynarCastCardProps> = ({
       reactions={castData.reactions}
       replies={castData.replies.count}
       embeds={renderEmbeds ? castData.embeds : []}
+      frames={castData.frames ?? []}
       channel={castData.channel ? {
         id: castData.channel.id,
         name: castData.channel.name,

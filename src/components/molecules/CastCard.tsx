@@ -8,6 +8,18 @@ import { useRenderEmbeds } from "../organisms/NeynarCastCard/hooks/useRenderEmbe
 import Reactions from "../atoms/Reactions";
 import { ShareToClipboardIcon } from "../atoms/icons/ShareToClipboardIcon";
 import { SKELETON_PFP_URL } from "../../constants";
+import CastFrames from "./CastFrames";
+import { useNeynarContext } from "../../contexts";
+
+type NeynarFrame = {
+    image: string;
+    frames_url: string;
+    post_url?: string;
+    buttons: {
+        index: number;
+        title: string;
+    }[];
+};
 
 const StyledCastCard = styled.div(({ theme }) => ({
   display: "flex",
@@ -134,6 +146,7 @@ export type CastCardProps = {
   };
   replies: number;
   embeds: any[];
+  frames: any[];
   channel?: {
     id: string;
     name: string;
@@ -161,6 +174,7 @@ export const CastCard = memo(
     reactions,
     replies,
     embeds,
+    frames,
     channel,
     viewerFid,
     hasPowerBadge,
@@ -177,6 +191,10 @@ export const CastCard = memo(
     const [isLiked, setIsLiked] = useState(reactions.likes.some(like => like.fid === viewerFid));
     const linkifiedText = useLinkifyCast(text, embeds);
     const isSingle = embeds?.length === 1;
+
+    const framesUrls = frames.map(frame => frame.frames_url);
+    const filteredEmbeds = embeds.filter(embed => !framesUrls.includes(embed.url));
+
     const handleError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
       e.currentTarget.src = SKELETON_PFP_URL;
     };
@@ -224,13 +242,18 @@ export const CastCard = memo(
             <Box spacingVertical="15px">
               <LinkifiedText>{linkifiedText}</LinkifiedText>
             </Box>
-            {embeds && embeds.length > 0 && (
+            {filteredEmbeds && filteredEmbeds.length > 0 && (
               <EmbedsContainer style={{ margin: isSingle ? '10px 0' : '0' }}>
-                {useRenderEmbeds(embeds, allowReactions, viewerFid).map((embed, index) => (
+                {useRenderEmbeds(filteredEmbeds, allowReactions, viewerFid).map((embed, index) => (
                   <div key={index} style={{ width: '100%' }}>
                     {embed}
                   </div>
                 ))}
+              </EmbedsContainer>
+            )}
+            {frames && frames.length > 0 && (
+              <EmbedsContainer>
+                <CastFrames hash={hash} frames={frames as any} />
               </EmbedsContainer>
             )}
             <ReactionsContainer style={{ justifyContent: allowReactions ? 'space-between' : 'flex-end' }}>
