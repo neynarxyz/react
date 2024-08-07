@@ -146,7 +146,7 @@ export type CastCardProps = {
   };
   replies: number;
   embeds: any[];
-  frames: any[];
+  frames: NeynarFrame[];
   channel?: {
     id: string;
     name: string;
