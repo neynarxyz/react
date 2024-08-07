@@ -30,6 +30,7 @@ const FrameButton = styled.button({
     '@media (min-width: 768px)': {
         fontSize: "16px",
     },
+    cursor: 'pointer'
 });
 
 const FrameContainer = styled.div({
