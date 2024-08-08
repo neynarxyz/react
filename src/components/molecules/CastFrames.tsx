@@ -24,6 +24,14 @@ type NeynarFrame = {
     frames_url: string;
 };
 
+type CastFrameBtn = {
+    number: number;
+    text: string;
+    actionType: string;
+    target?: string;
+    handleOnClick: (btnNumber: number) => void;
+}
+
 const FrameButton = styled.button({
     border: "1px solid rgba(0, 0, 0, 0.75)",
     borderRadius: "12px",
@@ -88,7 +96,7 @@ function fetchWithTimeout(url: string, options: RequestInit, timeout: number = 8
     ]);
 }
 
-function CastFrameBtn({ number, text, actionType, target, handleOnClick }: { number: number, text: string, actionType: string, target?: string, handleOnClick: (btnNumber: number) => void }) {
+function CastFrameBtn({ number, text, actionType, target, handleOnClick }: CastFrameBtn) {
     const handleClick = () => {
         if (actionType === "link" && target) {
             window.open(target, "_blank");
