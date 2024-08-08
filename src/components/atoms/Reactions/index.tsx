@@ -10,6 +10,7 @@ import { CommentIcon } from "../icons/CommentIcon";
 import { RecastIcon } from "../icons/RecastIcon";
 import { LikeIcon } from "../icons/LikeIcon";
 import XIcon from "../icons/XIcon";
+import customFetch from "../../../utils/fetcher";
 
 const ReactionWrapper = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -119,7 +120,7 @@ const Reactions: React.FC<ReactionsProps> = ({
       return;
     }
 
-    const request = await fetch(
+    const request = await customFetch(
       `${NEYNAR_API_URL}/v2/farcaster/reaction?client_id=${client_id}`,
       {
         method: "POST",

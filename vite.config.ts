@@ -5,8 +5,14 @@ import tsconfigPaths from "vite-tsconfig-paths";
 import dts from "vite-plugin-dts";
 import { theme } from "./src/theme/index";
 import { config } from "dotenv";
+import { readFileSync } from 'fs';
+import { join } from 'path';
 
 config({ path: ".env.local" });
+
+const packageJsonPath = join(__dirname, 'package.json');
+const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
+const SDK_VERSION = packageJson.version;
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -21,7 +27,10 @@ export default defineConfig({
     }),
   ],
   define: {
-    "process.env": process.env,
+    "process.env": {
+      ...process.env,
+      SDK_VERSION: JSON.stringify(SDK_VERSION),
+    },
   },
   build: {
     outDir: "dist",
