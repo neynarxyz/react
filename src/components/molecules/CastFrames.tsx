@@ -3,6 +3,10 @@ import { styled } from "@pigment-css/react";
 import { useNeynarContext } from "../../contexts";
 import { NEYNAR_API_URL } from "../../constants";
 import customFetch from "../../utils/fetcher";
+import { ToastType } from "../atoms/Toast/ToastItem";
+import { useLocalStorage } from "../../hooks";
+import { INeynarAuthenticatedUser } from "../../types/common";
+import { LocalStorageKeys } from "../../hooks/use-local-storage-state";
 
 type NeynarFrame = {
     version: string;
@@ -75,6 +79,15 @@ const FrameDomain = styled.div({
     width: "100%",
 });
 
+function fetchWithTimeout(url: string, options: RequestInit, timeout: number = 8000): Promise<Response> {
+    return Promise.race([
+        customFetch(url, options),
+        new Promise<Response>((_, reject) =>
+            setTimeout(() => reject(new Error('Request timed out')), timeout)
+        )
+    ]);
+}
+
 function CastFrameBtn({ number, text, actionType, target, handleOnClick }: { number: number, text: string, actionType: string, target?: string, handleOnClick: (btnNumber: number) => void }) {
     const handleClick = () => {
         if (actionType === "link" && target) {
@@ -95,34 +108,24 @@ function CastFrameBtn({ number, text, actionType, target, handleOnClick }: { num
 function CastFrame({ hash, frame }: { hash: string, frame: NeynarFrame }) {
     const [localFrame, setLocalFrame] = useState<NeynarFrame>(frame);
     const [signerValue, setSignerValue] = useState<string | null>(null);
-    const { client_id } = useNeynarContext();
+    const { client_id, showToast } = useNeynarContext();
+
+    const [storedUser] = useLocalStorage<INeynarAuthenticatedUser | null>(
+        LocalStorageKeys.NEYNAR_AUTHENTICATED_USER,
+        null
+    );
 
     useEffect(() => {
-        const user = localStorage.getItem("neynar_authenticated_user");
-        if (user) {
-            try {
-                setSignerValue(JSON.parse(user).signer_uuid);
-            } catch (e) {
-                console.error("Error parsing JSON from local storage:", e);
-                setSignerValue(null);
-            }
+        if (storedUser) {
+            setSignerValue(storedUser.signer_uuid);
         } else {
             console.warn("No NEYNAR_AUTHENTICATED_USER found in local storage.");
         }
-    }, []);
-
-    function fetchWithTimeout(url: string, options: RequestInit, timeout: number = 8000): Promise<Response> {
-        return Promise.race([
-            customFetch(url, options),
-            new Promise<Response>((_, reject) =>
-                setTimeout(() => reject(new Error('Request timed out')), timeout)
-            )
-        ]);
-    }
+    }, [storedUser]);
 
     const handleFrameBtnPress = async (btnIndex: number) => {
         if (!signerValue) {
-            alert('Signer UUID is not available');
+            showToast(ToastType.Error, 'Signer UUID is not available');
             return;
         }
 
@@ -152,11 +155,10 @@ function CastFrame({ hash, frame }: { hash: string, frame: NeynarFrame }) {
                 const json = await response.json() as NeynarFrame;
                 setLocalFrame(json);
             } else {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                showToast(ToastType.Error, `HTTP error! status: ${response.status}`);
             }
         } catch (error) {
-            console.error('Error during fetch:', error);
-            alert('An error occurred!');
+            showToast(ToastType.Error, `An error occurred: ${error}`);
         }
     };
 
