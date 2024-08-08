@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { styled } from "@pigment-css/react";
 import { useNeynarContext } from "../../contexts";
 import { NEYNAR_API_URL } from "../../constants";
+import customFetch from "../../utils/fetcher";
 
 type NeynarFrame = {
     version: string;
@@ -111,7 +112,7 @@ function CastFrame({ hash, frame }: { hash: string, frame: NeynarFrame }) {
 
     function fetchWithTimeout(url: string, options: RequestInit, timeout: number = 8000): Promise<Response> {
         return Promise.race([
-            fetch(url, options),
+            customFetch(url, options),
             new Promise<Response>((_, reject) =>
                 setTimeout(() => reject(new Error('Request timed out')), timeout)
             )

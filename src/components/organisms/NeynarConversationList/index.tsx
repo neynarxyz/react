@@ -3,6 +3,7 @@ import { useNeynarContext } from '../../../contexts';
 import { CastCardProps } from '../../molecules/CastCard';
 import { NEYNAR_API_URL } from '../../../constants';
 import ConversationList from '../../molecules/ConversationList';
+import customFetch from '../../../utils/fetcher';
 
 type FeedType = 'url' | 'hash';
 
@@ -29,7 +30,7 @@ async function fetchConversationByIdentifier({
         
         if (viewerFid) requestUrl += `&viewer_fid=${viewerFid}`;
         
-        const response = await fetch(requestUrl, {
+        const response = await customFetch(requestUrl, {
             method: 'GET',
             headers: {
                 'accept': 'application/json'
