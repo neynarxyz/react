@@ -95,6 +95,7 @@ function CastFrameBtn({ number, text, actionType, target, handleOnClick }: { num
 function CastFrame({ hash, frame }: { hash: string, frame: NeynarFrame }) {
     const [localFrame, setLocalFrame] = useState<NeynarFrame>(frame);
     const [signerValue, setSignerValue] = useState<string | null>(null);
+    const { client_id } = useNeynarContext();
 
     useEffect(() => {
         const user = localStorage.getItem("neynar_authenticated_user");
@@ -129,7 +130,7 @@ function CastFrame({ hash, frame }: { hash: string, frame: NeynarFrame }) {
         const postUrl = button?.post_url;
 
         try {
-            const response = await fetchWithTimeout(`${NEYNAR_API_URL}/v2/farcaster/frame/action`, {
+            const response = await fetchWithTimeout(`${NEYNAR_API_URL}/v2/farcaster/frame/action?client_id=${client_id}`, {
                 method: "POST",
                 headers: {
                     "accept": "application/json",
