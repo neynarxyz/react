@@ -7,6 +7,7 @@ import { ToastType } from "../atoms/Toast/ToastItem";
 import { useLocalStorage } from "../../hooks";
 import { INeynarAuthenticatedUser } from "../../types/common";
 import { LocalStorageKeys } from "../../hooks/use-local-storage-state";
+import ExternalLinkIcon from "../atoms/icons/ExternalLinkIcon";
 
 type NeynarFrame = {
     version: string;
@@ -108,7 +109,7 @@ function CastFrameBtn({ number, text, actionType, target, handleOnClick }: CastF
     return (
         <FrameButton onClick={handleClick}>
             {text}
-            {(actionType === "link" || actionType === "post_redirect") && <span>↗</span>}
+            {(actionType === "link" || actionType === "post_redirect") && <ExternalLinkIcon />}
         </FrameButton>
     )
 }
