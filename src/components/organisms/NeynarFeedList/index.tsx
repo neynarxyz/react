@@ -4,6 +4,7 @@ import { useNeynarContext } from '../../../contexts';
 import { CastCardProps } from '../../molecules/CastCard';
 import { NEYNAR_API_URL } from '../../../constants';
 import { FeedList } from '../../molecules/FeedList';
+import customFetch from '../../../utils/fetcher';
 
 type FeedType = 'following' | 'filter';
 type FeedFilterType = 'fids' | 'parent_url' | 'channel_id' | 'embed_url' | 'global_trending';
@@ -40,6 +41,7 @@ function formatCasts(casts: any[]): CastCardProps[] {
             reactions: cast.reactions,
             replies: cast.replies.count,
             embeds: cast.embeds,
+            frames: cast.frames,
             channel: cast.channel,
             viewerFid: 2,
             hasPowerBadge: cast.author.power_badge,
@@ -49,7 +51,7 @@ function formatCasts(casts: any[]): CastCardProps[] {
     });
 }
 
-const fetcher = (url: string) => fetch(url).then(res => res.json());
+const fetcher = (url: string) => customFetch(url).then(res => res.json());
 
 const getKey = (pageIndex: number, previousPageData: PreviousPageData | null, props: NeynarFeedListProps & { clientId: string }) => {
     if (previousPageData && !previousPageData.casts.length) return null;

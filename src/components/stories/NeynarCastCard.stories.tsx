@@ -58,6 +58,7 @@ Primary.args = {
   replies: 63,
   channel: { id: "paris", name: "Paris", url: "https://farcaster.group/paris" },
   embeds: [{ url: "https://imagedelivery.net/BXluQx4ige9GuW0Ia56BHw/ce5140cb-12ec-4b37-96f1-7b390e35e400/original" }],
+  frames: [],
   hasPowerBadge: true,
   isOwnProfile: true,
   onCast: () => {},
@@ -108,6 +109,13 @@ export const CastWithVideo = TemplateWithCast.bind({});
 CastWithVideo.args = {
   type: 'url',
   identifier: "https://warpcast.com/coinbasewallet/0xb9dee5f9",
+  allowReactions: true,
+};
+
+export const CastWithFrame = TemplateWithCast.bind({});
+CastWithFrame.args = {
+  type: 'url',
+  identifier: "https://warpcast.com/slokh/0x57e03c32",
   allowReactions: true,
 };
 
