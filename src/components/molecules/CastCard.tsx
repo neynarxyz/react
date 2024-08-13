@@ -1,4 +1,4 @@
-import React, { memo, useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { styled } from "@pigment-css/react";
 import Avatar from "../atoms/Avatar";
 import { useLinkifyCast } from "../organisms/NeynarCastCard/hooks/useLinkifyCast";
@@ -9,7 +9,6 @@ import Reactions from "../atoms/Reactions";
 import { ShareToClipboardIcon } from "../atoms/icons/ShareToClipboardIcon";
 import { SKELETON_PFP_URL } from "../../constants";
 import CastFrames from "./CastFrames";
-import { useNeynarContext } from "../../contexts";
 
 type NeynarFrame = {
     image: string;
@@ -164,7 +163,7 @@ export type CastCardProps = {
   customStyles?: React.CSSProperties;
 };
 
-export const CastCard = memo(
+export const CastCard = React.memo(
   ({
     username,
     displayName,
@@ -173,12 +172,11 @@ export const CastCard = memo(
     hash,
     reactions,
     replies,
-    embeds,
-    frames,
+    embeds = [],
+    frames = [],
     channel,
     viewerFid,
     hasPowerBadge,
-    isOwnProfile,
     isEmbed = true,
     allowReactions,
     onComment,
@@ -187,29 +185,31 @@ export const CastCard = memo(
     direct_replies,
     customStyles
   }: CastCardProps) => {
-    const [likesCount, setLikesCount] = useState(reactions.likes_count);
-    const [isLiked, setIsLiked] = useState(reactions.likes.some(like => like.fid === viewerFid));
+    const [likesCount, setLikesCount] = useState<number>(reactions.likes_count);
+    const [isLiked, setIsLiked] = useState<boolean>(reactions.likes.some(like => like.fid === viewerFid));
     const linkifiedText = useLinkifyCast(text, embeds);
     const isSingle = embeds?.length === 1;
 
-    const framesUrls = frames.map(frame => frame.frames_url);
-    const filteredEmbeds = embeds.filter(embed => !framesUrls.includes(embed.url));
+    const framesUrls = useMemo(() => frames.map(frame => frame.frames_url), [frames]);
+    const filteredEmbeds = useMemo(() => embeds.filter(embed => !framesUrls.includes(embed.url)), [embeds, framesUrls]);
 
-    const handleError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    const handleError = useCallback((e: React.SyntheticEvent<HTMLImageElement, Event>) => {
       e.currentTarget.src = SKELETON_PFP_URL;
-    };
+    }, []);
 
     useEffect(() => {
       setIsLiked(reactions.likes.some(like => like.fid === viewerFid));
     }, [reactions.likes, viewerFid]);
 
-    const handleLike = (newVal: boolean) => {
+    const handleLike = useCallback((newVal: boolean) => {
       setLikesCount(prev => newVal ? prev + 1 : prev - 1);
       setIsLiked(newVal);
       if (onLike) {
         onLike(newVal);
       }
-    };
+    }, [onLike]);
+
+    const renderedEmbeds = useRenderEmbeds(filteredEmbeds, allowReactions, viewerFid);
 
     return (
       <StyledCastCard style={{ ...customStyles, borderWidth: isEmbed ? "1px" : "0" }}>
@@ -244,7 +244,7 @@ export const CastCard = memo(
             </Box>
             {filteredEmbeds && filteredEmbeds.length > 0 && (
               <EmbedsContainer style={{ margin: isSingle ? '10px 0' : '0' }}>
-                {useRenderEmbeds(filteredEmbeds, allowReactions, viewerFid).map((embed, index) => (
+                {renderedEmbeds.map((embed, index) => (
                   <div key={index} style={{ width: '100%' }}>
                     {embed}
                   </div>

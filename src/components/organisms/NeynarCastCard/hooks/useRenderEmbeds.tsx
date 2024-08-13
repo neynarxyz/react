@@ -1,14 +1,32 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import Hls from 'hls.js';
 import { METADATA_PROXY_URL } from "../../../../constants";
 import { NeynarCastCard } from "..";
 import { styled } from "@pigment-css/react";
 
-type OpenGraphData = {
-  "og:image"?: string;
-  "og:title"?: string;
-  "og:description"?: string;
-};
+interface OpenGraphData {
+  ogImage: string;
+  ogTitle: string;
+  ogDescription: string;
+}
+
+interface Embed {
+  url?: string;
+  cast_id?: {
+    fid: number;
+    hash: string;
+  };
+}
+
+interface ImageWrapperProps {
+  src: string;
+  alt: string;
+  style?: React.CSSProperties;
+}
+
+interface NativeVideoPlayerProps {
+  url: string;
+}
 
 const StyledLink = styled.a(({ theme }) => ({
   textDecoration: "none",
@@ -22,42 +40,95 @@ const StyledLink = styled.a(({ theme }) => ({
   gap: '8px',
 }));
 
-async function fetchOpenGraphData(url: string): Promise<{ ogImage: string, ogTitle: string, ogDescription: string }> {
-  try {
-    // note: `METADATA_PROXY_URL` is a public(non-Neynar) proxy to avoid CORS issues when retrieving opengraph metadata. Feel free to substitute with your own proxy if you'd rather.
-    const response = await fetch(`${METADATA_PROXY_URL}?url=${url}`, { method: 'GET' });
+const openGraphCache = new Map<string, OpenGraphData>();
+const pendingRequests = new Map<string, Promise<OpenGraphData>>();
+const domainErrorTracker = new Map<string, boolean>();
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch Open Graph data: ${response.statusText}`);
-    }
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-    const data = await response.json();
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(data.contents, 'text/html');
-    const ogImageMeta = doc.querySelector('meta[property="og:image"]');
-    const ogTitleMeta = doc.querySelector('meta[property="og:title"]');
-    const ogDescriptionMeta = doc.querySelector('meta[property="og:description"]');
-    const titleTag = doc.querySelector('title');
+const fetchOpenGraphData = async (url: string, retryCount = 0): Promise<OpenGraphData> => {
+  const domain = new URL(url).hostname;
 
-    const ogImage = ogImageMeta ? ogImageMeta.getAttribute('content') || '' : '';
-    const ogTitle = ogTitleMeta ? ogTitleMeta.getAttribute('content') || '' : (titleTag ? titleTag.innerText : '');
-    const ogDescription = ogDescriptionMeta ? ogDescriptionMeta.getAttribute('content') || '' : '';
-
-    return { ogImage, ogTitle, ogDescription };
-  } catch (error) {
-    console.error("Error fetching Open Graph data", error);
+  if (domainErrorTracker.get(domain)) {
     return { ogImage: '', ogTitle: '', ogDescription: '' };
   }
-}
 
-type ImageWrapperProps = {
-  src: string;
-  alt: string;
-  isSingle: boolean;
-  style?: React.CSSProperties;
+  if (openGraphCache.has(url)) {
+    return openGraphCache.get(url)!;
+  }
+
+  if (pendingRequests.has(url)) {
+    return pendingRequests.get(url)!;
+  }
+
+  const fetchPromise = (async () => {
+    try {
+      await delay(100);
+      // note: `METADATA_PROXY_URL` is a public(non-Neynar) proxy to avoid CORS issues when retrieving opengraph metadata. Feel free to substitute with your own proxy if you'd rather.
+      const response = await fetch(`${METADATA_PROXY_URL}?url=${encodeURIComponent(url)}`, { method: 'GET' });
+
+      if (!response.ok) {
+        if (response.status === 429 && retryCount < 5) {
+          const backoff = Math.pow(2, retryCount) * 1000;
+          await delay(backoff);
+          return fetchOpenGraphData(url, retryCount + 1);
+        }
+        domainErrorTracker.set(domain, true);
+        throw new Error(`Failed to fetch Open Graph data: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(data.contents, 'text/html');
+      const ogImageMeta = doc.querySelector('meta[property="og:image"]');
+      const ogTitleMeta = doc.querySelector('meta[property="og:title"]');
+      const ogDescriptionMeta = doc.querySelector('meta[property="og:description"]');
+      const titleTag = doc.querySelector('title');
+
+      const ogImage = ogImageMeta ? ogImageMeta.getAttribute('content') || '' : '';
+      const ogTitle = ogTitleMeta ? ogTitleMeta.getAttribute('content') || '' : (titleTag ? titleTag.innerText : '');
+      const ogDescription = ogDescriptionMeta ? ogDescriptionMeta.getAttribute('content') || '' : '';
+
+      const openGraphData: OpenGraphData = { ogImage, ogTitle, ogDescription };
+      openGraphCache.set(url, openGraphData);
+      return openGraphData;
+    } catch (error) {
+      console.error("Error fetching Open Graph data", error);
+      return { ogImage: '', ogTitle: '', ogDescription: '' };
+    } finally {
+      pendingRequests.delete(url);
+    }
+  })();
+
+  pendingRequests.set(url, fetchPromise);
+  return fetchPromise;
 };
 
-const ImageWrapper: React.FC<ImageWrapperProps> = ({ src, alt, isSingle, style }) => (
+const requestQueue: (() => Promise<void>)[] = [];
+let activeRequests = 0;
+const MAX_CONCURRENT_REQUESTS = 5;
+
+const enqueueRequest = (requestFn: () => Promise<void>) => {
+  requestQueue.push(requestFn);
+  processQueue();
+};
+
+const processQueue = async () => {
+  if (activeRequests >= MAX_CONCURRENT_REQUESTS || requestQueue.length === 0) {
+    return;
+  }
+
+  activeRequests++;
+  const nextRequest = requestQueue.shift();
+  if (nextRequest) {
+    await nextRequest();
+  }
+  activeRequests--;
+
+  processQueue();
+};
+
+const ImageWrapper: React.FC<ImageWrapperProps> = ({ src, alt, style }) => (
   <img
     src={src}
     alt={alt}
@@ -76,32 +147,12 @@ const ImageWrapper: React.FC<ImageWrapperProps> = ({ src, alt, isSingle, style }
   />
 );
 
-type Embed = {
-  url?: string;
-  cast_id?: {
-    fid: number;
-    hash: string;
-  };
-};
+const NativeVideoPlayer: React.FC<NativeVideoPlayerProps> = ({ url }) => {
+  const videoRef = React.useRef<HTMLVideoElement | null>(null);
 
-const isImageUrl = (url: string): boolean => {
-  return url.startsWith('https://imagedelivery.net') || /\.(jpeg|jpg|gif|png|webp|bmp|svg)$/.test(url);
-};
-
-const isM3u8Url = (url: string): boolean => {
-  return url.endsWith('.m3u8');
-};
-
-const isMp4Url = (url: string): boolean => {
-  return url.endsWith('.mp4');
-};
-
-const NativeVideoPlayer: React.FC<{ url: string }> = ({ url }) => {
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-
-  useEffect(() => {
+  React.useEffect(() => {
     if (videoRef.current) {
-      if (Hls.isSupported() && isM3u8Url(url)) {
+      if (Hls.isSupported() && url.endsWith('.m3u8')) {
         const hls = new Hls();
         hls.loadSource(url);
         hls.attachMedia(videoRef.current);
@@ -133,87 +184,67 @@ const NativeVideoPlayer: React.FC<{ url: string }> = ({ url }) => {
   );
 };
 
-const removeLinksFromText = (text: string, urls: string[]): string => {
-  let modifiedText = text;
-  urls.forEach(url => {
-    const linkRegex = new RegExp(url.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'g');
-    modifiedText = modifiedText.replace(linkRegex, '');
-  });
-  return modifiedText.trim();
+const isImageUrl = (url: string): boolean => {
+  return /\.(jpeg|jpg|gif|png|webp|bmp|svg)$/.test(url) || url.startsWith('https://imagedelivery.net');
 };
 
-export const useRenderEmbeds = (embeds: Embed[], allowReactions: boolean, viewerFid?: number): React.ReactNode[] => {
+const useRenderEmbeds = (
+  embeds: Embed[],
+  allowReactions: boolean,
+  viewerFid?: number
+): React.ReactNode[] => {
   const [renderedEmbeds, setRenderedEmbeds] = React.useState<React.ReactNode[]>([]);
 
-  React.useEffect(() => {
-    const processEmbeds = async () => {
-      const embedComponents = await Promise.all(embeds.map(async (embed) => {
-        if (embed.url) {
-          if (isImageUrl(embed.url)) {
-            return <ImageWrapper key={embed.url} src={embed.url} alt={embed.url} isSingle={embeds.length === 1} />;
-          } else if (isM3u8Url(embed.url) || isMp4Url(embed.url)) {
-            return <NativeVideoPlayer key={embed.url} url={embed.url} />;
-          } else {
-            const { ogImage, ogTitle, ogDescription } = await fetchOpenGraphData(embed.url);
-            const domain = new URL(embed.url).hostname.replace('www.', '');
-            return (
-              <StyledLink key={embed.url} href={embed.url} target="_blank" rel="noreferrer">
-                {ogImage && <img src={ogImage} alt={ogTitle} style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '5px' }} />}
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <p style={{ margin: 0 }}>{ogTitle || embed.url}</p>
-                  <p style={{ margin: 0, color: 'grey', fontSize: '12px' }}>{domain}</p>
-                </div>
-              </StyledLink>
-            );
-          }
-        } else if (embed.cast_id) {
-          return (
-            <div style={{ maxWidth: '85%' }} key={`cast-${embed?.cast_id.hash}`}>
-              <NeynarCastCard
-                key={embed.cast_id.fid}
-                type="hash"
-                identifier={embed.cast_id.hash}
-                viewerFid={viewerFid}
-                allowReactions={allowReactions}
-                renderEmbeds={false}
-              />
-            </div>
-          );
+  const processEmbeds = React.useCallback(async (embeds: Embed[]): Promise<React.ReactNode[]> => {
+    const embedComponents = await Promise.all(embeds.map(async (embed) => {
+      if (embed.url) {
+        const url = embed.url;
+        if (isImageUrl(url)) {
+          return <ImageWrapper key={url} src={url} alt="Embedded image" />;
+        } else if (url.endsWith('.m3u8') || url.endsWith('.mp4')) {
+          return <NativeVideoPlayer key={url} url={url} />;
+        } else {
+          return new Promise<React.ReactNode>(resolve => {
+            enqueueRequest(async () => {
+              const { ogImage, ogTitle } = await fetchOpenGraphData(url);
+              const domain = new URL(url).hostname.replace('www.', '');
+              resolve(
+                <StyledLink key={url} href={url} target="_blank" rel="noreferrer">
+                  {ogImage && <img src={ogImage} alt={ogTitle} style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '5px' }} />}
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <p style={{ margin: 0 }}>{ogTitle || url}</p>
+                    <p style={{ margin: 0, color: 'grey', fontSize: '12px' }}>{domain}</p>
+                  </div>
+                </StyledLink>
+              );
+            });
+          });
         }
-        return null;
-      }));
+      } else if (embed.cast_id) {
+        return (
+          <div style={{ maxWidth: '85%' }} key={`cast-${embed.cast_id.hash}`}>
+            <NeynarCastCard
+              key={embed.cast_id.fid}
+              type="hash"
+              identifier={embed.cast_id.hash}
+              viewerFid={viewerFid}
+              allowReactions={allowReactions}
+              renderEmbeds={false}
+            />
+          </div>
+        );
+      }
+      return null;
+    }));
 
-      setRenderedEmbeds(embedComponents.filter((component) => component !== null));
-    };
+    return embedComponents.filter((component) => component !== null) as React.ReactNode[];
+  }, [allowReactions, viewerFid]);
 
-    processEmbeds();
-  }, [embeds, viewerFid, allowReactions]);
+  React.useEffect(() => {
+    processEmbeds(embeds).then(setRenderedEmbeds);
+  }, [embeds, processEmbeds]);
 
   return renderedEmbeds;
 };
 
-export const EmbedContainer: React.FC<{ embeds: Embed[], viewerFid: number, allowReactions: boolean, text: string }> = ({ embeds, viewerFid, allowReactions, text }) => {
-  const renderedEmbeds = useRenderEmbeds(embeds, allowReactions, viewerFid);
-  const embedUrls = embeds.map(embed => embed.url).filter(url => url) as string[];
-  const modifiedText = removeLinksFromText(text, embedUrls);
-
-  return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '2.5px',
-      alignItems: 'stretch',
-      width: '100%',
-      overflow: 'hidden'
-    }}>
-      <div style={{ maxWidth: '100%', wordWrap: 'break-word', whiteSpace: 'pre-wrap' }}>{modifiedText}</div>
-      {renderedEmbeds.map((embed, index) => (
-        <div key={index} style={{ width: '100%', overflow: 'hidden' }}>
-          {React.isValidElement(embed) && (embed as React.ReactElement<any>).type === ImageWrapper ?
-            React.cloneElement(embed as React.ReactElement<any>, { style: { height: '150px', width: '100%' } })
-            : embed}
-        </div>
-      ))}
-    </div>
-  );
-};
+export { useRenderEmbeds };
