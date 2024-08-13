@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React from "react";
 import Hls from 'hls.js';
 import { METADATA_PROXY_URL } from "../../../../constants";
 import { NeynarCastCard } from "..";
@@ -21,7 +21,6 @@ interface Embed {
 interface ImageWrapperProps {
   src: string;
   alt: string;
-  isSingle: boolean;
   style?: React.CSSProperties;
 }
 
@@ -43,8 +42,17 @@ const StyledLink = styled.a(({ theme }) => ({
 
 const openGraphCache = new Map<string, OpenGraphData>();
 const pendingRequests = new Map<string, Promise<OpenGraphData>>();
+const domainErrorTracker = new Map<string, boolean>();
 
-const fetchOpenGraphData = async (url: string): Promise<OpenGraphData> => {
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+const fetchOpenGraphData = async (url: string, retryCount = 0): Promise<OpenGraphData> => {
+  const domain = new URL(url).hostname;
+
+  if (domainErrorTracker.get(domain)) {
+    return { ogImage: '', ogTitle: '', ogDescription: '' };
+  }
+
   if (openGraphCache.has(url)) {
     return openGraphCache.get(url)!;
   }
@@ -55,10 +63,17 @@ const fetchOpenGraphData = async (url: string): Promise<OpenGraphData> => {
 
   const fetchPromise = (async () => {
     try {
+      await delay(100);
       // note: `METADATA_PROXY_URL` is a public(non-Neynar) proxy to avoid CORS issues when retrieving opengraph metadata. Feel free to substitute with your own proxy if you'd rather.
-      const response = await fetch(`${METADATA_PROXY_URL}?url=${url}`, { method: 'GET' });
+      const response = await fetch(`${METADATA_PROXY_URL}?url=${encodeURIComponent(url)}`, { method: 'GET' });
 
       if (!response.ok) {
+        if (response.status === 429 && retryCount < 5) {
+          const backoff = Math.pow(2, retryCount) * 1000;
+          await delay(backoff);
+          return fetchOpenGraphData(url, retryCount + 1);
+        }
+        domainErrorTracker.set(domain, true);
         throw new Error(`Failed to fetch Open Graph data: ${response.statusText}`);
       }
 
@@ -89,7 +104,31 @@ const fetchOpenGraphData = async (url: string): Promise<OpenGraphData> => {
   return fetchPromise;
 };
 
-const ImageWrapper: React.FC<ImageWrapperProps> = ({ src, alt, isSingle, style }) => (
+const requestQueue: (() => Promise<void>)[] = [];
+let activeRequests = 0;
+const MAX_CONCURRENT_REQUESTS = 5;
+
+const enqueueRequest = (requestFn: () => Promise<void>) => {
+  requestQueue.push(requestFn);
+  processQueue();
+};
+
+const processQueue = async () => {
+  if (activeRequests >= MAX_CONCURRENT_REQUESTS || requestQueue.length === 0) {
+    return;
+  }
+
+  activeRequests++;
+  const nextRequest = requestQueue.shift();
+  if (nextRequest) {
+    await nextRequest();
+  }
+  activeRequests--;
+
+  processQueue();
+};
+
+const ImageWrapper: React.FC<ImageWrapperProps> = ({ src, alt, style }) => (
   <img
     src={src}
     alt={alt}
@@ -109,9 +148,9 @@ const ImageWrapper: React.FC<ImageWrapperProps> = ({ src, alt, isSingle, style }
 );
 
 const NativeVideoPlayer: React.FC<NativeVideoPlayerProps> = ({ url }) => {
-  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const videoRef = React.useRef<HTMLVideoElement | null>(null);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (videoRef.current) {
       if (Hls.isSupported() && url.endsWith('.m3u8')) {
         const hls = new Hls();
@@ -145,30 +184,41 @@ const NativeVideoPlayer: React.FC<NativeVideoPlayerProps> = ({ url }) => {
   );
 };
 
+const isImageUrl = (url: string): boolean => {
+  return /\.(jpeg|jpg|gif|png|webp|bmp|svg)$/.test(url) || url.startsWith('https://imagedelivery.net');
+};
+
 const useRenderEmbeds = (
   embeds: Embed[],
   allowReactions: boolean,
   viewerFid?: number
 ): React.ReactNode[] => {
-  const [renderedEmbeds, setRenderedEmbeds] = useState<React.ReactNode[]>([]);
+  const [renderedEmbeds, setRenderedEmbeds] = React.useState<React.ReactNode[]>([]);
 
-  const processEmbeds = useCallback(async (embeds: Embed[]): Promise<React.ReactNode[]> => {
+  const processEmbeds = React.useCallback(async (embeds: Embed[]): Promise<React.ReactNode[]> => {
     const embedComponents = await Promise.all(embeds.map(async (embed) => {
       if (embed.url) {
-        if (embed.url.endsWith('.m3u8') || embed.url.endsWith('.mp4')) {
-          return <NativeVideoPlayer key={embed.url} url={embed.url} />;
+        const url = embed.url;
+        if (isImageUrl(url)) {
+          return <ImageWrapper key={url} src={url} alt="Embedded image" />;
+        } else if (url.endsWith('.m3u8') || url.endsWith('.mp4')) {
+          return <NativeVideoPlayer key={url} url={url} />;
         } else {
-          const { ogImage, ogTitle } = await fetchOpenGraphData(embed.url);
-          const domain = new URL(embed.url).hostname.replace('www.', '');
-          return (
-            <StyledLink key={embed.url} href={embed.url} target="_blank" rel="noreferrer">
-              {ogImage && <img src={ogImage} alt={ogTitle} style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '5px' }} />}
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <p style={{ margin: 0 }}>{ogTitle || embed.url}</p>
-                <p style={{ margin: 0, color: 'grey', fontSize: '12px' }}>{domain}</p>
-              </div>
-            </StyledLink>
-          );
+          return new Promise<React.ReactNode>(resolve => {
+            enqueueRequest(async () => {
+              const { ogImage, ogTitle } = await fetchOpenGraphData(url);
+              const domain = new URL(url).hostname.replace('www.', '');
+              resolve(
+                <StyledLink key={url} href={url} target="_blank" rel="noreferrer">
+                  {ogImage && <img src={ogImage} alt={ogTitle} style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '5px' }} />}
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <p style={{ margin: 0 }}>{ogTitle || url}</p>
+                    <p style={{ margin: 0, color: 'grey', fontSize: '12px' }}>{domain}</p>
+                  </div>
+                </StyledLink>
+              );
+            });
+          });
         }
       } else if (embed.cast_id) {
         return (
@@ -190,7 +240,7 @@ const useRenderEmbeds = (
     return embedComponents.filter((component) => component !== null) as React.ReactNode[];
   }, [allowReactions, viewerFid]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     processEmbeds(embeds).then(setRenderedEmbeds);
   }, [embeds, processEmbeds]);
 
