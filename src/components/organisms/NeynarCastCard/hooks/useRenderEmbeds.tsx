@@ -1,13 +1,13 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import Hls from 'hls.js';
 import { METADATA_PROXY_URL } from "../../../../constants";
 import { NeynarCastCard } from "..";
 import { styled } from "@pigment-css/react";
 
 type OpenGraphData = {
-  "og:image"?: string;
-  "og:title"?: string;
-  "og:description"?: string;
+  ogImage: string;
+  ogTitle: string;
+  ogDescription: string;
 };
 
 const StyledLink = styled.a(({ theme }) => ({
@@ -22,9 +22,14 @@ const StyledLink = styled.a(({ theme }) => ({
   gap: '8px',
 }));
 
-async function fetchOpenGraphData(url: string): Promise<{ ogImage: string, ogTitle: string, ogDescription: string }> {
+const openGraphCache = new Map<string, OpenGraphData>();
+
+async function fetchOpenGraphData(url: string): Promise<OpenGraphData> {
+  if (openGraphCache.has(url)) {
+    return openGraphCache.get(url)!;
+  }
+
   try {
-    // note: `METADATA_PROXY_URL` is a public(non-Neynar) proxy to avoid CORS issues when retrieving opengraph metadata. Feel free to substitute with your own proxy if you'd rather.
     const response = await fetch(`${METADATA_PROXY_URL}?url=${url}`, { method: 'GET' });
 
     if (!response.ok) {
@@ -43,7 +48,10 @@ async function fetchOpenGraphData(url: string): Promise<{ ogImage: string, ogTit
     const ogTitle = ogTitleMeta ? ogTitleMeta.getAttribute('content') || '' : (titleTag ? titleTag.innerText : '');
     const ogDescription = ogDescriptionMeta ? ogDescriptionMeta.getAttribute('content') || '' : '';
 
-    return { ogImage, ogTitle, ogDescription };
+    const openGraphData: OpenGraphData = { ogImage, ogTitle, ogDescription };
+    openGraphCache.set(url, openGraphData);
+
+    return openGraphData;
   } catch (error) {
     console.error("Error fetching Open Graph data", error);
     return { ogImage: '', ogTitle: '', ogDescription: '' };
@@ -97,9 +105,9 @@ const isMp4Url = (url: string): boolean => {
 };
 
 const NativeVideoPlayer: React.FC<{ url: string }> = ({ url }) => {
-  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const videoRef = React.useRef<HTMLVideoElement | null>(null);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (videoRef.current) {
       if (Hls.isSupported() && isM3u8Url(url)) {
         const hls = new Hls();
