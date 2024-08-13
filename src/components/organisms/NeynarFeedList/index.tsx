@@ -31,22 +31,23 @@ type PreviousPageData = {
 };
 
 function formatCasts(casts: any[]): CastCardProps[] {
+    if (!casts) return [];
     return casts.map((cast: any) => {
         return {
-            username: cast.author.username,
-            displayName: cast.author.display_name,
-            avatarImgUrl: cast.author.pfp_url,
-            text: cast.text,
-            hash: cast.hash,
-            reactions: cast.reactions,
-            replies: cast.replies.count,
-            embeds: cast.embeds,
-            frames: cast.frames,
-            channel: cast.channel,
+            username: cast?.author?.username ?? '',
+            displayName: cast?.author?.display_name ?? '',
+            avatarImgUrl: cast?.author?.pfp_url ?? '',
+            text: cast?.text ?? '',
+            hash: cast?.hash ?? '',
+            reactions: cast?.reactions ?? [],
+            replies: cast?.replies?.count ?? 0,
+            embeds: cast?.embeds ?? [],
+            frames: cast?.frames ?? [],
+            channel: cast?.channel ?? '',
             viewerFid: 2,
-            hasPowerBadge: cast.author.power_badge,
+            hasPowerBadge: cast?.author?.power_badge ?? false,
             isOwnProfile: false,
-            allowReactions: true
+            allowReactions: true,
         };
     });
 }
@@ -54,7 +55,7 @@ function formatCasts(casts: any[]): CastCardProps[] {
 const fetcher = (url: string) => customFetch(url).then(res => res.json());
 
 const getKey = (pageIndex: number, previousPageData: PreviousPageData | null, props: NeynarFeedListProps & { clientId: string }) => {
-    if (previousPageData && !previousPageData.casts.length) return null;
+    if (previousPageData && (!previousPageData.casts || !previousPageData.casts.length)) return null;
 
     let requestUrl = `${NEYNAR_API_URL}/v2/farcaster/feed?feed_type=${props.feedType}&client_id=${props.clientId}`;
     if (props.filterType) requestUrl += `&filter_type=${props.filterType}`;
@@ -81,7 +82,7 @@ export const NeynarFeedList: React.FC<NeynarFeedListProps> = (props) => {
         fetcher
     );
 
-    const allCasts = data ? data.flatMap(page => page.casts) : [];
+    const allCasts = data ? data.flatMap(page => page?.casts ?? []) : [];
     const uniqueCasts = Array.from(new Set(allCasts.map(cast => cast.hash)))
                             .map(hash => allCasts.find(cast => cast.hash === hash)!);
     const formattedCasts = formatCasts(uniqueCasts);
