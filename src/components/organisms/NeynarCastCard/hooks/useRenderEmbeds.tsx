@@ -30,6 +30,7 @@ async function fetchOpenGraphData(url: string): Promise<OpenGraphData> {
   }
 
   try {
+    // note: `METADATA_PROXY_URL` is a public(non-Neynar) proxy to avoid CORS issues when retrieving opengraph metadata. Feel free to substitute with your own proxy if you'd rather.
     const response = await fetch(`${METADATA_PROXY_URL}?url=${url}`, { method: 'GET' });
 
     if (!response.ok) {
