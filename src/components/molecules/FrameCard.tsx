@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { styled } from "@pigment-css/react";
 import ExternalLinkIcon from "../atoms/icons/ExternalLinkIcon";
-import { NeynarFrameCardProps, NeynarFrame } from "../organisms/NeynarFrameCard";
+import { NeynarFrame } from "../organisms/NeynarFrameCard";
 
-export type FrameCardProps = NeynarFrameCardProps & {
-    onFrameBtnPress: (btnIndex: number, localFrame: NeynarFrame, setLocalFrame: (frame: NeynarFrame) => void) => void;
+export type FrameCardProps = {
+    frames: NeynarFrame[];
+    onFrameBtnPress: (btnIndex: number, localFrame: NeynarFrame, setLocalFrame: React.Dispatch<React.SetStateAction<NeynarFrame>>) => void;
 };
 
 const FrameButton = styled.button({
@@ -77,7 +78,7 @@ function CastFrameBtn({ number, text, actionType, target, handleOnClick }: any) 
     )
 }
 
-function CastFrame({ hash, frame, onFrameBtnPress }: { hash: string, frame: NeynarFrame, onFrameBtnPress: FrameCardProps['onFrameBtnPress'] }) {
+function CastFrame({ frame, onFrameBtnPress }: { frame: NeynarFrame, onFrameBtnPress: FrameCardProps['onFrameBtnPress'] }) {
     const [localFrame, setLocalFrame] = useState<NeynarFrame>(frame);
 
     const renderFrameButtons = () => {
@@ -119,11 +120,11 @@ function CastFrame({ hash, frame, onFrameBtnPress }: { hash: string, frame: Neyn
     );
 }
 
-export const FrameCard: React.FC<FrameCardProps> = ({ hash, frames, onFrameBtnPress }) => {
+export const FrameCard: React.FC<FrameCardProps> = ({ frames, onFrameBtnPress }) => {
     return (
         <FlexContainer>
-            {frames.map((frame, index) => (
-                <CastFrame key={`cast-frame-${index}`} hash={hash} frame={frame} onFrameBtnPress={onFrameBtnPress} />
+            {frames.map((frame: NeynarFrame, index: number) => (
+                <CastFrame key={`cast-frame-${index}`} frame={frame} onFrameBtnPress={onFrameBtnPress} />
             ))}
         </FlexContainer>
     );
