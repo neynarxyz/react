@@ -107,9 +107,7 @@ export const NeynarFrameCard: React.FC<NeynarFrameCardProps> = ({ url, onFrameBt
         body: JSON.stringify({
           "signer_uuid": signerValue,
           "action": {
-            "button": {
-              "index": btnIndex
-            },
+            "button": button,
             "frames_url": localFrame.frames_url,
             "post_url": postUrl ? postUrl : localFrame.frames_url,
             "input": {
