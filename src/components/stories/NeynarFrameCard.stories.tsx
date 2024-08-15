@@ -82,6 +82,11 @@ ParagraphFrame.args = {
   url: "https://paragraph.xyz/@blog/introducing-smart-wallets"
 };
 
+export const ZoraFrame = TemplateWithInteractions.bind({});
+ZoraFrame.args = {
+  url: "https://zora.co/collect/base:0xcf6e80defd9be067f5adda2924b55c2186d3e930/5"
+};
+
 
 ParagraphFrame.argTypes = {
   hash: { table: { disable: true } },

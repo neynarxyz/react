@@ -78,10 +78,12 @@ const InputField = styled.input({
   },
 });
 
-function CastFrameBtn({ number, text, actionType, target, handleOnClick }: any) {
+function CastFrameBtn({ number, text, actionType, target, frameUrl, handleOnClick }: any) {
   const handleClick = () => {
     if (actionType === "link" && target) {
       window.open(target, "_blank");
+    } else if(actionType === "mint") {
+      window.open(frameUrl, "_blank");
     } else {
       handleOnClick(number);
     }
@@ -90,7 +92,7 @@ function CastFrameBtn({ number, text, actionType, target, handleOnClick }: any) 
   return (
     <FrameButton onClick={handleClick}>
       {text}
-      {(actionType === "link" || actionType === "post_redirect") && <ExternalLinkIcon />}
+      {(actionType === "link" || actionType === "post_redirect" || actionType === "mint") && <ExternalLinkIcon />}
     </FrameButton>
   )
 }
@@ -107,6 +109,7 @@ function CastFrame({ frame, onFrameBtnPress }: { frame: NeynarFrame, onFrameBtnP
         text={btn.title}
         actionType={btn.action_type}
         target={btn.target}
+        frameUrl={frame.frames_url}
         handleOnClick={(btnIndex: number) => onFrameBtnPress(btnIndex, localFrame, setLocalFrame, inputValue)}
       />
     ));
