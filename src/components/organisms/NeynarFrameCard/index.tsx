@@ -45,7 +45,7 @@ export const NeynarFrameCard: React.FC<NeynarFrameCardProps> = ({ url, hash = '0
     null
   );
   const [signerValue, setSignerValue] = useState<string | null>(null);
-  const [frames, setFrames] = useState<NeynarFrame[]>(initialFrame ? [initialFrame] : []);
+  const [frame, setFrame] = useState<NeynarFrame | null>(initialFrame ? initialFrame : null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -60,37 +60,12 @@ export const NeynarFrameCard: React.FC<NeynarFrameCardProps> = ({ url, hash = '0
     if (!initialFrame) {
       const fetchMetadata = async () => {
         try {
-          const response = await fetchWithTimeout(`${METADATA_PROXY_URL}?url=${encodeURIComponent(url)}`, { method: "GET" });
+          const response = await fetchWithTimeout(`${NEYNAR_API_URL}/v2/farcaster/frame/crawl?url=${url}&client_id=${client_id}`, { method: "GET" });
           
           if (response.ok) {
-            const metadata = await response.text();
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(metadata, "text/html");
-
-            const version = doc.querySelector('meta[name="fc:frame"]')?.getAttribute("content") || "vNext";
-            const title = doc.querySelector('meta[property="og:title"]')?.getAttribute("content") || "Untitled";
-            const image = doc.querySelector('meta[name="fc:frame:image"]')?.getAttribute("content") ||
-              doc.querySelector('meta[property="og:image"]')?.getAttribute("content") || "";
-            const state = JSON.parse(doc.querySelector('meta[name="fc:frame:state"]')?.getAttribute("content") || "{}");
-            const input = JSON.parse(doc.querySelector('meta[name="fc:frame:input:text"]')?.getAttribute("content") || "{}");
-            const frames_url = url;
-
-            const buttons = [];
-            for (let idx = 1; idx <= 4; idx++) {
-              const title = doc.querySelector(`meta[name="fc:frame:button:${idx}"]`)?.getAttribute("content");
-              if (title) {
-                buttons.push({
-                  index: idx,
-                  title: title,
-                  action_type: doc.querySelector(`meta[name="fc:frame:button:${idx}:action"]`)?.getAttribute("content") || "post",
-                  target: doc.querySelector(`meta[name="fc:frame:button:${idx}:target"]`)?.getAttribute("content") || undefined,
-                  post_url: doc.querySelector(`meta[name="fc:frame:button:${idx}:post_url"]`)?.getAttribute("content") || undefined
-                });
-              }
-            }
-
-            const frame: NeynarFrame = { version, title, image, buttons, input, state, frames_url };
-            setFrames([frame]);
+            const data = await response.json();
+            const frame: NeynarFrame = data.frame;
+            setFrame(frame);
             setError(null);
           } else {
             throw new Error(`HTTP error! status: ${response.status}`);
@@ -177,7 +152,7 @@ export const NeynarFrameCard: React.FC<NeynarFrameCardProps> = ({ url, hash = '0
 
   return (
     <FrameCard
-      frames={frames}
+      frames={frame ? [frame] : []}
       onFrameBtnPress={handleFrameBtnPress}
     />
   );
