@@ -68,6 +68,16 @@ Primary.argTypes = {
   frames: { table: { disable: true } },
 };
 
+export const EventsFrame = TemplateWithInteractions.bind({});
+EventsFrame.args = {
+  url: "https://events.xyz/events/a010d617"
+};
+
+export const HighlightFrame = TemplateWithInteractions.bind({});
+HighlightFrame.args = {
+  url: "https://highlight.xyz/mint/667dfcfe5229c603647108f0"
+};
+
 export const SliceFrame = TemplateWithInteractions.bind({});
 SliceFrame.args = {
   url: "https://shop.slice.so/store/0?productId=12"
