@@ -65,6 +65,11 @@ export const NeynarFrameCard: React.FC<NeynarFrameCardProps> = ({ url, hash = '0
           if (response.ok) {
             const data = await response.json();
             const frame: NeynarFrame = data.frame;
+            
+            if (Object.keys(frame).length === 0) {
+              throw new Error("No frame data available");
+            }
+            
             setFrame(frame);
             setError(null);
           } else {
