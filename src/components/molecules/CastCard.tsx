@@ -8,7 +8,7 @@ import { useRenderEmbeds } from "../organisms/NeynarCastCard/hooks/useRenderEmbe
 import Reactions from "../atoms/Reactions";
 import { ShareToClipboardIcon } from "../atoms/icons/ShareToClipboardIcon";
 import { SKELETON_PFP_URL } from "../../constants";
-import CastFrames from "./CastFrames";
+import NeynarFrameCard from "../organisms/NeynarFrameCard";
 
 type NeynarFrame = {
     image: string;
@@ -253,7 +253,7 @@ export const CastCard = React.memo(
             )}
             {frames && frames.length > 0 && (
               <EmbedsContainer>
-                <CastFrames hash={hash} frames={frames as any} />
+                <NeynarFrameCard hash={hash} frames={frames as any} />
               </EmbedsContainer>
             )}
             <ReactionsContainer style={{ justifyContent: allowReactions ? 'space-between' : 'flex-end' }}>
