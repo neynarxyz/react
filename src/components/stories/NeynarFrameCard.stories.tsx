@@ -1,6 +1,6 @@
 import React from "react";
 import { Meta, StoryFn } from "@storybook/react";
-import NeynarFrameCard, { NeynarFrameCardProps } from "../organisms/NeynarFrameCard";
+import { NeynarFrameCard, NeynarFrameCardProps } from "../organisms/NeynarFrameCard";
 import FrameCard, { FrameCardProps } from "../molecules/FrameCard";
 
 const meta: Meta<typeof NeynarFrameCard> = {

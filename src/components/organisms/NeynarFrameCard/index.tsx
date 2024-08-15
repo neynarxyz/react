@@ -167,5 +167,3 @@ function fetchWithTimeout(url: string, options: RequestInit, timeout: number = 8
     )
   ]);
 }
-
-export default NeynarFrameCard;

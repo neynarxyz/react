@@ -8,7 +8,7 @@ import { useRenderEmbeds } from "../organisms/NeynarCastCard/hooks/useRenderEmbe
 import Reactions from "../atoms/Reactions";
 import { ShareToClipboardIcon } from "../atoms/icons/ShareToClipboardIcon";
 import { SKELETON_PFP_URL } from "../../constants";
-import NeynarFrameCard, { NeynarFrame as NeynarFrameCardType } from "../organisms/NeynarFrameCard";
+import { NeynarFrameCard, NeynarFrame as NeynarFrameCardType } from "../organisms/NeynarFrameCard";
 
 type NeynarFrame = {
     image: string;
