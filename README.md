@@ -169,7 +169,6 @@ This component displays a specific frame on Farcaster.
 
 Params:
 - `url` (string): The URL to fetch the frame data from.
-- `hash?` (string): The hash identifier for the frame. Default: '0xd49f247f18e7b9e18c1d77876743b6606218b062'.
 - `onFrameBtnPress?` (function): A callback function triggered when a button in the frame is pressed. Default: The SDK handles POST actions through the Neynar API.
 - `initialFrame?` (NeynarFrame): The initial frame data to display. Default: undefined.
 

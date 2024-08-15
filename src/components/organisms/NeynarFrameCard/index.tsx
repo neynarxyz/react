@@ -28,7 +28,6 @@ export type NeynarFrame = {
 
 export type NeynarFrameCardProps = {
   url: string;
-  hash?: string;
   onFrameBtnPress?: (
     btnIndex: number,
     localFrame: NeynarFrame,
@@ -38,7 +37,7 @@ export type NeynarFrameCardProps = {
   initialFrame?: NeynarFrame;
 };
 
-export const NeynarFrameCard: React.FC<NeynarFrameCardProps> = ({ url, hash = '0xd49f247f18e7b9e18c1d77876743b6606218b062', onFrameBtnPress, initialFrame }) => {
+export const NeynarFrameCard: React.FC<NeynarFrameCardProps> = ({ url, onFrameBtnPress, initialFrame }) => {
   const { client_id, showToast } = useNeynarContext();
   const [storedUser] = useLocalStorage<INeynarAuthenticatedUser | null>(
     LocalStorageKeys.NEYNAR_AUTHENTICATED_USER,
@@ -107,7 +106,6 @@ export const NeynarFrameCard: React.FC<NeynarFrameCardProps> = ({ url, hash = '0
         },
         body: JSON.stringify({
           "signer_uuid": signerValue,
-          "cast_hash": hash,
           "action": {
             "button": {
               "index": btnIndex
