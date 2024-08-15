@@ -131,6 +131,7 @@ ParagraphFrame.args = {
   },
 };
 
+
 ParagraphFrame.argTypes = {
   hash: { table: { disable: true } },
   frames: { table: { disable: true } },
