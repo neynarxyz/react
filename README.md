@@ -164,6 +164,27 @@ import { NeynarConversationList } from "@neynar/react";
 />
 ```
 
+### `<NeynarFrameCard />`
+This component displays a specific frame on Farcaster.
+
+Params:
+- `url` (string): The URL to fetch the frame data from.
+- `hash?` (string): The hash identifier for the frame. Default: '0xd49f247f18e7b9e18c1d77876743b6606218b062'.
+- `onFrameBtnPress?` (function): A callback function triggered when a button in the frame is pressed. Default: The SDK handles POST actions through the Neynar API.
+- `initialFrame?` (NeynarFrame): The initial frame data to display. Default: undefined.
+
+Usage:
+```tsx
+import { NeynarFrameCard } from "@neynar/react";
+
+<NeynarFrameCard 
+  url="https://events.xyz/events/a010d617"
+/>
+```
+
+**Note**: It is highly recommended to override the `onFrameBtnPress` and make the API call through your own secure, authenticated server which can then call the [Neynar post frame action API](https://docs.neynar.com/reference/post-frame-action).
+
+
 ## Example app
 
 Check out our [example app](https://github.com/neynarxyz/farcaster-examples/tree/main/wownar-react-sdk) for a demonstration of how to use `@neynar/react`.
