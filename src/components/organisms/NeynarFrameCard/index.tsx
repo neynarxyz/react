@@ -93,41 +93,46 @@ export const NeynarFrameCard: React.FC<NeynarFrameCardProps> = ({ url, onFrameBt
       showToast(ToastType.Error, 'Signer UUID is not available');
       throw new Error('Signer UUID is not available');
     }
-
+  
     const button = localFrame.buttons.find(btn => btn.index === btnIndex);
     const postUrl = button?.post_url;
-
-    try {
-      const response = await fetchWithTimeout(`${NEYNAR_API_URL}/v2/farcaster/frame/action?client_id=${client_id}`, {
-        method: "POST",
-        headers: {
-          "accept": "application/json",
-          "content-type": "application/json"
-        },
-        body: JSON.stringify({
-          "signer_uuid": signerValue,
-          "action": {
-            "button": button,
-            "frames_url": localFrame.frames_url,
-            "post_url": postUrl ? postUrl : localFrame.frames_url,
-            "input": {
-                "text": inputValue
+  
+    if ((button?.action_type === "link" || button?.action_type === "post_redirect" || button?.action_type === "mint")) {
+      window.open(button.action_type !== 'mint' && button?.target ? button?.target : localFrame.frames_url, '_blank');
+      return localFrame;
+    } else {
+      try {
+        const response = await fetchWithTimeout(`${NEYNAR_API_URL}/v2/farcaster/frame/action?client_id=${client_id}`, {
+          method: "POST",
+          headers: {
+            "accept": "application/json",
+            "content-type": "application/json"
+          },
+          body: JSON.stringify({
+            "signer_uuid": signerValue,
+            "action": {
+              "button": button,
+              "frames_url": localFrame.frames_url,
+              "post_url": postUrl ? postUrl : localFrame.frames_url,
+              "input": {
+                  "text": inputValue
+              }
             }
-          }
-        })
-      }) as Response;
-      if (response.ok) {
-        const json = await response.json() as NeynarFrame;
-        return json;
-      } else {
-        showToast(ToastType.Error, `HTTP error! status: ${response.status}`);
-        throw new Error(`HTTP error! status: ${response.status}`);
+          })
+        }) as Response;
+        if (response.ok) {
+          const json = await response.json() as NeynarFrame;
+          return json;
+        } else {
+          showToast(ToastType.Error, `HTTP error! status: ${response.status}`);
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+      } catch (error) {
+        showToast(ToastType.Error, `An error occurred while processing the button press: ${error}`);
+        throw error;
       }
-    } catch (error) {
-      showToast(ToastType.Error, `An error occurred while processing the button press: ${error}`);
-      throw error;
     }
-  };
+  }
 
   const handleFrameBtnPress = async (
     btnIndex: number,
