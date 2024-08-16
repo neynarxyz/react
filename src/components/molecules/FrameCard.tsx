@@ -127,10 +127,10 @@ function CastFrame({ frame, onFrameBtnPress }: { frame: NeynarFrame, onFrameBtnP
             <a href={localFrame.frames_url} target="_blank" rel="noopener noreferrer">
               <FrameImage src={localFrame.image} alt={`Frame image for ${localFrame.frames_url}`} />
             </a>
-            {frame.input?.text && (
+            {localFrame.input?.text && (
               <InputField
                 type="text"
-                placeholder={frame.input.text}
+                placeholder={localFrame.input.text}
                 value={inputValue}
                 onChange={(e) => handleSetInputValue(e.target.value)}
               />
