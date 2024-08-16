@@ -79,18 +79,9 @@ const InputField = styled.input({
 });
 
 function CastFrameBtn({ number, text, actionType, target, frameUrl, handleOnClick }: any) {
-  const handleClick = () => {
-    if (actionType === "link" && target) {
-      window.open(target, "_blank");
-    } else if(actionType === "mint") {
-      window.open(frameUrl, "_blank");
-    } else {
-      handleOnClick(number);
-    }
-  };
 
   return (
-    <FrameButton onClick={handleClick}>
+    <FrameButton onClick={() => handleOnClick(number)}>
       {text}
       {(actionType === "link" || actionType === "post_redirect" || actionType === "mint") && <ExternalLinkIcon />}
     </FrameButton>
