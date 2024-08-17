@@ -17,7 +17,7 @@ export type FrameCardProps = {
 const FrameButton = styled.button({
   border: "1px solid rgba(255, 255, 255, 0.2)",
   borderRadius: "8px",
-  padding: "8px 16px",
+  padding: "6px 16px",
   fontSize: "14px",
   display: "flex",
   alignItems: "center",
@@ -46,11 +46,11 @@ const FrameContainer = styled.div({
 });
 
 const ButtonContainer = styled.div({
-  margin: "8px 0",
+  margin: "7px",
   display: "flex",
   flexWrap: "wrap",
   gap: "8px",
-  width: "100%",
+  width: "97%",
 });
 
 const FrameImage = styled.img({
