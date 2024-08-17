@@ -12,6 +12,7 @@ export type NeynarFrame = {
   version: string;
   title: string;
   image: string;
+  image_aspect_ratio: string;
   buttons: {
     index: number;
     title: string;
@@ -158,7 +159,7 @@ export const NeynarFrameCard: React.FC<NeynarFrameCardProps> = ({ url, onFrameBt
 
   return (
     <FrameCard
-      frames={frame ? [frame] : []}
+      frame={frame}
       onFrameBtnPress={handleFrameBtnPress}
     />
   );
