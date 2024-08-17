@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { styled } from "@pigment-css/react";
 import ExternalLinkIcon from "../atoms/icons/ExternalLinkIcon";
 import { NeynarFrame } from "../organisms/NeynarFrameCard";
@@ -11,7 +11,7 @@ export type FrameCardProps = {
     localFrame: NeynarFrame,
     setLocalFrame: React.Dispatch<React.SetStateAction<NeynarFrame>>,
     inputValue?: string
-  ) => void;
+  ) => Promise<void>;
 };
 
 const FrameButton = styled.button({
@@ -43,6 +43,7 @@ const FrameContainer = styled.div({
   alignItems: "right",
   width: "100%",
   maxWidth: "400px",
+  position: "relative",
 });
 
 const ButtonContainer = styled.div({
@@ -85,6 +86,53 @@ const InputField = styled.input({
   color: "white",
 });
 
+const SpinnerOverlay = styled.div({
+  position: "absolute",
+  top: 0,
+  left: 0,
+  width: "100%",
+  height: "100%",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  backgroundColor: "rgba(0, 0, 0, 0.5)",
+  borderRadius: "12px",
+  zIndex: 10,
+});
+
+const FrameSpinnerSVG = () => {
+  const spinnerRef = useRef<SVGSVGElement>(null);
+
+  useEffect(() => {
+    if (spinnerRef.current) {
+      let rotation = 0;
+      const animate = () => {
+        rotation += 6;
+        if (spinnerRef.current) {
+          spinnerRef.current.style.transform = `rotate(${rotation}deg)`;
+        }
+        requestAnimationFrame(animate);
+      };
+      requestAnimationFrame(animate);
+    }
+  }, []);
+
+  return (
+    <svg
+      ref={spinnerRef}
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth="1.5"
+      stroke="currentColor"
+      className="size-6 text-white"
+      style={{ width: '24px', height: '24px' }}
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+    </svg>
+  );
+};
+
 function CastFrameBtn({ number, text, actionType, target, frameUrl, handleOnClick }: any) {
   return (
     <FrameButton onClick={() => handleOnClick(number)}>
@@ -98,6 +146,7 @@ function CastFrameBtn({ number, text, actionType, target, frameUrl, handleOnClic
 function CastFrame({ frame, onFrameBtnPress }: { frame: NeynarFrame, onFrameBtnPress: FrameCardProps['onFrameBtnPress'] }) {
   const [localFrame, setLocalFrame] = useState<NeynarFrame>(frame);
   const [inputValue, setInputValue] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
 
   const renderFrameButtons = () => {
     const buttons = localFrame.buttons.map((btn) => (
@@ -108,7 +157,11 @@ function CastFrame({ frame, onFrameBtnPress }: { frame: NeynarFrame, onFrameBtnP
         actionType={btn.action_type}
         target={btn.target}
         frameUrl={frame.frames_url}
-        handleOnClick={(btnIndex: number) => onFrameBtnPress(btnIndex, localFrame, setLocalFrame, inputValue)}
+        handleOnClick={(btnIndex: number) => {
+          setLoading(true);
+          onFrameBtnPress(btnIndex, localFrame, setLocalFrame, inputValue)
+            .finally(() => setLoading(false));
+        }}
       />
     ));
     return <ButtonContainer>{buttons}</ButtonContainer>;
@@ -140,6 +193,9 @@ function CastFrame({ frame, onFrameBtnPress }: { frame: NeynarFrame, onFrameBtnP
   return (
     <>
       <FrameContainer>
+        {loading && (
+          <SpinnerOverlay><FrameSpinnerSVG /></SpinnerOverlay>
+        )}
         {localFrame.frames_url && (
           <>
             <a href={localFrame.frames_url} target="_blank" rel="noopener noreferrer" style={{ width: '100%' }}>
