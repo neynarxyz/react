@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import { styled } from "@pigment-css/react";
 import ExternalLinkIcon from "../atoms/icons/ExternalLinkIcon";
 import { NeynarFrame } from "../organisms/NeynarFrameCard";
+import { LightningIcon } from "../atoms/icons/LightningIcon";
 
 export type FrameCardProps = {
-  frames: NeynarFrame[];
+  frame: NeynarFrame | null;
   onFrameBtnPress: (
     btnIndex: number,
     localFrame: NeynarFrame,
@@ -14,76 +15,82 @@ export type FrameCardProps = {
 };
 
 const FrameButton = styled.button({
-  border: "1px solid rgba(0, 0, 0, 0.75)",
-  borderRadius: "12px",
-  padding: "4px 16px",
-  fontSize: "12px",
+  border: "1px solid rgba(255, 255, 255, 0.2)",
+  borderRadius: "8px",
+  padding: "8px 16px",
+  fontSize: "14px",
   display: "flex",
   alignItems: "center",
+  justifyContent: "center",
   gap: "8px",
-  '@media (min-width: 768px)': {
-    fontSize: "16px",
-  },
-  cursor: 'pointer'
+  cursor: 'pointer',
+  backgroundColor: "#1E1E1E",
+  color: "white",
+  flex: "1 1 0",
+  minWidth: "0",
+  '&:hover': {
+    backgroundColor: "#2E2E2E",
+  }
 });
 
 const FrameContainer = styled.div({
-  border: "0.5px solid rgba(128, 128, 128, 0.7)",
+  border: "1px solid rgba(255, 255, 255, 0.1)",
   margin: "8px 0",
-  padding: "16px",
-  backgroundColor: "transparent",
+  backgroundColor: "#121212",
   borderRadius: "12px",
   display: "flex",
   flexDirection: "column",
-  alignItems: "center",
+  alignItems: "right",
+  width: "100%",
+  maxWidth: "400px",
 });
 
 const ButtonContainer = styled.div({
   margin: "8px 0",
   display: "flex",
-  flexDirection: "row",
+  flexWrap: "wrap",
   gap: "8px",
-  justifyContent: "center",
+  width: "100%",
 });
 
 const FrameImage = styled.img({
   width: "100%",
-  height: "auto",
-  borderRadius: "8px",
+  borderTopLeftRadius: "8px",
+  borderTopRightRadius: "8px",
 });
 
 const FrameDomain = styled.div({
   fontSize: "12px",
-  color: "#aaa",
-  marginTop: "4px",
-  textAlign: "right",
+  color: "#888",
+  marginTop: "auto",
   width: "100%",
+  padding: "4px 0"
 });
 
 const FlexContainer = styled.div({
   display: "flex",
   flexDirection: "column",
   gap: "4px",
+  width: "100%",
 });
 
 const InputField = styled.input({
-  border: "1px solid rgba(0, 0, 0, 0.75)",
-  borderRadius: "12px",
+  border: "1px solid rgba(255, 255, 255, 0.2)",
+  borderRadius: "8px",
   padding: "8px",
   marginTop: "8px",
-  width: "80%",
-  fontSize: "16px",
-  '@media (min-width: 768px)': {
-    fontSize: "16px",
-  },
+  width: "100%",
+  fontSize: "14px",
+  backgroundColor: "#1E1E1E",
+  color: "white",
 });
 
 function CastFrameBtn({ number, text, actionType, target, frameUrl, handleOnClick }: any) {
-
   return (
     <FrameButton onClick={() => handleOnClick(number)}>
       {text}
       {(actionType === "link" || actionType === "post_redirect" || actionType === "mint") && <ExternalLinkIcon />}
+      {actionType === "tx" && <LightningIcon />}
     </FrameButton>
   )
 }
@@ -119,13 +126,24 @@ function CastFrame({ frame, onFrameBtnPress }: { frame: NeynarFrame, onFrameBtnP
     }
   };
 
+  const getImageStyle = () => {
+    switch (localFrame.image_aspect_ratio) {
+      case "1:1":
+        return { aspectRatio: "1 / 1" };
+      case "1.91:1":
+        return { aspectRatio: "1.91 / 1" };
+      default:
+        return {};
+    }
+  };
+
   return (
     <>
       <FrameContainer>
         {localFrame.frames_url && (
           <>
-            <a href={localFrame.frames_url} target="_blank" rel="noopener noreferrer">
-              <FrameImage src={localFrame.image} alt={`Frame image for ${localFrame.frames_url}`} />
+            <a href={localFrame.frames_url} target="_blank" rel="noopener noreferrer" style={{ width: '100%' }}>
+              <FrameImage src={localFrame.image} alt={`Frame image for ${localFrame.frames_url}`} style={getImageStyle()} />
             </a>
             {localFrame.input?.text && (
               <InputField
@@ -139,17 +157,17 @@ function CastFrame({ frame, onFrameBtnPress }: { frame: NeynarFrame, onFrameBtnP
           </>
         )}
       </FrameContainer>
-      <FrameDomain>{extractDomain(localFrame.frames_url)}</FrameDomain>
+      {localFrame.frames_url && <FrameDomain>{extractDomain(localFrame.frames_url)}</FrameDomain>}
     </>
   );
 }
 
-export const FrameCard: React.FC<FrameCardProps> = ({ frames, onFrameBtnPress }) => {
+export const FrameCard: React.FC<FrameCardProps> = ({ frame, onFrameBtnPress }) => {
   return (
     <FlexContainer>
-      {frames.map((frame: NeynarFrame, index: number) => (
-        <CastFrame key={`cast-frame-${index}`} frame={frame} onFrameBtnPress={onFrameBtnPress} />
-      ))}
+      {frame ? 
+        <CastFrame frame={frame} onFrameBtnPress={onFrameBtnPress} />
+      : <></>}
     </FlexContainer>
   );
 };

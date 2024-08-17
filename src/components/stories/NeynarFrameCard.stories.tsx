@@ -24,7 +24,7 @@ const TemplateWithInteractions: StoryFn<NeynarFrameCardProps> = (args) => (
 
 export const Primary = Template.bind({});
 Primary.args = {
-  frames: [
+  frame:
     {
       version: "vNext",
       title: "Introducing Smart Wallets on Paragraph",
@@ -59,12 +59,11 @@ Primary.args = {
       state: {},
       frames_url: "https://paragraph.xyz/@blog/introducing-smart-wallets",
     },
-  ],
 };
 
 Primary.argTypes = {
   hash: { table: { disable: true } },
-  frames: { table: { disable: true } },
+  frame: { table: { disable: true } },
 };
 
 export const EventsFrame = TemplateWithInteractions.bind({});
@@ -87,8 +86,7 @@ ZoraFrame.args = {
   url: "https://zora.co/collect/base:0xcf6e80defd9be067f5adda2924b55c2186d3e930/5"
 };
 
-
 ParagraphFrame.argTypes = {
   hash: { table: { disable: true } },
-  frames: { table: { disable: true } },
+  frame: { table: { disable: true } },
 };
