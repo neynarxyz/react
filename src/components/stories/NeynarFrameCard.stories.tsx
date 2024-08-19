@@ -81,6 +81,16 @@ ParagraphFrame.args = {
   url: "https://paragraph.xyz/@blog/introducing-smart-wallets"
 };
 
+export const PonderPollFrame = TemplateWithInteractions.bind({});
+PonderPollFrame.args = {
+  url: "https://frame.weponder.io/api/polls/10419"
+};
+
+export const PonderQuestionFrame = TemplateWithInteractions.bind({});
+PonderQuestionFrame.args = {
+  url: "https://frame.weponder.io/api/questions/710756bd-247f-4015-add2-1d62df8e3e91"
+};
+
 export const ZoraFrame = TemplateWithInteractions.bind({});
 ZoraFrame.args = {
   url: "https://zora.co/collect/base:0xcf6e80defd9be067f5adda2924b55c2186d3e930/5"
