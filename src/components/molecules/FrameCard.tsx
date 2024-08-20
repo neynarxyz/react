@@ -189,7 +189,7 @@ function CastFrame({ frame, onFrameBtnPress }: { frame: NeynarFrame, onFrameBtnP
       case "1.91:1":
         return { aspectRatio: "1.91 / 1" };
       default:
-        return {};
+        return { aspectRatio: "1.91 / 1" };
     }
   };
 

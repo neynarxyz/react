@@ -12,7 +12,7 @@ export type NeynarFrame = {
   version: string;
   title?: string;
   image: string;
-  image_aspect_ratio: string;
+  image_aspect_ratio?: string;
   buttons: {
     index: number;
     title: string;
@@ -87,7 +87,7 @@ export const NeynarFrameCard: React.FC<NeynarFrameCardProps> = ({ url, onFrameBt
 
   const isValidNeynarFrame = (frame: any): frame is NeynarFrame  => {
     if (typeof frame !== 'object' || frame === null) return false;
-    const requiredFields = ['version', 'image', 'image_aspect_ratio', 'buttons', 'frames_url'];
+    const requiredFields = ['version', 'image', 'buttons', 'frames_url'];
     for (const field of requiredFields) {
       if (!(field in frame)) return false;
     }
