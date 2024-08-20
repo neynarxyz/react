@@ -43,6 +43,7 @@ function formatCasts(casts: any[]): CastCardProps[] {
             replies: cast?.replies?.count ?? 0,
             embeds: cast?.embeds ?? [],
             frames: cast?.frames ?? [],
+            renderEmbeds: cast?.renderEmbeds ?? true,
             channel: cast?.channel ?? '',
             viewerFid: 2,
             hasPowerBadge: cast?.author?.power_badge ?? false,
