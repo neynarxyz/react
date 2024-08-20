@@ -91,7 +91,7 @@ export const NeynarFrameCard: React.FC<NeynarFrameCardProps> = ({ url, onFrameBt
     for (const field of requiredFields) {
       if (!(field in frame)) return false;
     }
-    if (!Array.isArray(frame.buttons) || typeof frame.buttons[0]?.index !== 'number') {
+    if (!Array.isArray(frame.buttons) || frame.buttons.some((button: NeynarFrame['buttons'][0]) => typeof button.index !== 'number')) {
       return false;
     }
     return true;
