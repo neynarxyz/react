@@ -56,11 +56,13 @@ function formatCast(cast: any): CastCardProps {
         replies: cast.replies.count,
         embeds: cast.embeds,
         frames: cast.frames,
+        renderEmbeds: cast.renderEmbeds,
         channel: cast.channel,
         viewerFid: 2,
         hasPowerBadge: cast.author.power_badge,
         isOwnProfile: false,
         allowReactions: true,
+        renderFrames: false,
         direct_replies: cast.direct_replies ? cast.direct_replies.map(formatCast) : [],
     };
 }

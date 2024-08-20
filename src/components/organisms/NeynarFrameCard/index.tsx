@@ -10,9 +10,9 @@ import { LocalStorageKeys } from "../../../hooks/use-local-storage-state";
 
 export type NeynarFrame = {
   version: string;
-  title: string;
+  title?: string;
   image: string;
-  image_aspect_ratio: string;
+  image_aspect_ratio?: string;
   buttons: {
     index: number;
     title: string;
@@ -29,7 +29,7 @@ export type NeynarFrame = {
 
 export type NeynarFrameCardProps = {
   url: string;
-  onFrameBtnPress?: (
+  onFrameBtnPress: (
     btnIndex: number,
     localFrame: NeynarFrame,
     setLocalFrame: React.Dispatch<React.SetStateAction<NeynarFrame>>,
@@ -85,55 +85,17 @@ export const NeynarFrameCard: React.FC<NeynarFrameCardProps> = ({ url, onFrameBt
     }
   }, [url, showToast, initialFrame]);
 
-  const defaultFrameBtnPress = async (
-    btnIndex: number,
-    localFrame: NeynarFrame,
-    inputValue?: string
-  ): Promise<NeynarFrame> => {
-    if (!signerValue) {
-      showToast(ToastType.Error, 'Signer UUID is not available');
-      throw new Error('Signer UUID is not available');
+  const isValidNeynarFrame = (frame: any): frame is NeynarFrame  => {
+    if (typeof frame !== 'object' || frame === null) return false;
+    const requiredFields = ['version', 'image', 'buttons', 'frames_url'];
+    for (const field of requiredFields) {
+      if (!(field in frame)) return false;
     }
-  
-    const button = localFrame.buttons.find(btn => btn.index === btnIndex);
-    const postUrl = button?.post_url;
-  
-    if ((button?.action_type === "link" || button?.action_type === "post_redirect" || button?.action_type === "mint")) {
-      window.open(button.action_type !== 'mint' && button?.target ? button?.target : localFrame.frames_url, '_blank');
-      return localFrame;
-    } else {
-      try {
-        const response = await fetchWithTimeout(`${NEYNAR_API_URL}/v2/farcaster/frame/action?client_id=${client_id}`, {
-          method: "POST",
-          headers: {
-            "accept": "application/json",
-            "content-type": "application/json"
-          },
-          body: JSON.stringify({
-            "signer_uuid": signerValue,
-            "action": {
-              "button": button,
-              "frames_url": localFrame.frames_url,
-              "post_url": postUrl ? postUrl : localFrame.frames_url,
-              "input": {
-                  "text": inputValue
-              }
-            }
-          })
-        }) as Response;
-        if (response.ok) {
-          const json = await response.json() as NeynarFrame;
-          return json;
-        } else {
-          showToast(ToastType.Error, `HTTP error! status: ${response.status}`);
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-      } catch (error) {
-        showToast(ToastType.Error, `An error occurred while processing the button press: ${error}`);
-        throw error;
-      }
+    if (!Array.isArray(frame.buttons) || frame.buttons.some((button: NeynarFrame['buttons'][0]) => typeof button.index !== 'number')) {
+      return false;
     }
-  }
+    return true;
+  }  
 
   const handleFrameBtnPress = async (
     btnIndex: number,
@@ -142,12 +104,15 @@ export const NeynarFrameCard: React.FC<NeynarFrameCardProps> = ({ url, onFrameBt
     inputValue?: string
   ) => {
     try {
-      const updatedFrame = await (onFrameBtnPress ? onFrameBtnPress(btnIndex, localFrame, setLocalFrame, inputValue) : defaultFrameBtnPress(btnIndex, localFrame, inputValue));
+      const updatedFrame = await onFrameBtnPress(btnIndex, localFrame, setLocalFrame, inputValue);
+      if (!isValidNeynarFrame(updatedFrame)) {
+        throw new Error("Invalid frame data received");
+      }
       setLocalFrame(updatedFrame);
     } catch (error) {
       showToast(ToastType.Error, `An error occurred while processing the button press: ${error}`);
     }
-  };
+  };  
 
   if (error) {
     return (
