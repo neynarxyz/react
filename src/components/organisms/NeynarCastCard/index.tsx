@@ -3,6 +3,7 @@ import { NEYNAR_API_URL } from "../../../constants";
 import { useNeynarContext } from "../../../contexts";
 import { CastCard } from "../../molecules/CastCard";
 import customFetch from "../../../utils/fetcher";
+import { type NeynarFrame } from "../NeynarFrameCard";
 
 async function fetchCastByIdentifier({
   type,
@@ -32,6 +33,15 @@ export type NeynarCastCardProps = {
   viewerFid?: number;
   allowReactions?: boolean;
   renderEmbeds?: boolean;
+  onLikeBtnPress?: () => boolean;
+  onRecastBtnPress?: () => boolean;
+  onCommentBtnPress?: () => void;
+  onFrameBtnPress?: (
+    btnIndex: number,
+    localFrame: NeynarFrame,
+    setLocalFrame: React.Dispatch<React.SetStateAction<NeynarFrame>>,
+    inputValue?: string
+  ) => Promise<NeynarFrame>;
   customStyles?: React.CSSProperties;
 };
 
@@ -39,8 +49,12 @@ export const NeynarCastCard: React.FC<NeynarCastCardProps> = ({
   type,
   identifier,
   viewerFid,
-  allowReactions = true,
+  allowReactions = false,
   renderEmbeds = true,
+  onLikeBtnPress,
+  onRecastBtnPress,
+  onCommentBtnPress,
+  onFrameBtnPress,
   customStyles
 }) => {
   const { client_id } = useNeynarContext();
@@ -71,7 +85,10 @@ export const NeynarCastCard: React.FC<NeynarCastCardProps> = ({
   }
 
   if (!castData || error) {
-    return <div>Error fetching user data</div>;
+    return <div>Error: could not fetch cast data</div>;
+  }
+  if (renderEmbeds && !onFrameBtnPress) {
+    return <div>Error: onFrameBtnPress must be provided when renderEmbeds is true.</div>;
   }
 
   return (
@@ -83,8 +100,9 @@ export const NeynarCastCard: React.FC<NeynarCastCardProps> = ({
       hash={castData.hash}
       reactions={castData.reactions}
       replies={castData.replies.count}
-      embeds={renderEmbeds ? castData.embeds : []}
+      embeds={castData.embeds ?? []}
       frames={castData.frames ?? []}
+      renderEmbeds={renderEmbeds}
       channel={castData.channel ? {
         id: castData.channel.id,
         name: castData.channel.name,
@@ -95,6 +113,10 @@ export const NeynarCastCard: React.FC<NeynarCastCardProps> = ({
       hasPowerBadge={castData.author.power_badge}
       isOwnProfile={isOwnProfile}
       customStyles={customStyles}
+      onLikeBtnPress={onLikeBtnPress}
+      onRecastBtnPress={onRecastBtnPress}
+      onCommentBtnPress={onCommentBtnPress}
+      onFrameBtnPress={onFrameBtnPress}
     />
   );
 };

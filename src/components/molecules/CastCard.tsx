@@ -8,17 +8,7 @@ import { useRenderEmbeds } from "../organisms/NeynarCastCard/hooks/useRenderEmbe
 import Reactions from "../atoms/Reactions";
 import { ShareToClipboardIcon } from "../atoms/icons/ShareToClipboardIcon";
 import { SKELETON_PFP_URL } from "../../constants";
-import { NeynarFrameCard, NeynarFrame as NeynarFrameCardType } from "../organisms/NeynarFrameCard";
-
-type NeynarFrame = {
-    image: string;
-    frames_url: string;
-    post_url?: string;
-    buttons: {
-        index: number;
-        title: string;
-    }[];
-};
+import { NeynarFrameCard, type NeynarFrame } from "../organisms/NeynarFrameCard";
 
 const StyledCastCard = styled.div(({ theme }) => ({
   display: "flex",
@@ -146,6 +136,7 @@ export type CastCardProps = {
   replies: number;
   embeds: any[];
   frames: NeynarFrame[];
+  renderEmbeds: boolean;
   channel?: {
     id: string;
     name: string;
@@ -156,9 +147,15 @@ export type CastCardProps = {
   isOwnProfile?: boolean;
   isEmbed?: boolean;
   allowReactions: boolean;
-  onComment?: () => void;
-  onRecast?: () => void;
-  onLike?: (newVal: boolean) => void;
+  onLikeBtnPress?: () => boolean;
+  onRecastBtnPress?: () => boolean;
+  onCommentBtnPress?: () => void;
+  onFrameBtnPress?: (
+    btnIndex: number,
+    localFrame: NeynarFrame,
+    setLocalFrame: React.Dispatch<React.SetStateAction<NeynarFrame>>,
+    inputValue?: string
+  ) => Promise<NeynarFrame>;
   direct_replies?: CastCardProps[];
   customStyles?: React.CSSProperties;
 };
@@ -174,14 +171,16 @@ export const CastCard = React.memo(
     replies,
     embeds = [],
     frames = [],
+    renderEmbeds,
     channel,
     viewerFid,
     hasPowerBadge,
     isEmbed = true,
     allowReactions,
-    onComment,
-    onRecast,
-    onLike,
+    onLikeBtnPress,
+    onRecastBtnPress,
+    onCommentBtnPress,
+    onFrameBtnPress,
     direct_replies,
     customStyles
   }: CastCardProps) => {
@@ -202,12 +201,14 @@ export const CastCard = React.memo(
     }, [reactions.likes, viewerFid]);
 
     const handleLike = useCallback((newVal: boolean) => {
-      setLikesCount(prev => newVal ? prev + 1 : prev - 1);
-      setIsLiked(newVal);
-      if (onLike) {
-        onLike(newVal);
+      if (onLikeBtnPress) {
+        const likeBtnPressResp = onLikeBtnPress();
+        if(likeBtnPressResp){
+          setLikesCount(prev => newVal ? prev + 1 : prev - 1);
+          setIsLiked(newVal);
+        }
       }
-    }, [onLike]);
+    }, [onLikeBtnPress]);
 
     const renderedEmbeds = useRenderEmbeds(filteredEmbeds, allowReactions, viewerFid);
 
@@ -242,7 +243,7 @@ export const CastCard = React.memo(
             <Box spacingVertical="15px">
               <LinkifiedText>{linkifiedText}</LinkifiedText>
             </Box>
-            {filteredEmbeds && filteredEmbeds.length > 0 && (
+            {renderEmbeds && filteredEmbeds && filteredEmbeds.length > 0 ? (
               <EmbedsContainer style={{ margin: isSingle ? '10px 0' : '0' }}>
                 {renderedEmbeds.map((embed, index) => (
                   <div key={index} style={{ width: '100%' }}>
@@ -250,23 +251,28 @@ export const CastCard = React.memo(
                   </div>
                 ))}
               </EmbedsContainer>
-            )}
-            {frames && frames.length > 0 && (
-              <EmbedsContainer>
-               {frames.map((frame: any) => {
-                return (
-                    <NeynarFrameCard key={frame.frames_url} url={frame.frames_url} initialFrame={frame} />
-                );
-               })}
-              </EmbedsContainer>
-            )}
+            ) : <></>}
+            {
+              renderEmbeds && frames && frames.length > 0 ? (
+                <EmbedsContainer>
+                  {frames.map((frame: NeynarFrame) => (
+                    <NeynarFrameCard 
+                      key={frame.frames_url} 
+                      url={frame.frames_url} 
+                      initialFrame={frame} 
+                      onFrameBtnPress={onFrameBtnPress!}
+                    />
+                  ))}
+                </EmbedsContainer>
+              ) : null
+            }
             <ReactionsContainer style={{ justifyContent: allowReactions ? 'space-between' : 'flex-end' }}>
               {allowReactions && (
                 <Reactions
                   hash={hash}
                   reactions={reactions}
-                  onComment={onComment}
-                  onRecast={onRecast}
+                  onComment={onCommentBtnPress}
+                  onRecast={onRecastBtnPress}
                   onLike={handleLike}
                   isLiked={isLiked}
                 />
