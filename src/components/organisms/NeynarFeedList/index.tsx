@@ -49,6 +49,7 @@ function formatCasts(casts: any[]): CastCardProps[] {
             hasPowerBadge: cast?.author?.power_badge ?? false,
             isOwnProfile: false,
             allowReactions: true,
+            renderFrames: false,
         };
     });
 }

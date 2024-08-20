@@ -136,7 +136,6 @@ export type CastCardProps = {
   replies: number;
   embeds: any[];
   frames: NeynarFrame[];
-  renderEmbeds: boolean;
   channel?: {
     id: string;
     name: string;
@@ -147,6 +146,8 @@ export type CastCardProps = {
   isOwnProfile?: boolean;
   isEmbed?: boolean;
   allowReactions: boolean;
+  renderEmbeds: boolean;
+  renderFrames: boolean;
   onLikeBtnPress?: () => boolean;
   onRecastBtnPress?: () => boolean;
   onCommentBtnPress?: () => void;
@@ -171,12 +172,13 @@ export const CastCard = React.memo(
     replies,
     embeds = [],
     frames = [],
-    renderEmbeds,
     channel,
     viewerFid,
     hasPowerBadge,
     isEmbed = true,
     allowReactions,
+    renderEmbeds,
+    renderFrames,
     onLikeBtnPress,
     onRecastBtnPress,
     onCommentBtnPress,
@@ -253,7 +255,7 @@ export const CastCard = React.memo(
               </EmbedsContainer>
             ) : <></>}
             {
-              renderEmbeds && frames && frames.length > 0 ? (
+              renderFrames && frames && frames.length > 0 ? (
                 <EmbedsContainer>
                   {frames.map((frame: NeynarFrame) => (
                     <NeynarFrameCard 

@@ -85,6 +85,18 @@ export const NeynarFrameCard: React.FC<NeynarFrameCardProps> = ({ url, onFrameBt
     }
   }, [url, showToast, initialFrame]);
 
+  const isValidNeynarFrame = (frame: any): frame is NeynarFrame  => {
+    if (typeof frame !== 'object' || frame === null) return false;
+    const requiredFields = ['version', 'title', 'image', 'image_aspect_ratio', 'buttons', 'frames_url'];
+    for (const field of requiredFields) {
+      if (!(field in frame)) return false;
+    }
+    if (!Array.isArray(frame.buttons) || typeof frame.buttons[0]?.index !== 'number') {
+      return false;
+    }
+    return true;
+  }  
+
   const handleFrameBtnPress = async (
     btnIndex: number,
     localFrame: NeynarFrame,
@@ -93,11 +105,14 @@ export const NeynarFrameCard: React.FC<NeynarFrameCardProps> = ({ url, onFrameBt
   ) => {
     try {
       const updatedFrame = await onFrameBtnPress(btnIndex, localFrame, setLocalFrame, inputValue);
+      if (!isValidNeynarFrame(updatedFrame)) {
+        throw new Error("Invalid frame data received");
+      }
       setLocalFrame(updatedFrame);
     } catch (error) {
       showToast(ToastType.Error, `An error occurred while processing the button press: ${error}`);
     }
-  };
+  };  
 
   if (error) {
     return (

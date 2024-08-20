@@ -20,12 +20,18 @@ const TemplateWithCast: StoryFn<NeynarCastCardProps> = ({
   identifier,
   viewerFid,
   allowReactions,
+  renderEmbeds,
+  renderFrames,
+  onFrameBtnPress
 }) => (
   <NeynarCastCard
     type={type}
     identifier={identifier}
     viewerFid={viewerFid}
     allowReactions={allowReactions}
+    renderEmbeds={renderEmbeds}
+    renderFrames={renderFrames}
+    onFrameBtnPress={onFrameBtnPress}
   />
 );
 
@@ -34,13 +40,17 @@ const TemplateWithCustomStyling: StoryFn<NeynarCastCardProps> = ({
   identifier,
   viewerFid,
   allowReactions,
-  customStyles,
+  renderEmbeds,
+  renderFrames,
+  customStyles
 }) => (
   <NeynarCastCard
     type={type}
     identifier={identifier}
     viewerFid={viewerFid}
     allowReactions={allowReactions}
+    renderEmbeds={renderEmbeds}
+    renderFrames={renderFrames}
     customStyles={customStyles}
   />
 );
@@ -63,6 +73,8 @@ Primary.args = {
   isOwnProfile: true,
   onCast: () => {},
   allowReactions: false,
+  renderEmbeds: true,
+  renderFrames: false
 };
 Primary.argTypes = {
   fid: { table: { disable: true } },
@@ -74,55 +86,76 @@ export const WithCast = TemplateWithCast.bind({});
 WithCast.args = {
   type: 'url',
   identifier: "https://warpcast.com/dylsteck.eth/0xda6b1699",
-  allowReactions: true,
+  allowReactions: false,
+  renderEmbeds: true,
+  renderFrames: false
 };
 
 export const CastWithQuoteCast = TemplateWithCast.bind({});
 CastWithQuoteCast.args = {
   type: 'url',
   identifier: "https://warpcast.com/nonlinear.eth/0x4e09e86c",
-  allowReactions: true,
+  allowReactions: false,
+  renderEmbeds: true,
+  renderFrames: false
 };
 
 export const CastWithImage = TemplateWithCast.bind({});
 CastWithImage.args = {
   type: 'url',
   identifier: "https://warpcast.com/rish/0xcc752c55",
-  allowReactions: true,
+  allowReactions: false,
+  renderEmbeds: true,
+  renderFrames: false
 };
 
 export const CastWithImageAndLink = TemplateWithCast.bind({});
 CastWithImageAndLink.args = {
   type: 'url',
   identifier: "https://warpcast.com/giuseppe/0x1805c345",
-  allowReactions: true,
+  allowReactions: false,
+  renderEmbeds: true,
+  renderFrames: false
 };
 
 export const CastWithTwoImages = TemplateWithCast.bind({});
 CastWithTwoImages.args = {
   type: 'url',
   identifier: "https://warpcast.com/nicholas/0xd06c1e56",
-  allowReactions: true,
+  allowReactions: false,
+  renderEmbeds: true,
+  renderFrames: false
 };
 
 export const CastWithVideo = TemplateWithCast.bind({});
 CastWithVideo.args = {
   type: 'url',
   identifier: "https://warpcast.com/coinbasewallet/0xb9dee5f9",
-  allowReactions: true,
+  allowReactions: false,
+  renderEmbeds: true,
+  renderFrames: false
+};
+
+const emptyFunction = () => {
+  return;
 };
 
 export const CastWithFrame = TemplateWithCast.bind({});
 CastWithFrame.args = {
   type: 'url',
   identifier: "https://warpcast.com/slokh/0x57e03c32",
-  allowReactions: true,
+  allowReactions: false,
+  renderEmbeds: true,
+  renderFrames: true,
+  onFrameBtnPress: emptyFunction
 };
 
 export const WithCustomStyling = TemplateWithCustomStyling.bind({});
 WithCustomStyling.args = {
   type: 'url',
   identifier: "https://warpcast.com/dylsteck.eth/0xda6b1699",
-  allowReactions: true,
+  allowReactions: false,
+  renderEmbeds: true,
+  renderFrames: false,
   customStyles: { background: "black", color: "white" },
 };

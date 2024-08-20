@@ -33,6 +33,7 @@ export type NeynarCastCardProps = {
   viewerFid?: number;
   allowReactions?: boolean;
   renderEmbeds?: boolean;
+  renderFrames?: boolean;
   onLikeBtnPress?: () => boolean;
   onRecastBtnPress?: () => boolean;
   onCommentBtnPress?: () => void;
@@ -51,6 +52,7 @@ export const NeynarCastCard: React.FC<NeynarCastCardProps> = ({
   viewerFid,
   allowReactions = false,
   renderEmbeds = true,
+  renderFrames = false,
   onLikeBtnPress,
   onRecastBtnPress,
   onCommentBtnPress,
@@ -87,7 +89,7 @@ export const NeynarCastCard: React.FC<NeynarCastCardProps> = ({
   if (!castData || error) {
     return <div>Error: could not fetch cast data</div>;
   }
-  if (renderEmbeds && !onFrameBtnPress) {
+  if (renderFrames && !onFrameBtnPress) {
     return <div>Error: onFrameBtnPress must be provided when renderEmbeds is true.</div>;
   }
 
@@ -103,6 +105,7 @@ export const NeynarCastCard: React.FC<NeynarCastCardProps> = ({
       embeds={castData.embeds ?? []}
       frames={castData.frames ?? []}
       renderEmbeds={renderEmbeds}
+      renderFrames={renderFrames}
       channel={castData.channel ? {
         id: castData.channel.id,
         name: castData.channel.name,
