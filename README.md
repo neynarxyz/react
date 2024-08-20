@@ -98,7 +98,18 @@ Params:
 - `type` ('url' | 'hash'): The type of identifier used for the cast.
 - `identifier` (string): The identifier (either URL or hash) for the cast.
 - `viewerFid?` (number): The FID of the viewer. Default: undefined.
-- `allowReactions?` (boolean, default = true): Whether to allow reactions on the cast, and when this is true the component default to using Neynar reactions
+- `allowReactions?` (boolean, default = false): Whether to allow reactions on the cast
+- `renderEmbeds`(boolean, default = true): Whether to allow rendering of cast embeds
+- `renderFrames`(boolean, default = false): Whether to allow rendering of cast frames(note: if you pass in true, you must also set a value for `onFrameBtnPress`)
+- `onLikeBtnPress`(() => boolean) A handler to add functionality when the like button is pressed. A response of `true` indicates the like action is successful
+- `onRecastBtnPress`(() => boolean) A handler to add functionality when the recast button is pressed. A response of `true` indicates the recast action is successful
+- `onCommentBtnPress`(() => boolean) A handler to add functionality when the comment button is pressed. A response of `true` indicates the comment action is successful
+- `onFrameBtnPress?: (
+    btnIndex: number,
+    localFrame: NeynarFrame,
+    setLocalFrame: React.Dispatch<React.SetStateAction<NeynarFrame>>,
+    inputValue?: string
+  ) => Promise<NeynarFrame>;`: A handler to add functionality when a frame button is pressed.
 - `customStyles?` (CSSProperties): Custom styles for the cast card. Default: {}
 
 Usage:
@@ -169,7 +180,12 @@ This component displays a specific frame on Farcaster.
 
 Params:
 - `url` (string): The URL to fetch the frame data from.
-- `onFrameBtnPress?` (function): A callback function triggered when a button in the frame is pressed. Default: The SDK handles POST actions through the Neynar API.
+- `onFrameBtnPress: (
+    btnIndex: number,
+    localFrame: NeynarFrame,
+    setLocalFrame: React.Dispatch<React.SetStateAction<NeynarFrame>>,
+    inputValue?: string
+  ) => Promise<NeynarFrame>;`: A handler to add functionality when a frame button is pressed.
 - `initialFrame?` (NeynarFrame): The initial frame data to display. Default: undefined.
 
 Usage:
