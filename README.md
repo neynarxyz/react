@@ -197,7 +197,8 @@ import { NeynarFrameCard } from "@neynar/react";
 />
 ```
 
-**Note**: It is highly recommended to override the `onFrameBtnPress` and make the API call through your own secure, authenticated server which can then call the [Neynar post frame action API](https://docs.neynar.com/reference/post-frame-action).
+## How to securely implement write actions
+There are currently two components that offer props for develoeprs to handle write actions: `NeynarCastCard`(write action handlers for cast reactions) and `NeynarFeedCard`(write action handlers for frame interactions). We highly recommend that you call Neynar's POST APIs(or other intended APIs) from your own, authenticated server to ensure that your Neynar API key credentials are not exposed on the client-side. Check out the [example app](https://github.com/neynarxyz/farcaster-examples/tree/main/wownar-react-sdk) below for a guide and example of securely implementing write actions. 
 
 
 ## Example app
