@@ -64,7 +64,7 @@ type ReactionsProps = {
   };
   onComment?: () => void;
   onRecast?: () => void;
-  onLike?: (newVal: boolean) => void;
+  onLike?: () => void;
   isLiked: boolean;
 };
 
@@ -113,68 +113,37 @@ const Reactions: React.FC<ReactionsProps> = ({
       setShowPopover(false);
     }
   }, [signerValue, isAuthenticated, showPopover]);
-
-  const postReaction = async (type: string) => {
-    if (!signerValue) {
-      console.error("signerValue is null, cannot post reaction.");
-      return;
-    }
-
-    const request = await customFetch(
-      `${NEYNAR_API_URL}/v2/farcaster/reaction?client_id=${client_id}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          reaction_type: type,
-          signer_uuid: signerValue,
-          target: hash,
-        }),
-      }
-    );
-    const result = await request.json();
-    if (!result.success) {
-      console.error("Error posting reaction:", result);
-      throw new Error("Error posting reaction");
-    } else {
-      if (type === "like") {
-        setIsLiked(!isLiked);
-        if (onLike) {
-          onLike(!isLiked);
-        }
-      } else if (type === "recast") {
-        setIsRecasted(!isRecasted);
-      }
-    }
-  };
-
   const handleAction = async (
     event: React.MouseEvent<SVGSVGElement>,
-    actionName: string,
-    action?: () => void
+    actionName: string
   ) => {
     if (signerValue) {
       switch (actionName) {
         case "comment":
+          if(onComment){
+            onComment()
+          } else{
+            throw new Error("No comment handler function provided")
+          }
           break;
         case "recast":
-          await postReaction("recast");
+          if(onRecast){
+            onRecast()
+          } else{
+            throw new Error("No recast handler function provided")
+          }
           break;
         case "like":
-          await postReaction("like");
+          if(onLike){
+            onLike()
+          } else{
+            throw new Error("No like handler function provided")
+          }
           break;
         default:
           break;
       }
     }
-    if (action && !signerValue) {
-      action();
-    } else if (actionName !== 'comment') {
-      setShowPopover(true);
-    }
-
     const iconElement = iconRefs.current[actionName];
     if (iconElement) {
       const iconRect = iconElement.getBoundingClientRect();
@@ -210,13 +179,13 @@ const Reactions: React.FC<ReactionsProps> = ({
       >
         <Box spacingVertical="15px" style={{ display: "flex", gap: "10px" }}>
           <div ref={(el) => (iconRefs.current.comment = el)}>
-            <CommentIcon onClick={(e) => handleAction(e, "comment", onComment)} />
+            <CommentIcon onClick={(e) => handleAction(e, "comment")} />
           </div>
           <div ref={(el) => (iconRefs.current.recast = el)}>
-            <RecastIcon fill={isRecasted ? "green" : undefined} onClick={(e) => handleAction(e, "recast", onRecast)} />
+            <RecastIcon fill={isRecasted ? "green" : undefined} onClick={(e) => handleAction(e, "recast")} />
           </div>
           <div ref={(el) => (iconRefs.current.like = el)}>
-            <LikeIcon fill={isLiked ? "red" : undefined} onClick={(e) => handleAction(e, "like", () => onLike && onLike(!isLiked))} />
+            <LikeIcon fill={isLiked ? "red" : undefined} onClick={(e) => handleAction(e, "like")} />
           </div>
         </Box>
       </Box>

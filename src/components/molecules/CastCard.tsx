@@ -202,12 +202,12 @@ export const CastCard = React.memo(
       setIsLiked(reactions.likes.some(like => like.fid === viewerFid));
     }, [reactions.likes, viewerFid]);
 
-    const handleLike = useCallback((newVal: boolean) => {
+    const handleLike = useCallback(() => {
       if (onLikeBtnPress) {
         const likeBtnPressResp = onLikeBtnPress();
         if(likeBtnPressResp){
-          setLikesCount(prev => newVal ? prev + 1 : prev - 1);
-          setIsLiked(newVal);
+          setLikesCount(prev => prev + 1);
+          setIsLiked(!isLiked);
         }
       }
     }, [onLikeBtnPress]);
