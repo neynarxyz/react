@@ -47,6 +47,7 @@ const preview: Preview = {
         date: /Date$/i,
       },
     },
+    sourceLink: 'https://github.com/neynarxyz/react/',
   },
 
   tags: ["autodocs"]
