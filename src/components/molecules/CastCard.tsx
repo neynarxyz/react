@@ -208,8 +208,10 @@ export const CastCard = React.memo(
         if(likeBtnPressResp){
           setLikesCount(prev => prev + 1);
           setIsLiked(!isLiked);
+          return true;
         }
       }
+      return false;
     }, [onLikeBtnPress]);
 
     const renderedEmbeds = useRenderEmbeds(filteredEmbeds, allowReactions, viewerFid);
