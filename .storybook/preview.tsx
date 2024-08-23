@@ -39,6 +39,7 @@ const withNeynarProvider: Decorator = (Story, context) => {
 
 const preview: Preview = {
   decorators: [themeDecorator, withNeynarProvider],
+
   parameters: {
     controls: {
       matchers: {
@@ -46,7 +47,10 @@ const preview: Preview = {
         date: /Date$/i,
       },
     },
+    sourceLink: 'https://github.com/neynarxyz/react/',
   },
+
+  tags: ["autodocs"]
 };
 
 export default preview;
