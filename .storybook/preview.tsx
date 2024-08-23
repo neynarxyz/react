@@ -39,6 +39,7 @@ const withNeynarProvider: Decorator = (Story, context) => {
 
 const preview: Preview = {
   decorators: [themeDecorator, withNeynarProvider],
+
   parameters: {
     controls: {
       matchers: {
@@ -47,6 +48,8 @@ const preview: Preview = {
       },
     },
   },
+
+  tags: ["autodocs"]
 };
 
 export default preview;
