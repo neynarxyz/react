@@ -63,8 +63,8 @@ type ReactionsProps = {
     }[];
   };
   onComment?: () => void;
-  onRecast?: () => void;
-  onLike?: () => void;
+  onRecast?: () => boolean;
+  onLike?: () => boolean;
   isLiked: boolean;
 };
 
@@ -128,14 +128,14 @@ const Reactions: React.FC<ReactionsProps> = ({
           break;
         case "recast":
           if(onRecast){
-            onRecast()
+            setIsRecasted(onRecast());
           } else{
             throw new Error("No recast handler function provided")
           }
           break;
         case "like":
           if(onLike){
-            onLike()
+            setIsLiked(onLike());
           } else{
             throw new Error("No like handler function provided")
           }
