@@ -172,6 +172,7 @@ const NativeVideoPlayer: React.FC<NativeVideoPlayerProps> = ({ url }) => {
     <video
       ref={videoRef}
       controls
+      muted={true}
       style={{
         width: 'auto',
         maxWidth: '100%',
