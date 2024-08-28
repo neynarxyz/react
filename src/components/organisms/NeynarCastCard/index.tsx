@@ -43,7 +43,8 @@ export type NeynarCastCardProps = {
     setLocalFrame: React.Dispatch<React.SetStateAction<NeynarFrame>>,
     inputValue?: string
   ) => Promise<NeynarFrame>;
-  customStyles?: React.CSSProperties;
+  containerStyles?: React.CSSProperties;
+  textStyles?: React.CSSProperties;
 };
 
 export const NeynarCastCard: React.FC<NeynarCastCardProps> = ({
@@ -57,7 +58,8 @@ export const NeynarCastCard: React.FC<NeynarCastCardProps> = ({
   onRecastBtnPress,
   onCommentBtnPress,
   onFrameBtnPress,
-  customStyles
+  containerStyles,
+  textStyles
 }) => {
   const { client_id } = useNeynarContext();
   const [castData, setCastData] = React.useState<any | null>(null);
@@ -115,7 +117,8 @@ export const NeynarCastCard: React.FC<NeynarCastCardProps> = ({
       allowReactions={allowReactions}
       hasPowerBadge={castData.author.power_badge}
       isOwnProfile={isOwnProfile}
-      customStyles={customStyles}
+      containerStyles={containerStyles}
+      textStyles={textStyles}
       onLikeBtnPress={onLikeBtnPress}
       onRecastBtnPress={onRecastBtnPress}
       onCommentBtnPress={onCommentBtnPress}
