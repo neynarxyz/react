@@ -223,7 +223,7 @@ export const CastCard = React.memo(
         <HBox>
           <Box spacingRight="10px">
             <Avatar
-              src={avatarImgUrl ?? SKELETON_PFP_URL}
+              src={avatarImgUrl && avatarImgUrl.length > 0 ? avatarImgUrl : SKELETON_PFP_URL}
               onError={handleError}
               loading="lazy"
               alt={`${displayName ?? 'Skeleton'} Avatar`}
