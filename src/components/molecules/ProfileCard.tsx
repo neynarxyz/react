@@ -78,7 +78,7 @@ export type ProfileCardProps = {
   isFollowing?: boolean;
   isOwnProfile?: boolean;
   onCast?: () => void;
-  customStyles?: React.CSSProperties;
+  containerStyles?: React.CSSProperties;
 };
 
 export const ProfileCard = memo(
@@ -94,7 +94,7 @@ export const ProfileCard = memo(
     isFollowing,
     isOwnProfile,
     onCast,
-    customStyles,
+    containerStyles,
   }: ProfileCardProps) => {
     const linkifiedBio = useLinkifyBio(bio);
 
@@ -113,18 +113,18 @@ export const ProfileCard = memo(
     };
 
     const customNumberStyle = {
-      color: customStyles?.color,
+      color: containerStyles?.color,
     };
 
     return (
-      <StyledProfileCard style={customStyles}>
+      <StyledProfileCard style={containerStyles}>
         {isOwnProfile && onCast && (
           <HBox
             alignItems="center"
             justifyContent="space-between"
             spacingBottom="20px"
           >
-            <UsernameTitle style={customStyles}>@{username}</UsernameTitle>
+            <UsernameTitle style={containerStyles}>@{username}</UsernameTitle>
             <ButtonPrimary onClick={onCast}>Cast</ButtonPrimary>
           </HBox>
         )}
@@ -148,13 +148,13 @@ export const ProfileCard = memo(
                   )}
                 </HBox>
                 <HBox alignItems="center">
-                  <Username style={customStyles}>@{username}</Username>
-                  {isFollowing && <Tag style={customStyles}>Follows you</Tag>}
+                  <Username style={containerStyles}>@{username}</Username>
+                  {isFollowing && <Tag style={containerStyles}>Follows you</Tag>}
                 </HBox>
               </VBox>
               <HBox>
                 {isOwnProfile && (
-                  <ButtonOutlined style={customStyles} onClick={handleEditProfile}>
+                  <ButtonOutlined style={containerStyles} onClick={handleEditProfile}>
                     Edit Profile
                   </ButtonOutlined>
                 )}
@@ -162,7 +162,7 @@ export const ProfileCard = memo(
             </HBox>
 
             <Box spacingVertical="15px">
-              <div style={customStyles}>{linkifiedBio}</div>
+              <div style={containerStyles}>{linkifiedBio}</div>
             </Box>
 
             <HBox>

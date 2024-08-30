@@ -42,7 +42,7 @@ const TemplateWithCustomStyling: StoryFn<NeynarCastCardProps> = ({
   allowReactions,
   renderEmbeds,
   renderFrames,
-  customStyles
+  containerStyles
 }) => (
   <NeynarCastCard
     type={type}
@@ -51,7 +51,7 @@ const TemplateWithCustomStyling: StoryFn<NeynarCastCardProps> = ({
     allowReactions={allowReactions}
     renderEmbeds={renderEmbeds}
     renderFrames={renderFrames}
-    customStyles={customStyles}
+    containerStyles={containerStyles}
   />
 );
 
@@ -157,5 +157,5 @@ WithCustomStyling.args = {
   allowReactions: false,
   renderEmbeds: true,
   renderFrames: false,
-  customStyles: { background: "black", color: "white" },
+  containerStyles: { background: "black", color: "white" },
 };

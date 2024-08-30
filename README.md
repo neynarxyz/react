@@ -79,7 +79,7 @@ This component displays a user's Farcaster profile information.
 Params:
 - `fid` (number): The FID of the user to display.
 - `viewerFid?` (number): The FID of the viewer. Default: undefined.
-- `customStyles?` (CSSProperties): Custom styles for the profile card. Default: {}
+- `containerStyles?` (CSSProperties): Custom styles for the profile card. Default: {}
 
 Usage:
 ```tsx
@@ -110,7 +110,8 @@ Params:
     setLocalFrame: React.Dispatch<React.SetStateAction<NeynarFrame>>,
     inputValue?: string
   ) => Promise<NeynarFrame>;`: A handler to add functionality when a frame button is pressed.
-- `customStyles?` (CSSProperties): Custom styles for the cast card. Default: {}
+- `containerStyles?` (CSSProperties): Custom styles for the cast card's container. Default: {}
+- `textStyles?` (CSSProperties): Custom styles for the cast card's text. Default: {}
 
 Usage:
 ```tsx

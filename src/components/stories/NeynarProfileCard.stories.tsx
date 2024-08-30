@@ -18,8 +18,8 @@ const Template: StoryFn<ProfileCardProps> = (args) => <ProfileCard {...args} />;
 const TemplateWithUser: StoryFn<NeynarProfileCardProps> = ({
   fid,
   viewerFid,
-  customStyles,
-}) => <NeynarProfileCard fid={fid} viewerFid={viewerFid} customStyles={customStyles} />;
+  containerStyles,
+}) => <NeynarProfileCard fid={fid} viewerFid={viewerFid} containerStyles={containerStyles} />;
 
 export const Primary = Template.bind({});
 Primary.args = {
@@ -50,7 +50,7 @@ export const WithCustomStyling = TemplateWithUser.bind({});
 WithCustomStyling.args = {
   fid: 1,
   viewerFid: 1,
-  customStyles: { background: "black", color: "white" },
+  containerStyles: { background: "black", color: "white" },
 };
 
 export const WithEmptyPFPUser = TemplateWithUser.bind({});

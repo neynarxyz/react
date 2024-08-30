@@ -158,7 +158,8 @@ export type CastCardProps = {
     inputValue?: string
   ) => Promise<NeynarFrame>;
   direct_replies?: CastCardProps[];
-  customStyles?: React.CSSProperties;
+  containerStyles?: React.CSSProperties;
+  textStyles?: React.CSSProperties;
 };
 
 export const CastCard = React.memo(
@@ -184,7 +185,8 @@ export const CastCard = React.memo(
     onCommentBtnPress,
     onFrameBtnPress,
     direct_replies,
-    customStyles
+    containerStyles,
+    textStyles
   }: CastCardProps) => {
     const [likesCount, setLikesCount] = useState<number>(reactions.likes_count);
     const [isLiked, setIsLiked] = useState<boolean>(reactions.likes.some(like => like.fid === viewerFid));
@@ -217,11 +219,11 @@ export const CastCard = React.memo(
     const renderedEmbeds = useRenderEmbeds(filteredEmbeds, allowReactions, viewerFid);
 
     return (
-      <StyledCastCard style={{ ...customStyles, borderWidth: isEmbed ? "1px" : "0" }}>
+      <StyledCastCard style={{ ...containerStyles, borderWidth: isEmbed ? "1px" : "0" }}>
         <HBox>
           <Box spacingRight="10px">
             <Avatar
-              src={avatarImgUrl ?? SKELETON_PFP_URL}
+              src={avatarImgUrl && avatarImgUrl.length > 0 ? avatarImgUrl : SKELETON_PFP_URL}
               onError={handleError}
               loading="lazy"
               alt={`${displayName ?? 'Skeleton'} Avatar`}
@@ -245,7 +247,7 @@ export const CastCard = React.memo(
             </HBox>
 
             <Box spacingVertical="15px">
-              <LinkifiedText>{linkifiedText}</LinkifiedText>
+              <LinkifiedText style={textStyles}>{linkifiedText}</LinkifiedText>
             </Box>
             {renderEmbeds && filteredEmbeds && filteredEmbeds.length > 0 ? (
               <EmbedsContainer style={{ margin: isSingle ? '10px 0' : '0' }}>
