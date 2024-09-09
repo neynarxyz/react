@@ -145,8 +145,8 @@ Usage:
 import { NeynarFeedList } from "@neynar/react";
 
 <NeynarFeedList 
-  feed_type="filter" 
-  filter_type="fids" 
+  feedType="filter" 
+  filterType="fids" 
   fids="2"
   viewerFid={2} 
 />
