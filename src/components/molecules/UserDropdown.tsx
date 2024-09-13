@@ -77,7 +77,7 @@ const UserDropdown: React.FC<UserDropdownProps> = ({
       {users.map((user) => (
         <ListItem style={{...customStyles?.listItem}} key={user.fid} onClick={() => onSelect(user)}>
           <Avatar style={{...customStyles?.avatar}} src={user.pfp_url} alt={user.username} />
-          <UserInfo style={{...customStyles.}}>
+          <UserInfo style={{...customStyles.userInfo}}>
             <DisplayName>{user.display_name}</DisplayName>
             <Username>@{user.username}</Username>
           </UserInfo>
