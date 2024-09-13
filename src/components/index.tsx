@@ -5,3 +5,4 @@ export { NeynarConversationList } from "./organisms/NeynarConversationList";
 export { NeynarFeedList } from "./organisms/NeynarFeedList"; 
 export { NeynarFrameCard } from "./organisms/NeynarFrameCard";
 export { NeynarProfileCard } from "./organisms/NeynarProfileCard";
+export { NeynarUserDropdown } from "./organisms/NeynarUserDropdown";
