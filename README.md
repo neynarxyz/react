@@ -90,6 +90,35 @@ import { NeynarProfileCard } from "@neynar/react";
   viewerFid={1} 
 />
 ```
+### `<NeynarUserDropdown />`
+This component is a dropdown to search for Farcaster users.
+
+Params:
+- `value` (string): The currently selected user value.
+- `onChange` (function): Callback function called with the new value when the user selection changes.
+- `style?` (CSSProperties): Custom styles for the dropdown. Default: undefined.
+- `placeholder?` (string): Placeholder text to display in the dropdown. Default: undefined.
+- `disabled?` (boolean): Boolean indicating whether the dropdown is disabled. Default: false.
+- `viewerFid?` (number): The FID of the viewer. Default: undefined.
+- `customStyles?` (object): Custom styles for various elements within the dropdown. Properties include:
+  - `dropdown?` (CSSProperties): Styles for the dropdown container.
+  - `listItem?` (CSSProperties): Styles for the individual list items.
+  - `avatar?` (CSSProperties): Styles for the user's avatar.
+  - `userInfo?` (CSSProperties): Styles for the user's information text.
+- `limit?` (number | null): The number of users that can be selected, or null for no limit. Default: null.
+
+Usage:
+```tsx
+import { NeynarUserDropdown } from "@neynar/react";
+
+<NeynarUserDropdown 
+  value="rish" 
+  onChange={(newValue) => console.log(newValue)} 
+  viewerFid={1}
+  limit={5}
+/>
+```
+
 
 ### `<NeynarCastCard />`
 This component displays a specific cast (post) on Farcaster.
