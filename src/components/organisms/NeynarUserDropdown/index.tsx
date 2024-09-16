@@ -13,18 +13,19 @@ interface User {
 }
 
 export interface NeynarUserDropdownProps {
-    value: string;
-    onChange: (value: string) => void;
-    style?: React.CSSProperties;
-    placeholder?: string;
-    disabled?: boolean;
-    viewerFid?: number;
-    customStyles?: {
-        dropdown?: React.CSSProperties;
-        listItem?: React.CSSProperties;
-        avatar?: React.CSSProperties;
-        userInfo?: React.CSSProperties;
-        };
+  value: string;
+  onChange: (value: string) => void;
+  style?: React.CSSProperties;
+  placeholder?: string;
+  disabled?: boolean;
+  viewerFid?: number;
+  customStyles?: {
+    dropdown?: React.CSSProperties;
+    listItem?: React.CSSProperties;
+    avatar?: React.CSSProperties;
+    userInfo?: React.CSSProperties;
+  };
+  limit?: number | null; // Number of users that can be selected, or null for no limit
 }
 
 const Container = styled.div(() => ({
@@ -39,19 +40,21 @@ const Input = styled.input(() => ({
 async function fetchUsersByQuery({
   q,
   viewerFid,
-  client_id
+  client_id,
 }: {
   q: string;
   viewerFid?: number;
   client_id: string;
 }): Promise<User[] | null> {
   try {
-    let requestUrl = `${NEYNAR_API_URL}/v2/farcaster/user/search?q=${q}&limit=5${viewerFid ? `&viewer_fid=${viewerFid}` : ''}&client_id=${client_id}`;
+    let requestUrl = `${NEYNAR_API_URL}/v2/farcaster/user/search?q=${q}&limit=5${
+      viewerFid ? `&viewer_fid=${viewerFid}` : ''
+    }&client_id=${client_id}`;
     const response = await customFetch(requestUrl);
     const data = await response.json();
     return data?.result?.users || [];
   } catch (error) {
-    console.log("Error fetching users by query", error);
+    console.log('Error fetching users by query', error);
     return null;
   }
 }
@@ -63,7 +66,8 @@ export const NeynarUserDropdown: React.FC<NeynarUserDropdownProps> = ({
   placeholder = 'Enter FIDs or usernames',
   disabled = false,
   viewerFid,
-customStyles = {},
+  customStyles = {},
+  limit = null, // Default limit is null for no limit
 }) => {
   const { client_id } = useNeynarContext();
   const [currentValue, setCurrentValue] = useState<string>('');
@@ -71,15 +75,17 @@ customStyles = {},
   const [users, setUsers] = useState<User[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Splitting the value and storing in array format
   useEffect(() => {
     const values = value?.split(',') || [];
-    if (!values[values.length -1]) {
+    if (!values[values.length - 1]) {
       setCurrentValue('');
       return;
     }
     setCurrentValue(values[values.length - 1].trim());
   }, [value]);
 
+  // Fetch users when current value changes
   useEffect(() => {
     const shouldFetchUsers = currentValue !== '' && !/^\d+$/.test(currentValue);
     if (shouldFetchUsers) {
@@ -90,7 +96,11 @@ customStyles = {},
   }, [currentValue]);
 
   const fetchUsers = async (query: string) => {
-    const fetchedUsers = await fetchUsersByQuery({ q: query, viewerFid, client_id });
+    const fetchedUsers = await fetchUsersByQuery({
+      q: query,
+      viewerFid,
+      client_id,
+    });
     if (fetchedUsers) {
       setUsers(fetchedUsers);
       setShowDropdown(true);
@@ -104,7 +114,14 @@ customStyles = {},
 
   const handleUserSelect = (user: User) => {
     let values = value.split(',');
-    values[values.length - 1] = user.fid.toString();
+
+    // If limit is defined and reached, replace the last user; otherwise add the user
+    if (limit !== null && values.length >= limit) {
+      values[values.length - 1] = user.fid.toString(); // Replace the last user
+    } else {
+      values.push(user.fid.toString()); // Add the user if under the limit or if no limit
+    }
+
     const newValue = values.join(',');
     onChange(newValue);
     setCurrentValue('');
