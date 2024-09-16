@@ -67,7 +67,7 @@ export const NeynarUserDropdown: React.FC<NeynarUserDropdownProps> = ({
   disabled = false,
   viewerFid,
   customStyles = {},
-  limit = null, // Default limit is null for no limit
+  limit = null,
 }) => {
   const { client_id } = useNeynarContext();
   const [currentValue, setCurrentValue] = useState<string>('');
@@ -75,7 +75,6 @@ export const NeynarUserDropdown: React.FC<NeynarUserDropdownProps> = ({
   const [users, setUsers] = useState<User[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Splitting the value and storing in array format
   useEffect(() => {
     const values = value?.split(',') || [];
     if (!values[values.length - 1]) {
@@ -85,7 +84,6 @@ export const NeynarUserDropdown: React.FC<NeynarUserDropdownProps> = ({
     setCurrentValue(values[values.length - 1].trim());
   }, [value]);
 
-  // Fetch users when current value changes
   useEffect(() => {
     const shouldFetchUsers = currentValue !== '' && !/^\d+$/.test(currentValue);
     if (shouldFetchUsers) {
@@ -115,11 +113,10 @@ export const NeynarUserDropdown: React.FC<NeynarUserDropdownProps> = ({
   const handleUserSelect = (user: User) => {
     let values = value.split(',');
 
-    // If limit is defined and reached, replace the last user; otherwise add the user
     if (limit !== null && values.length >= limit) {
-      values[values.length - 1] = user.fid.toString(); // Replace the last user
+      values[values.length - 1] = user.fid.toString();
     } else {
-      values.push(user.fid.toString()); // Add the user if under the limit or if no limit
+      values.push(user.fid.toString());
     }
 
     const newValue = values.join(',');
