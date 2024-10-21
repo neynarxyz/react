@@ -24,12 +24,12 @@ const generateUrl = (match: string): string => {
 
 const StyledLink = styled.a(({ theme }) => ({
   textDecoration: "underline",
-  color: theme.vars.colors.primary,
+  color: theme.vars.colors.primary
 }));
 
 export const useLinkifyBio = (text: string | undefined): React.ReactNode[] => {
   if (!text) return [];
-  
+
   const elements: React.ReactNode[] = [];
   let lastIndex = 0;
 
@@ -41,8 +41,15 @@ export const useLinkifyBio = (text: string | undefined): React.ReactNode[] => {
     }
 
     const url = generateUrl(match[0]);
+    const isChannel = (match[0].trim()).startsWith('/');
+
     elements.push(
-      <StyledLink key={matchIndex} href={url} target="_blank">
+      <StyledLink
+        key={matchIndex}
+        href={url}
+        target="_blank"
+        style={isChannel ? { marginLeft: 3.5 } : {}}
+      >
         {match[0].trim()}
       </StyledLink>
     );

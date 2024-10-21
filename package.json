@@ -1,6 +1,6 @@
 {
   "name": "@neynar/react",
-  "version": "0.9.5",
+  "version": "0.9.6",
   "description": "Farcaster frontend component library powered by Neynar",
   "main": "dist/bundle.cjs.js",
   "module": "dist/bundle.es.js",
