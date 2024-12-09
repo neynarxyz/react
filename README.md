@@ -1,5 +1,10 @@
 # @neynar/react
 
+## `npm` package
+Download npm package [here](https://www.npmjs.com/package/@neynar/react). 
+
+-- -- -- -- -- -- 
+
 ## Introduction
 
 `@neynar/react` is the official Frontend SDK from [Neynar](https://neynar.com/). This SDK includes React components to build Farcaster clients.
